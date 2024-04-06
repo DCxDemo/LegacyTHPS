@@ -1,5 +1,5 @@
 ﻿using FastColoredTextBoxNS;
-using QScripted.Properties;
+using ThpsQScriptEd.Properties;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace QScripted
+namespace ThpsQScriptEd
 {
     partial class MainForm
     {

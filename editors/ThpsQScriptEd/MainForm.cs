@@ -10,9 +10,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using Settings = QScripted.Properties.Settings;
+using Settings = ThpsQScriptEd.Properties.Settings;
 
-namespace QScripted
+namespace ThpsQScriptEd
 {
     public partial class MainForm : Form
     {

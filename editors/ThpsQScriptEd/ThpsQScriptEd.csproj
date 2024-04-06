@@ -8,8 +8,8 @@
     <ProjectGuid>{A725A0D0-D9EE-4F0B-85A4-4EADD9841E1E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QScripted</RootNamespace>
-    <AssemblyName>QScripted</AssemblyName>
+    <RootNamespace>ThpsQScriptEd</RootNamespace>
+    <AssemblyName>ThpsQScriptEd</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
@@ -53,7 +53,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>QScripted.Program</StartupObject>
+    <StartupObject>ThpsQScriptEd.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>qscripted.ico</ApplicationIcon>

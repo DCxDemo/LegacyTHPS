@@ -43,7 +43,7 @@ namespace LegacyThps.QScript
             {
                 if (br.BaseStream.Length - offset > 4)
                 {
-                    QScripted.MainForm.WarnUser("got terminator at: 0x" + offset.ToString("X8"));
+                    ThpsQScriptEd.MainForm.WarnUser("got terminator at: 0x" + offset.ToString("X8"));
                 }
             }
 
@@ -135,7 +135,7 @@ namespace LegacyThps.QScript
                         }
                         else
                         {
-                            QScripted.MainForm.WarnUser("RandomRange got no vector2. much wow");
+                            ThpsQScriptEd.MainForm.WarnUser("RandomRange got no vector2. much wow");
                         }
 
                         break;
@@ -219,7 +219,7 @@ namespace LegacyThps.QScript
                     {
                         unimplemented = true;
 
-                        QScripted.MainForm.WarnUser(
+                        ThpsQScriptEd.MainForm.WarnUser(
                             "Unknown opcode: " + ((byte)code).ToString("X2") +
                             " at 0x" + (br.BaseStream.Position - 1).ToString("X8") +
                             "\r\nParsing failed."
@@ -351,7 +351,7 @@ namespace LegacyThps.QScript
                 default:
                     {
                         unimplemented = true;
-                        QScripted.MainForm.WarnUser(code.ToString() + " " + offset.ToString("X8"));
+                        ThpsQScriptEd.MainForm.WarnUser(code.ToString() + " " + offset.ToString("X8"));
                         return "[unk_" + ((byte)code).ToString("X2") + "]";
                     }
             }

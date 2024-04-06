@@ -1,5 +1,5 @@
 ﻿using System;
-using Settings = QScripted.Properties.Settings;
+using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript.Helpers
 {

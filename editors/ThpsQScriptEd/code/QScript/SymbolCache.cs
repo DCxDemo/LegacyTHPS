@@ -1,12 +1,12 @@
 ﻿using LegacyThps.QScript.Helpers;
-using QScripted;
+using ThpsQScriptEd;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Settings = QScripted.Properties.Settings;
+using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript
 {
@@ -97,7 +97,7 @@ namespace LegacyThps.QScript
                 }
                 catch (Exception ex)
                 {
-                    QScripted.MainForm.WarnUser($"failed to parse hex number {symbol}\r\n" + ex.Message);
+                    ThpsQScriptEd.MainForm.WarnUser($"failed to parse hex number {symbol}\r\n" + ex.Message);
                 }
             }
 
@@ -144,7 +144,7 @@ namespace LegacyThps.QScript
 
             if (!Settings.Default.fixIncorrectChecksums)
                 if (errors > 0)
-                    QScripted.MainForm.WarnUser($"{errors} incorrect checksums found.");
+                    ThpsQScriptEd.MainForm.WarnUser($"{errors} incorrect checksums found.");
         }
 
         public static string GetSymbolName(uint hash)
@@ -163,7 +163,7 @@ namespace LegacyThps.QScript
             foreach (var kvp in Entries)
             {
                 sb.AppendLine($"\"{kvp.Key.ToString("X8")}\",\"{kvp.Key.ToString()}\",\"{kvp.Value}\"");
-                if (kvp.Value.Contains(',')) QScripted.MainForm.WarnUser("Comma found in symbol: " + kvp.Value);
+                if (kvp.Value.Contains(',')) ThpsQScriptEd.MainForm.WarnUser("Comma found in symbol: " + kvp.Value);
             }
 
             File.WriteAllText(path, sb.ToString());

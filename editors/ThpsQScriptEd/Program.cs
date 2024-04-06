@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace QScripted
+namespace ThpsQScriptEd
 {
     static class Program
     {

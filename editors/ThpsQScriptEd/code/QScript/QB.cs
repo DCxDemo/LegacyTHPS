@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Settings = QScripted.Properties.Settings;
+using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript
 {
@@ -396,7 +396,7 @@ namespace LegacyThps.QScript
                                 Array.Resize(ref finalsymbytes, (int)bwsym.BaseStream.Position);
 
                                 File.WriteAllBytes(Path.ChangeExtension(filename, ".sym.qb"), finalsymbytes);
-                                QScripted.MainForm.WarnUser(Path.ChangeExtension(filename, ".sym.qb"));
+                                ThpsQScriptEd.MainForm.WarnUser(Path.ChangeExtension(filename, ".sym.qb"));
                             }
                         }
                     }
@@ -685,7 +685,7 @@ namespace LegacyThps.QScript
 
             if (w.ToLower() == "random")
             {
-                QScripted.MainForm.WarnUser("Yo!\r\nRandom is not implemented yet.\r\nThis file won't work in game.");
+                ThpsQScriptEd.MainForm.WarnUser("Yo!\r\nRandom is not implemented yet.\r\nThis file won't work in game.");
                 return;
             }
 

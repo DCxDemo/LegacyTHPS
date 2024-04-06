@@ -2,9 +2,9 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using Settings = QScripted.Properties.Settings;
+using Settings = ThpsQScriptEd.Properties.Settings;
 
-namespace QScripted
+namespace ThpsQScriptEd
 {
     public partial class SettingsForm : Form
     {

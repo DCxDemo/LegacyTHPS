@@ -1,10 +1,10 @@
 ﻿using LegacyThps.QScript.Helpers;
-using QScripted;
+using ThpsQScriptEd;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Settings = QScripted.Properties.Settings;
+using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript
 {
@@ -157,7 +157,7 @@ namespace LegacyThps.QScript
 
                         break;
                     }
-                default: QScripted.MainForm.WarnUser("unimplemented datagroup!: " + code.Group); break;
+                default: ThpsQScriptEd.MainForm.WarnUser("unimplemented datagroup!: " + code.Group); break;
             }
         }
 
@@ -196,7 +196,7 @@ namespace LegacyThps.QScript
                     {
                         case DataGroup.Int: result = data_int.ToString(); break;
                         case DataGroup.Float: result = data_float.ToString("0.0####"); break;
-                        default: result = code.GetSyntax(); QScripted.MainForm.WarnUser("Unknown numeric entry!\r\n" + result); break;
+                        default: result = code.GetSyntax(); ThpsQScriptEd.MainForm.WarnUser("Unknown numeric entry!\r\n" + result); break;
                     }
                     break;
 
@@ -260,11 +260,11 @@ namespace LegacyThps.QScript
                     break;
 
                 case OpLogic.Unknown:
-                    QScripted.MainForm.WarnUser("unknown code found: " + code.GetSyntax());
+                    ThpsQScriptEd.MainForm.WarnUser("unknown code found: " + code.GetSyntax());
                     result = code.GetSyntax();
                     break;
 
-                default: QScripted.MainForm.WarnUser("unimplemented logic: " + code.Logic); break;
+                default: ThpsQScriptEd.MainForm.WarnUser("unimplemented logic: " + code.Logic); break;
 
             }
 

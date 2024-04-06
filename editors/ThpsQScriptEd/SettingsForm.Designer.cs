@@ -1,4 +1,4 @@
-﻿namespace QScripted
+﻿namespace ThpsQScriptEd
 {
     partial class SettingsForm
     {

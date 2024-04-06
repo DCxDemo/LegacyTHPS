@@ -1,13 +1,13 @@
 ﻿using LegacyThps.QScript.Helpers;
 using LegacyThps.QScript.Nodes;
-using QScripted;
+using ThpsQScriptEd;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using Settings = QScripted.Properties.Settings;
+using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript
 {
@@ -54,7 +54,7 @@ namespace LegacyThps.QScript
                     return qc;
             }
 
-            QScripted.MainForm.WarnUser(q.ToString());
+            ThpsQScriptEd.MainForm.WarnUser(q.ToString());
 
             return null;
         }
@@ -166,7 +166,7 @@ namespace LegacyThps.QScript
             }
             catch (Exception ex)
             {
-                QScripted.MainForm.WarnUser("parse failed: " + ex.Message + "\r\n" + ex.ToString());
+                ThpsQScriptEd.MainForm.WarnUser("parse failed: " + ex.Message + "\r\n" + ex.ToString());
             }
 
             SymbolCache.MaybeFix();
@@ -437,7 +437,7 @@ namespace LegacyThps.QScript
             }
             catch (Exception ex)
             {
-                QScripted.MainForm.WarnUser("Error while fixing angles: " + ex.Message);
+                ThpsQScriptEd.MainForm.WarnUser("Error while fixing angles: " + ex.Message);
             }
 
             foreach (QChunk c in chunks)
@@ -469,7 +469,7 @@ namespace LegacyThps.QScript
                 {
                     if (indent < 0)
                     {
-                        QScripted.MainForm.WarnUser("Whoops! Negative indent.");
+                        ThpsQScriptEd.MainForm.WarnUser("Whoops! Negative indent.");
                         indent = 20; //just so you can easily spot the place where this occurs
                     }
 
@@ -658,7 +658,7 @@ namespace LegacyThps.QScript
             }
 
             if (stack != "")
-                QScripted.MainForm.WarnUser($"Balance check failed!\r\nCheck below line {lastemptystack}.");
+                ThpsQScriptEd.MainForm.WarnUser($"Balance check failed!\r\nCheck below line {lastemptystack}.");
         }
 
         private static void FinalChecks()
@@ -696,7 +696,7 @@ namespace LegacyThps.QScript
             }
             catch (Exception ex)
             {
-                QScripted.MainForm.WarnUser("Error while parsing vectors: " + ex.Message);
+                ThpsQScriptEd.MainForm.WarnUser("Error while parsing vectors: " + ex.Message);
             }
 
 
@@ -715,7 +715,7 @@ namespace LegacyThps.QScript
             }
             catch (Exception ex)
             {
-                QScripted.MainForm.WarnUser("Error while removing jump linefeeds: " + ex.Message);
+                ThpsQScriptEd.MainForm.WarnUser("Error while removing jump linefeeds: " + ex.Message);
             }
 
 
@@ -736,7 +736,7 @@ namespace LegacyThps.QScript
             }
             catch (Exception ex)
             {
-                QScripted.MainForm.WarnUser("Error while parsing random: " + ex.Message);
+                ThpsQScriptEd.MainForm.WarnUser("Error while parsing random: " + ex.Message);
             }
 
 
@@ -761,7 +761,7 @@ namespace LegacyThps.QScript
                 }
                 catch (Exception ex)
                 {
-                    QScripted.MainForm.WarnUser("Error while removing trailing newlines: " + ex.Message);
+                    ThpsQScriptEd.MainForm.WarnUser("Error while removing trailing newlines: " + ex.Message);
                 }
             }
 
@@ -782,7 +782,7 @@ namespace LegacyThps.QScript
                 }
                 catch (Exception ex)
                 {
-                    QScripted.MainForm.WarnUser("Error while removing commas: " + ex.Message);
+                    ThpsQScriptEd.MainForm.WarnUser("Error while removing commas: " + ex.Message);
                 }
             }
 
@@ -1276,7 +1276,7 @@ namespace LegacyThps.QScript
             //maybeGlobal?
             if (s == "")
             {
-                if (!suppressError) QScripted.MainForm.WarnUser("wtf null putsymbol called");
+                if (!suppressError) ThpsQScriptEd.MainForm.WarnUser("wtf null putsymbol called");
                 return;
             }
 
@@ -1481,7 +1481,7 @@ namespace LegacyThps.QScript
                         }
                         catch
                         {
-                            QScripted.MainForm.WarnUser("TYPE FOUND: " + SymbolCache.GetSymbolName(chunks[from].data_uint));
+                            ThpsQScriptEd.MainForm.WarnUser("TYPE FOUND: " + SymbolCache.GetSymbolName(chunks[from].data_uint));
                         }
                         from++;
                         continue;
@@ -1586,7 +1586,7 @@ namespace LegacyThps.QScript
                     }
                     else
                     {
-                        QScripted.MainForm.WarnUser(SymbolCache.GetSymbolName(chunks[from].data_uint) + " at " + from);
+                        ThpsQScriptEd.MainForm.WarnUser(SymbolCache.GetSymbolName(chunks[from].data_uint) + " at " + from);
                         from++;
                     }
                 }

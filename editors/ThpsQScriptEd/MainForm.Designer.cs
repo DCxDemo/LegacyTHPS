@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Reflection;
 using FastColoredTextBoxNS;
-using Settings = QScripted.Properties.Settings;
+using Settings = ThpsQScriptEd.Properties.Settings;
 
-namespace QScripted
+namespace ThpsQScriptEd
 {
     partial class MainForm
     {
