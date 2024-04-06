@@ -1,0 +1,42 @@
+script|name|description|params
+skutils|SetAllStats|sets all stats to specified value|value = [int]
+skutils|WaitAnimFinished|loops until anim is finished|no
+skutils|WaitAnimWhilstChecking|checks every frame if there is next trick available.|optional AndManuals
+skutils|Goto|alias for JumpToScript|script name
+skutils|WaitOneGameFrame|alias for "wait 1 gameframe"|no
+skutils|Obj_WaitForFlag|wait until obj flag is set|flag = [flag_name]
+airtricks|FlipTrick|flip trick logic|trick struct
+airtricks|CheckForOllie|check for ollie exception|no
+airtricks|CalledOllie|maybe allow late ollie|no
+airtricks|GrabTrick|grab trick logic|trick struct
+airtricks|Eyeball_SFX|plays eyeball sound|no
+airtricks|MaulSFX|plays maul sounds|no
+airtricks|Ollie_Signage|spawns special item for bum trick|no
+airtricks|FlipGrabBlendFS|blend trick logic|trick struct
+airtricks|FlipGrabBlendBS|blend trick logic|trick struct
+airtricks|FlipGrabBlend|blend trick logic|trick struct
+skater_sfx|LoadPermSFX|loads permanent sounds|no
+skater_sfx|LoadPermSongs|loads permanent songs|no
+skater_sfx|LoadPermSounds|loads all permanent sfx|no
+tricks|ClearSkaterFlags|Clears skater flags, captain.|no
+tricks|OnGroundExceptions|process on ground exceptions|optional: NoClear, NoEndRun
+tricks|InAirExceptions|process in air exceptions|no
+tricks|ClearTrickQueues|alias for clearing trick queue + manuals + extra grinds|no
+tricks|Wallride|wallride logic|param: Left. else right wallride is executed
+tricks|WallrideEnd|spawns if groundgone in wallride|no
+tricks|Wallie|wallie - wall ollie trick logic| no
+tricks|OnGroundAI|skater on ground logic|no
+tricks|CheckforNetBrake|checks whether skater should be stopped due to menu overlay online|no
+tricks|CessBrake|maybe play cess anim while stopping|no
+tricks|NetBrake|execute net brake|no
+tricks|OnGroundNollieAI|nollie stance logic|no
+tricks|Airborne|idle air logic|optional: stretchtime, blendperiod
+tricks|Land|landing fail logic|no
+tricks|Land2|landing success logic|reverttime
+tricks|WaitOnGround|waits until skater hits ground|no
+tricks|VibrateOff|turns off vibration (doens't work on pc)|no
+tricks|WonGame|won game anim|no
+tricks|LostGame|lost game anim|no
+tricks|DropIn|restart anim for ramps|optional: dropinanim
+tricks|LaunchSpecialMessage|triggered by special trick|optional: text
+tricks|LaunchExtralMessage|triggered by extra trick|optional: text
