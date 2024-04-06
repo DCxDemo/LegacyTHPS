@@ -20,8 +20,6 @@ namespace ThpsQScriptEd
 
         SettingsForm sf;
 
-        string manual = "";
-
         public List<string> exefuncs = new List<string>();
         public List<string> scrfuncs = new List<string>();
 
@@ -30,7 +28,6 @@ namespace ThpsQScriptEd
         {
             InitializeComponent();
 
-            manual = codeBox.Text;
             checksumHelper.Text = "";
 
             //this is here to force dot floating point format.
@@ -592,19 +589,7 @@ namespace ThpsQScriptEd
 
         private void sortOfManualToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (codeBox.Text.Trim(' ') == "")
-            {
-                codeBox.Text = manual;
-            }
-            else
-            {
-                string warning = "You have some text there, are you sure you want to load manual?";
-                if (MessageBox.Show(warning, "Warning", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    codeBox.Text = manual;
-                }
-            }
-
+            System.Diagnostics.Process.Start("https://github.com/DCxDemo/LegacyThps/wiki/ThpsQScriptEd");
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -784,6 +769,11 @@ namespace ThpsQScriptEd
                 sb.AppendLine(str);
 
             File.WriteAllText("scripts.txt", sb.ToString());
+        }
+
+        private void legacyThpsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://discord.gg/vTWucHS");
         }
     }
 }
