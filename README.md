@@ -12,7 +12,7 @@ Join the LegacyThps Discord server: https://discord.gg/vTWucHS
 # Tools
 * ThpsQScriptEd - a Neversoft qScript compiler/decompiler
 
-_**Disclaimer!!!** This repo is a pile of tools written over the decade, code quality may vary._
+_**Disclaimer!!!** This repo is a pile of tools written over the last decade, code quality may vary. There is no support promises for anything you'll find here. Use at your own risk._
 
 # Related links
 * http://thmods.com
