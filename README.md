@@ -1,4 +1,4 @@
-# LegacyThps
+## LegacyThps
 
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-green.svg)](https://opensource.org/licenses/GPL-3.0)
 [![Discord Chat](https://img.shields.io/discord/527135227546435584.svg)](https://discord.gg/vTWucHS)
@@ -9,7 +9,7 @@ Download the latest release here: https://github.com/DCxDemo/LegacyThps/releases
 
 Join the LegacyThps Discord server: https://discord.gg/vTWucHS
 
-# Tools
+## Tools
 * ThpsQScriptEd - a Neversoft qScript compiler/decompiler
 
 _**Disclaimer!!!** This repo is a pile of tools written over the last decade, code quality may vary. There is no support promises for anything you'll find here. Use at your own risk._
