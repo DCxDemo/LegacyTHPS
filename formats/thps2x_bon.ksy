@@ -1,15 +1,18 @@
 meta:
   id: thps2x_bon
   application: Tony Hawk's Pro Skater 2X
-  title: Tony Hawk's Pro SKater 2X (XBOX) skater mesh file
+  title: Treyarch THPS mesh file
   file-extension: bon
   endian: le
-
+  
 doc-ref: https://github.com/DCxDemo/LegacyTHPS/blob/master/formats/thps2x_bon.ksy
 
 doc: |
   Describes skater model in BON format found in THPS2x for the Original Xbox.
   File mapped by DCxDemo*.
+  
+  version 1 found on Dreamcast, uses PVR textures.
+  versions 3 and 4 found on Xbox, uses DDS textures.
 
 seq:
 
@@ -23,6 +26,7 @@ seq:
     type:
       switch-on: version
       cases:
+        1: u4
         3: u2
         4: u4
 
@@ -62,7 +66,11 @@ seq:
     repeat-expr: num_indices
 
   - id: num_hier
-    type: u4
+    type:
+      switch-on: version
+      cases:
+        3: u2
+        4: u4
 
   - id: hier
     type: mesh
@@ -81,9 +89,15 @@ types:
         type: f4
       - id: unk_float2
         type: f4
-      - id: flag
+      - id: has_texture
         type: u1
-      - id: short_name
+      - id: texture
+        type: texture
+        if: has_texture == 1
+
+  texture:
+    seq:
+      - id: name
         type: bonstring
       - id: flag1
         type: u1
@@ -114,15 +128,17 @@ types:
         repeat-expr: num_children
       - id: matrix2
         type: matrix
+        
       - id: num_base_splits # base mesh parts
         type: u2
-      - id: mat_splits
+      - id: base_splits
         type: mat_split
         repeat: expr
         repeat-expr: num_base_splits
+        
       - id: num_joint_splits # stiches in the original engine
         type: u2
-      - id: mat_splits2
+      - id: joint_splits
         type: mat_split
         repeat: expr
         repeat-expr: num_joint_splits
@@ -146,7 +162,11 @@ types:
   bonstring:
     seq:
       - id: length
-        type: u2
+        type:
+          switch-on: _root.version
+          cases:
+            1: u1
+            _: u2
       - id: content
         type: str
         encoding: ascii
@@ -193,8 +213,12 @@ types:
   vertex:
     seq:
       - id: position
-        type: vector4f
-      - id: normal
-        type: vector4f
+        type: vector3f
+      - id: unk1 # a lot of 1.0, but also many lower 0.0-1.0 values
+        type: f4
+      - id: normal # maybe not
+        type: vector3f
+      - id: vcol # looks like color, but makes little sense
+        type: color 
       - id: uv
         type: vector2f
