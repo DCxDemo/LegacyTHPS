@@ -4,15 +4,19 @@ meta:
   title: Treyarch THPS mesh file
   file-extension: bon
   endian: le
-  
-doc-ref: https://github.com/DCxDemo/LegacyTHPS/blob/master/formats/thps2x_bon.ksy
+
+doc-ref: https://github.com/DCxDemo/LegacyThps/blob/master/formats/thps2x_bon.ksy
 
 doc: |
   Describes skater model in BON format found in THPS2x for the Original Xbox.
   File mapped by DCxDemo*.
   
-  version 1 found on Dreamcast, uses PVR textures.
-  versions 3 and 4 found on Xbox, uses DDS textures.
+  version 1 found on Dreamcast, uses PVR textures, not supported
+  versions 3 and 4 found on Xbox, uses DDS textures, supported
+  
+  dreamcast bon stores vertices and indices in hierarchy
+  instead of global arrays, maybe should create a separate ksy for that one
+  also uses floats instead of byte for color and some extra float
 
 seq:
 
@@ -26,7 +30,6 @@ seq:
     type:
       switch-on: version
       cases:
-        1: u4
         3: u2
         4: u4
 
@@ -99,11 +102,11 @@ types:
     seq:
       - id: name
         type: bonstring
-      - id: flag1
+      - id: flag1 # always 1, does nothing
         type: u1
-      - id: flag2
+      - id: address_u # 0 clamp, 1 wrap, 2 mirror
         type: u1
-      - id: flag3
+      - id: address_v # 0 clamp, 1 wrap, 2 mirror
         type: u1
       - id: size
         type: u4
@@ -116,16 +119,18 @@ types:
         type: u1
       - id: name
         type: bonstring
-      - id: matrix
+      - id: matrix #
         type: matrix
-      - id: position
+      - id: position # works for most as absolute, except hands, maybe should use matrix to translate
         type: vector3f
+
       - id: num_children
         type: u2
       - id: children
         type: mesh
         repeat: expr
         repeat-expr: num_children
+
       - id: matrix2
         type: matrix
         
@@ -218,7 +223,7 @@ types:
         type: f4
       - id: normal # maybe not
         type: vector3f
-      - id: vcol # looks like color, but makes little sense
+      - id: wobbliness # apparently vertex wobbliness in the wind
         type: color 
       - id: uv
         type: vector2f
