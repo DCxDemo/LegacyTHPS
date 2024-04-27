@@ -1,0 +1,42 @@
+﻿#include "windows.h"
+__declspec (dllexport) void Unswizzle(const void *src, unsigned int depth, unsigned int width, unsigned int height, void *dest)
+{
+   for (UINT y = 0; y < height; y++)
+   {
+      UINT sy = 0;
+    if (y < width)
+    {
+      for (int bit = 0; bit < 16; bit++)
+        sy |= ((y >> bit) & 1) << (2*bit);
+      sy <<= 1; // y counts twice
+    }
+    else
+    {
+      UINT y_mask = y % width;
+      for (int bit = 0; bit < 16; bit++)
+        sy |= ((y_mask >> bit) & 1) << (2*bit);
+      sy <<= 1; // y counts twice
+      sy += (y / width) * width * width;
+    }
+    BYTE *d = (BYTE *)dest + y * width * depth;
+    for (UINT x = 0; x < width; x++)
+    {
+      UINT sx = 0;
+      if (x < height * 2)
+      {
+        for (int bit = 0; bit < 16; bit++)
+          sx |= ((x >> bit) & 1) << (2*bit);
+      }
+      else
+      {
+        int x_mask = x % (2*height);
+        for (int bit = 0; bit < 16; bit++)
+          sx |= ((x_mask >> bit) & 1) << (2*bit);
+        sx += (x / (2 * height)) * 2 * height * height;
+      }
+      BYTE *s = (BYTE *)src + (sx + sy)*depth;
+      for (unsigned int i = 0; i < depth; ++i)
+        *d++ = *s++;
+    }
+}
+}
