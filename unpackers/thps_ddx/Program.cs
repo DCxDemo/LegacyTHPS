@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using LegacyThps.Levels.Thps2x;
+using LegacyThps.Thps2;
 using LegacyThps.Helpers;
 
 namespace thps_ddx
