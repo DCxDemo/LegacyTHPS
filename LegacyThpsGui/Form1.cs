@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using LegacyThps.Levels.Thps2x;
+using System.Diagnostics;
 
 namespace thps_ddx_gui
 {
@@ -9,6 +9,16 @@ namespace thps_ddx_gui
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void discordToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("http://discord.gg/vTWucHS");
+        }
+
+        private void githubToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/DCxDemo/LegacyTHPS");
         }
     }
 }
