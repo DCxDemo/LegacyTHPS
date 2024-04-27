@@ -10,7 +10,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.IO;
 
-namespace LegacyThps.ThirdParty
+namespace DDS
 {
     #region DDSImage Class
     public class DDSImage : IDisposable

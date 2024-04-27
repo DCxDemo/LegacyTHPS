@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using LegacyThps.ThirdParty;
+using DDS;
 using LegacyThps.Helpers;
 
-namespace LegacyThps.Levels.Thps2x
+namespace LegacyThps.Thps2
 {
     /// <summary>
     /// A collection of DDS textures found in THPS2x.

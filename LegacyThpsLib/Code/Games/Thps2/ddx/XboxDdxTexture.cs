@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using LegacyThps.ThirdParty;
+using DDS;
 using LegacyThps.Helpers;
 using System.Diagnostics;
 
-namespace LegacyThps.Levels.Thps2x
+namespace LegacyThps.Thps2
 {
     public class XboxDdxTexture
     {

@@ -1,0 +1,20 @@
+hawk_pelvis 3
+	hawk_right_thigh 1
+		hawk_right_shin 1
+			hawk_right_shoe 0
+	hawk_left_thigh 1
+		hawk_left_shin 1
+			hawk_left_shoe 1
+	hawk_stomach 1
+		hawk_chest 3
+			hawk_left_bicep 1
+				hawk_left_forearm 1
+					hawk_left_hand 0
+			hawk_right_bicep 1
+				hawk_right_forearm 1
+					hawk_right_hand 0
+			hawk_head 0
+
+hawk_board 2
+	hawk_front_wheel 0
+	hawk_back_wheel 0

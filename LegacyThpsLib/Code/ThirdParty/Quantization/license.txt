@@ -1,0 +1,11 @@
+https://github.com/bacowan/cSharpColourQuantization
+
+cSharpColourQuantization
+
+Colour Palette Quantization in C#
+
+Implementation of various Colour Quantizaiton alogrithms in C#. Currently implemented are Octree and Mediun-cut. To use, call the static Quantize method of whichever algorithm you intend on using. The parameters are the input bitmap image, and the number of colours in the output bitmap image. Currently, octree quantization won't produce the exact number of output colours, only an approximation.
+
+License
+
+These files are all Public Domain. There's no nuget package, so to use them just copy paste the code into your own.
