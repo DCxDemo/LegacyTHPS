@@ -1,6 +1,6 @@
 meta:
   id: thps2x_ddx
-  application: THPS2x
+  application: Tony Hawk's Pro Skater 2X
   title: Tony Hawk's Pro Skater 2X texture container
   file-extension: ddx
   endian: le
@@ -12,31 +12,31 @@ doc: |
   Represents a list of DirectX surfaces (DDS).
 
 seq:
-  - id: reserved
+  - id: reserved # always 0
     type: u4
-  - id: total_size
+  - id: file_size # can use to validate
     type: u4
-  - id: data_offset
+  - id: data_offset # texture array starts here
     type: u4
-  - id: file_count
+  - id: num_files
     type: u4
   - id: files
     type: file_entry
     repeat: expr
-    repeat-expr: file_count
+    repeat-expr: num_files
 
 types:
   file_entry:
     seq:
       - id: offset
         type: u4
-      - id: length
+      - id: data_size
         type: u4
-      - id: name
+      - id: name # includes file extension (.DDS)
         type: strz
         encoding: ascii
         size: 256
     instances:
       data:
-        size: length
+        size: data_size
         pos: _root.data_offset + offset
