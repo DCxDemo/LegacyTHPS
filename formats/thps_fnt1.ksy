@@ -1,5 +1,5 @@
 meta:
-  id: thps3_fnt1
+  id: thps_fnt1
   application: Tony Hawk's Pro Skater 3
   title: Tony Hawk's Pro Skater 3 bitmap font (FNT1)
   file-extension: fnt
@@ -9,20 +9,22 @@ doc-ref: https://github.com/DCxDemo/LegacyTHPS/blob/master/formats/thps3_fnt1.ks
 
 doc: |
   Bitmap font found in several Tony Hawk's Pro Skater games and derivatives, given a FNT1 label.
-  
+
 seq:
   - id: file_size
     type: u4
-  - id: num_letters
+  - id: num_glyphs
     type: u4
-  - id: font_height
+  - id: height
     type: u4
-  - id: font_vshift
+  - id: baseline
     type: u4
-  - id: letters
-    type: letter
+
+  - id: glyphs
+    type: glyph
     repeat: expr
-    repeat-expr: num_letters
+    repeat-expr: num_glyphs
+
   - id: remain_size
     type: u4
   - id: bmp
@@ -37,26 +39,20 @@ seq:
 types:
   bitmap:
     seq:
-    - id: width
-      type: u2
-    - id: height
-      type: u2
+    - id: size
+      type: vector2s
     - id: bpp
       type: u2
-    - id: unk1
-      type: s2
-    - id: unk2
-      type: s2
-    - id: unk3
-      type: s2
+    - id: reserved # assume it's never used
+      size: 6
     - id: data
-      size: width*height
+      size: size.x * size.y
     - id: palette
-      size: 256*4
+      size: 256 * 4
       
-  letter:
+  glyph:
     seq:
-      - id: vshift
+      - id: underline
         type: u2
       - id: symbol_code
         type: str
@@ -65,11 +61,14 @@ types:
 
   rectangle:
     seq:
+      - id: position
+        type: vector2s
+      - id: size
+        type: vector2s
+
+  vector2s:
+    seq:
       - id: x
         type: u2
       - id: y
-        type: u2
-      - id: w
-        type: u2
-      - id: h
         type: u2

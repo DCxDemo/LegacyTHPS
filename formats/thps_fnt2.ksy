@@ -1,6 +1,6 @@
 meta:
   id: thps_fnt2
-  application: THUG2 bitmap font
+  application: Tony Hawk's Underground 2
   title: Tony Hawk's Underground 2 bitmap font (FNT2)
   file-extension: fnt.xbx
   endian: le
@@ -8,23 +8,25 @@ meta:
 doc-ref: https://github.com/DCxDemo/LegacyTHPS/blob/master/formats/thps3_fnt2.ksy
 
 doc: |
-  Bitmap font found in Tony Hawk's Pro Skater games.
-  
+  Bitmap font found in several Tony Hawk's Pro Skater games and derivatives, given a FNT2 label.
+
 seq:
-  - id: file_size
+  - id: file_size # this is actually calculated using FNT1 sizes, hence doesn't match actual FNT2 size
     type: u4
   - id: unk1
     type: u4
-  - id: num_letters
+  - id: num_glyphs
     type: u4
-  - id: font_height
+  - id: height
     type: u4
-  - id: font_vshift
+  - id: baseline
     type: u4
-  - id: letters
-    type: letter
+
+  - id: glyphs
+    type: glyph
     repeat: expr
-    repeat-expr: num_letters
+    repeat-expr: num_glyphs
+
   - id: remain_size
     type: u4
   - id: bmp
@@ -35,28 +37,22 @@ seq:
     type: rectangle
     repeat: expr
     repeat-expr: num_layouts
-    
+
 types:
   bitmap:
     seq:
-    - id: width
-      type: u2
-    - id: height
-      type: u2
+    - id: size
+      type: vector2s
     - id: bpp
       type: u2
-    - id: unk1
-      type: s2
-    - id: unk2
-      type: s2
-    - id: unk3
-      type: s2
+    - id: reserved # assume it's never used
+      size: 6
     - id: data
-      size: width*height
+      size: size.x * size.y
     - id: palette
-      size: 256*4
-      
-  letter:
+      size: 256 * 4
+
+  glyph:
     seq:
       - id: vshift
         type: u2
@@ -69,11 +65,14 @@ types:
 
   rectangle:
     seq:
+      - id: position
+        type: vector2s
+      - id: size
+        type: vector2s
+
+  vector2s:
+    seq:
       - id: x
         type: u2
       - id: y
-        type: u2
-      - id: w
-        type: u2
-      - id: h
         type: u2

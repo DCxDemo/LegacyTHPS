@@ -5,7 +5,7 @@ meta:
   file-extension: ska
   endian: le
 
-doc-ref: doc-ref: https://github.com/DCxDemo/LegacyTHPS/blob/master/formats/thps3_ska.ksy
+doc-ref: https://github.com/DCxDemo/LegacyTHPS/blob/master/formats/thps3_ska.ksy
 
 seq:
   - id: unk1 # no effect

@@ -59,7 +59,7 @@ types:
         type: u4
         if: _parent.version == 3
       - id: compression_type
-        type: u4       
+        type: u4
       - id: offset
         type: u4
       - id: size
