@@ -5,7 +5,7 @@ meta:
   file-extension: sav
   endian: le
 
-doc-ref: https://github.com/DCxDemo/LegacyTHPS/blob/master/formats/thps_sav.ksy
+doc-ref: https://github.com/DCxDemo/LegacyTHPS/blob/master/formats/thps2_sav.ksy
 
 seq:
   - id: magic # "SC" - magic word
