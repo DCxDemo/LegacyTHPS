@@ -5,7 +5,7 @@ meta:
   file-extension: pkr
   endian: le
 
-doc-ref: https://github.com/DCxDemo/LegacyTHPS/blob/master/formats/thps2_pkr.ksy
+doc-ref: https://github.com/DCxDemo/LegacyTHPS/blob/main/formats/thps2_pkr.ksy
 
 doc: |
   the format is known to be used in
