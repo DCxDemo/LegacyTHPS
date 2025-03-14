@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ThpsFontEd</RootNamespace>
     <AssemblyName>ThpsFontEd</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -156,9 +156,9 @@
     <Content Include="Swizzle_cpp.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\LegacyThps\LegacyThps.csproj">
-      <Project>{2ec77577-4855-4367-9129-17b203bc81b4}</Project>
-      <Name>LegacyThps</Name>
+    <ProjectReference Include="..\..\LegacyThpsLib\LegacyThpsLib.csproj">
+      <Project>{f59e93f7-d998-4179-bd25-599ef7c42d39}</Project>
+      <Name>LegacyThpsLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

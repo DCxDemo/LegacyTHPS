@@ -775,5 +775,10 @@ namespace ThpsQScriptEd
         {
             System.Diagnostics.Process.Start("https://discord.gg/vTWucHS");
         }
+
+        private void legacyThpsGithubToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/DCxDemo/LegacyThps");
+        }
     }
 }

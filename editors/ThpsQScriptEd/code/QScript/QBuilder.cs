@@ -1188,6 +1188,12 @@ namespace LegacyThps.QScript
                 return;
             }
 
+            if (s == QBuilder.GetCode(QBcode.qband).GetSyntax())
+            {
+                chunks.Add(new QChunk(QBcode.qband));
+                return;
+            }
+
             if (s == QBuilder.GetCode(QBcode.qbswitch).GetSyntax())
             {
                 chunks.Add(new QChunk(QBcode.qbswitch));

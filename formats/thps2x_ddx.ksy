@@ -1,7 +1,7 @@
 meta:
   id: thps2x_ddx
-  application: Tony Hawk's Pro Skater 2X
   title: Tony Hawk's Pro Skater 2X texture container
+  application: Tony Hawk's Pro Skater 2X
   file-extension: ddx
   endian: le
 

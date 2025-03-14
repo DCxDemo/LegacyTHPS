@@ -524,11 +524,14 @@ namespace ThpsFontEd
         }
 
         string discordLink = "https://discord.gg/vTWucHS";
-        string thmodsLink = "http://thmods.com/forum/viewtopic.php?t=489";
+        string githubLink = "https://github.com/DCxDemo/LegacyThps";
+        string fonthuntLink = "https://github.com/DCxDemo/ThpsFonts";
 
         private void legacyThpsDiscordToolStripMenuItem_Click(object sender, EventArgs e) => Process.Start(discordLink);
 
-        private void tHPSFontsHuntToolStripMenuItem_Click(object sender, EventArgs e) => Process.Start(thmodsLink);
+        private void tHPSFontsHuntToolStripMenuItem_Click(object sender, EventArgs e) => Process.Start(fonthuntLink);
+
+        private void githubToolStripMenuItem_Click(object sender, EventArgs e) => Process.Start(githubLink);
 
         private void SetTitle(string title = "")
         {

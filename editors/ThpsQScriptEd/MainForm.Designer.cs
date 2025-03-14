@@ -63,6 +63,7 @@ namespace ThpsQScriptEd
             this.hideScriptsListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sortOfManualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.legacyThpsGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.legacyThpsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openInNotepadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -333,6 +334,7 @@ namespace ThpsQScriptEd
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.sortOfManualToolStripMenuItem,
+            this.legacyThpsGithubToolStripMenuItem,
             this.legacyThpsToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
@@ -345,6 +347,13 @@ namespace ThpsQScriptEd
             this.sortOfManualToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.sortOfManualToolStripMenuItem.Text = "Documentation";
             this.sortOfManualToolStripMenuItem.Click += new System.EventHandler(this.sortOfManualToolStripMenuItem_Click);
+            // 
+            // legacyThpsGithubToolStripMenuItem
+            // 
+            this.legacyThpsGithubToolStripMenuItem.Name = "legacyThpsGithubToolStripMenuItem";
+            this.legacyThpsGithubToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.legacyThpsGithubToolStripMenuItem.Text = "LegacyThps Github";
+            this.legacyThpsGithubToolStripMenuItem.Click += new System.EventHandler(this.legacyThpsGithubToolStripMenuItem_Click);
             // 
             // legacyThpsToolStripMenuItem
             // 
@@ -515,7 +524,7 @@ namespace ThpsQScriptEd
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "QScripted";
+            this.Text = "ThpsQScriptEd";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
@@ -579,6 +588,7 @@ namespace ThpsQScriptEd
         private ToolStripStatusLabel checksumHelper;
         private ToolStripMenuItem dumpScriptsToolStripMenuItem;
         private ToolStripMenuItem legacyThpsToolStripMenuItem;
+        private ToolStripMenuItem legacyThpsGithubToolStripMenuItem;
     }
 }
 
