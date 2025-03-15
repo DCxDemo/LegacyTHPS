@@ -248,6 +248,7 @@
             // okButton
             // 
             this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okButton.Location = new System.Drawing.Point(390, 321);
             this.okButton.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.okButton.Name = "okButton";
@@ -397,7 +398,7 @@
             this.Name = "SettingsForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "QScripted settings";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.SettingsForm_Load);

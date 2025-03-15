@@ -54,7 +54,7 @@ namespace LegacyThps.QScript
                     return qc;
             }
 
-            ThpsQScriptEd.MainForm.WarnUser(q.ToString());
+            MainForm.WarnUser(q.ToString());
 
             return null;
         }
@@ -84,10 +84,13 @@ namespace LegacyThps.QScript
             }
         }
 
-
+        /// <summary>
+        /// Scan source code for the script names. Scans actual chunks, won't work if only text is provided.
+        /// </summary>
+        /// <returns></returns>
         public static List<string> GetScriptsList()
         {
-            List<string> scripts = new List<string>();
+            var scripts = new List<string>();
 
             for (int i = 0; i < chunks.Count; i++)
             {
@@ -166,10 +169,10 @@ namespace LegacyThps.QScript
             }
             catch (Exception ex)
             {
-                ThpsQScriptEd.MainForm.WarnUser("parse failed: " + ex.Message + "\r\n" + ex.ToString());
+                MainForm.WarnUser("parse failed: " + ex.Message + "\r\n" + ex.ToString());
             }
 
-            SymbolCache.MaybeFix();
+            SymbolCache.Validate();
 
             return chunks;
         }
@@ -437,17 +440,16 @@ namespace LegacyThps.QScript
             }
             catch (Exception ex)
             {
-                ThpsQScriptEd.MainForm.WarnUser("Error while fixing angles: " + ex.Message);
+                MainForm.WarnUser("Error while fixing angles: " + ex.Message);
             }
 
             foreach (QChunk c in chunks)
             {
-
                 result = c.ToString(debug);
 
                 if (globalize)
                 {
-                    //maybe add 0x16 check here?
+                    // maybe add 0x16 check here?
                     result = "<" + result + ">";
                     globalize = false;
                 }
@@ -469,7 +471,7 @@ namespace LegacyThps.QScript
                 {
                     if (indent < 0)
                     {
-                        ThpsQScriptEd.MainForm.WarnUser("Whoops! Negative indent.");
+                        MainForm.WarnUser("Whoops! Negative indent.");
                         indent = 20; //just so you can easily spot the place where this occurs
                     }
 
@@ -514,27 +516,42 @@ namespace LegacyThps.QScript
         }
 
 
-
-        private static string NormalizeSource(string s)
+        /// <summary>
+        /// Splits the source code in lines and trims line edges
+        /// </summary>
+        /// <param name="sourceText"></param>
+        /// <returns></returns>
+        private static string NormalizeSource(string sourceText)
         {
-            StringBuilder sb = new StringBuilder();
-            string[] bufray = s.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            var sb = new StringBuilder();
 
-            foreach (string str in bufray)
-                sb.Append(str.Trim() + "\n");
+            // get all lines separated by environment set new line symbol
+            string[] lines = sourceText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
+            // add a single new line symbol as we scan chars and convert it later to newline opcode
+            foreach (string line in lines)
+            {
+                sb.Append(line.Trim());
+                sb.Append("\n");
+            }
+
+            // remove last line? guess there was a reason?
             sb.Length -= 1;
 
-            s = sb.ToString();
-            sb = null;
-            return s;
+            return sb.ToString();
         }
 
         static string wordbuf = "";
 
+        /// <summary>
+        /// Parses whatever we currently got in the char buffer.
+        /// </summary>
         public static void ParseBuf()
         {
+            // parse the buffer
             ParseWord(wordbuf);
+
+            // clear the buffer
             wordbuf = "";
         }
 
@@ -544,20 +561,20 @@ namespace LegacyThps.QScript
 
         private static List<string> localcache = new List<string>();
 
-        public static void Compile(string s)
+        public static void Compile(string sourceText)
         {
-            SymbolCache.MaybeFix();
+            SymbolCache.Validate();
 
             //we need no chunks in our list
             chunks.Clear();
             localcache.Clear();
 
-            s = NormalizeSource(s);
+            sourceText = NormalizeSource(sourceText);
 
             //foreach symbol in our source text
-            for (int i = 0; i < s.Length; i++)
+            for (int i = 0; i < sourceText.Length; i++)
             {
-                switch (s[i])
+                switch (sourceText[i])
                 {
                     //detect stop chars. should somehow use xml values probably?
                     case ' ':
@@ -584,19 +601,19 @@ namespace LegacyThps.QScript
                     case '#': ParseBuf(); symbolmarker = true; break;
 
                     //commenting
-                    case ';': ParseBuf(); i = Skip(s, i); chunks.Add(new QChunk(QBcode.newline1)); break;
+                    case ';': ParseBuf(); i = Skip(sourceText, i); chunks.Add(new QChunk(QBcode.newline1)); break;
                     case '/':
                         ParseBuf();
-                        if (s[i + 1] == '/') { i = Skip(s, i); chunks.Add(new QChunk(QBcode.newline1)); }
+                        if (sourceText[i + 1] == '/') { i = Skip(sourceText, i); chunks.Add(new QChunk(QBcode.newline1)); }
                         else chunks.Add(new QChunk(QBcode.qbdiv));
                         break;
 
                     //region based stop symbols
-                    case '"': ParseBuf(); i = ReadString(s, i + 1, '"'); PutString(); break;
-                    case '\'': ParseBuf(); i = ReadString(s, i + 1, '\''); PutParamString(); break;
+                    case '"': ParseBuf(); i = ReadString(sourceText, i + 1, '"'); PutString(); break;
+                    case '\'': ParseBuf(); i = ReadString(sourceText, i + 1, '\''); PutParamString(); break;
 
                     //oh what a pity, there is nothing to parse yet!
-                    default: wordbuf += s[i]; break;
+                    default: wordbuf += sourceText[i]; break;
                 }
             }
 
@@ -1113,6 +1130,9 @@ namespace LegacyThps.QScript
                 return;
             }
 
+
+            // TODO: we definitely can make that a loop over a QBcode enum
+            // just gotta make sure only a valid subset is used
 
             if (s == QBuilder.GetCode(QBcode.script).GetSyntax())
             {

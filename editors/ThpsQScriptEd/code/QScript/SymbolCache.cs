@@ -21,10 +21,16 @@ namespace LegacyThps.QScript
             if (Entries == null)
                 Entries = new Dictionary<uint, string>();
 
-            if (File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}\\cache.sym.qb"))
+            var symbolCachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cache.sym.qb");
+
+            // if such file exists
+            if (File.Exists(symbolCachePath))
             {
+                // make sure qbuilder is ready
                 QBuilder.Init();
-                QBuilder.LoadCompiledScript($"{AppDomain.CurrentDomain.BaseDirectory}\\cache.sym.qb");
+
+                // load cache file
+                QBuilder.LoadCompiledScript(symbolCachePath);
             }
         }
 
@@ -60,7 +66,10 @@ namespace LegacyThps.QScript
             }
         }
 
-
+        /// <summary>
+        /// Add a new symbol by name and calculate hash automatically.
+        /// </summary>
+        /// <param name="symbol"></param>
         public static void Add(string symbol)
         {
             uint crc = Checksum.Calc(symbol);
@@ -69,10 +78,15 @@ namespace LegacyThps.QScript
                 Entries.Add(crc, symbol);
         }
 
-        public static void Add(uint crc, string s)
+        /// <summary>
+        /// Add a new symbol with the provided hash without the check.
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <param name="symbol"></param>
+        public static void Add(uint hash, string symbol)
         {
-            if (!SymbolCache.Entries.ContainsKey(crc))
-                Entries.Add(crc, s);
+            if (!SymbolCache.Entries.ContainsKey(hash))
+                Entries.Add(hash, symbol);
 
             //if (Checksum.Calc(s) != crc)
             //MainForm.Warn($"{s} != {crc.ToString("X8")}");
@@ -88,7 +102,7 @@ namespace LegacyThps.QScript
 
         public static uint GetSymbolHash(string symbol)
         {
-            //first we check if it's a hex string
+            // first we check if it's a hex string
             if (symbol[0] == '0' && (symbol[1] == 'x' || symbol[1] == 'X'))
             {
                 try
@@ -97,54 +111,72 @@ namespace LegacyThps.QScript
                 }
                 catch (Exception ex)
                 {
-                    ThpsQScriptEd.MainForm.WarnUser($"failed to parse hex number {symbol}\r\n" + ex.Message);
+                    MainForm.WarnUser($"failed to parse hex number {symbol}\r\n{ex.Message}");
                 }
             }
 
-            //then try fast without casing first due to performance
+            // then try fast linear lookup without casing first due to performance
             foreach (var entry in SymbolCache.Entries)
             {
                 if (symbol == entry.Value)
                     return entry.Key;
             }
 
-            //now we got no match, try with uppercase
-            foreach (var v in SymbolCache.Entries)
+            // since we got no match here, try the slow uppercase
+            foreach (var entry in SymbolCache.Entries)
             {
-                if (symbol.ToUpper() == v.Value.ToUpper())
-                    return v.Key;
+                if (symbol.ToUpperInvariant() == entry.Value.ToUpperInvariant())
+                    return entry.Key;
             }
 
-            //if everything failed, calculate it
+            // if everything failed, calculate itm should we maybe add it here too?
             return Checksum.Calc(symbol);
         }
 
 
-        public static void MaybeFix()
-        {
-            int errors = 0;
 
-            foreach (var v in SymbolCache.Entries.ToDictionary(x => x.Key, x => x.Value))
+
+        /// <summary>
+        /// Looks for mismatching checksums in the symbol cache.
+        /// </summary>
+        public static void Validate()
+        {
+            // it is important to let user have the option to keep invalid checksums
+            // cause there is always a possiblity of manually baked keys that don't correspond to actual NS hash
+            // this ruins compilation of such files and leads to unknown symbols
+            // THQBEditor never fixed the hashes and handled unknown hashes as "pseudo"
+            // for files edited from scratch with this tool it's recommended to have it always enabled
+
+            int numErrors = 0;
+
+            // we create a new temp list here, since we'll attempt to remove values from it
+            foreach (var entry in SymbolCache.Entries.ToDictionary(x => x.Key, x => x.Value))
             {
-                if (v.Key != Checksum.Calc(v.Value))
+                // compare stored symbol hash to a calculated hash
+                if (entry.Key != Checksum.Calc(entry.Value))
                 {
+                    // if user wants to fixup incorrect checksums
                     if (Settings.Default.fixIncorrectChecksums)
                     {
                         //MainForm.Warn($"fixing {v.Value}: {v.Key.ToString("X8")} vs {Checksum.Calc(v.Value).ToString("X8")}");
-                        SymbolCache.Entries.Remove(v.Key);
-                        SymbolCache.Add(v.Value);
+
+                        // remove the symbol by hash
+                        SymbolCache.Entries.Remove(entry.Key);
+
+                        // add symbol by values, it handles the checksum calculation inside
+                        SymbolCache.Add(entry.Value);
                     }
                     else
                     {
-                        if (v.Key != Checksum.Calc(v.Value))
-                            errors++;
+                        // otherwise simply count the errors for the report
+                        numErrors++;
                     }
                 }
             }
 
-            if (!Settings.Default.fixIncorrectChecksums)
-                if (errors > 0)
-                    ThpsQScriptEd.MainForm.WarnUser($"{errors} incorrect checksums found.");
+            // finally, if we don't fix them up, report the number
+            if (!Settings.Default.fixIncorrectChecksums && numErrors > 0)
+                MainForm.WarnUser($"{numErrors} incorrect checksums found.");
         }
 
         public static string GetSymbolName(uint hash)
@@ -169,7 +201,10 @@ namespace LegacyThps.QScript
             File.WriteAllText(path, sb.ToString());
         }
 
-        public static void DumpQB()
+        /// <summary>
+        /// Dumps entire symbol cache to disk.
+        /// </summary>
+        public static void DumpSymbolCache()
         {
             byte[] finalbytes = new byte[0];
 
@@ -197,8 +232,11 @@ namespace LegacyThps.QScript
             File.WriteAllBytes("cache.sym.qb", finalbytes);
         }
 
-        //validates checksum cache, returns list of errors, empty if no errors 
-        public static string Validate()
+        /// <summary>
+        /// List checksum mismatches in the cache.
+        /// </summary>
+        /// <returns></returns>
+        public static string ReportErrors()
         {
             var sb = new StringBuilder();
 

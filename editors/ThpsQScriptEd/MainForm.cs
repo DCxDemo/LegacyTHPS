@@ -10,6 +10,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics;
 using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace ThpsQScriptEd
@@ -45,7 +46,7 @@ namespace ThpsQScriptEd
             if (Settings.Default.wordWrap) WrapOn(); else WrapOff();
 
 
-            codeBox.Text = "QScripted\r\n2018, DCxDemo*.";
+            codeBox.Text = "ThpsQScriptEd\r\n2018, DCxDemo*.";
             codeBox.Font = Settings.Default.editorFont;
 
             SetTitle("");
@@ -120,8 +121,8 @@ namespace ThpsQScriptEd
             {
                 switch (Path.GetExtension(ofd.FileName).ToUpper())
                 {
-                    case ".Q": OpenQ(ofd.FileName, true); break;
-                    case ".QB": OpenQB(ofd.FileName); break;
+                    case ".Q": LoadQSource(ofd.FileName, true); break;
+                    case ".QB": LoadQBinary(ofd.FileName); break;
                 }
             }
 
@@ -129,14 +130,14 @@ namespace ThpsQScriptEd
         }
 
         //opens text q file
-        private void OpenQ(string s, bool updatePath)
+        private void LoadQSource(string filename, bool updatePath)
         {
             codeBuilder.Clear();
-            codeBuilder.Append(File.ReadAllText(s));
+            codeBuilder.Append(File.ReadAllText(filename));
 
             if (updatePath)
             {
-                path = s;
+                path = filename;
                 SetTitle(path);
             }
 
@@ -144,7 +145,7 @@ namespace ThpsQScriptEd
 
             qb = new QB();
             qb.UpdateText(codeBox.Text);
-            qb.filename = s;
+            qb.filename = filename;
 
 
             scriptList.Items.Clear();
@@ -164,7 +165,7 @@ namespace ThpsQScriptEd
 
             if (File.Exists(fn))
             {
-                OpenQ(fn, false);
+                LoadQSource(fn, false);
                 MainForm.WarnUser(fn + " loaded");
             }
             else
@@ -212,7 +213,7 @@ namespace ThpsQScriptEd
         static extern short GetAsyncKeyState(Keys vKey);
 
 
-        private void OpenQB(string filename)
+        private void LoadQBinary(string filename)
         {
             string qpath = Path.ChangeExtension(filename, "q");
 
@@ -223,14 +224,14 @@ namespace ThpsQScriptEd
             {
                 if (Settings.Default.alwaysLoadSource)
                 {
-                    OpenQ(qpath, true);
+                    LoadQSource(qpath, true);
                     return;
                 }
                 else
                 {
                     if (MainForm.AskUser(Strings.SourceFileDetected) == DialogResult.Yes)
                     {
-                        OpenQ(qpath, true);
+                        LoadQSource(qpath, true);
                         return;
                     }
                 }
@@ -295,7 +296,7 @@ namespace ThpsQScriptEd
             codeBox.Text = "";
             codeBuilder.Clear();
 
-            foreach (string s in files)
+            foreach (string filename in files)
             {
 
                 if (!ctrlState)
@@ -310,12 +311,12 @@ namespace ThpsQScriptEd
                         }
                     }
 
-                    string ext = Path.GetExtension(s).ToLower();
+                    string ext = Path.GetExtension(filename).ToLower();
 
                     if (ext == ".qb")
                     {
                         alertChanges = false;
-                        OpenQB(s);
+                        LoadQBinary(filename);
                         FillTextBox(codeBox, codeBuilder.ToString());
                         return;
                     }
@@ -323,33 +324,33 @@ namespace ThpsQScriptEd
                     if (textExt.Contains(ext))
                     {
                         alertChanges = false;
-                        OpenQ(s, true);
+                        LoadQSource(filename, true);
                         FillTextBox(codeBox, codeBuilder.ToString());
                         return;
                     }
 
-                    WarnUser("Unsupported file.\r\n" + s);
+                    WarnUser("Unsupported file.\r\n" + filename);
                     return;
                 }
                 else
                 {
-                    string ext = Path.GetExtension(s).ToLower();
+                    string ext = Path.GetExtension(filename).ToLower();
 
                     if (ext == ".qb")
                     {
                         alertChanges = false;
-                        OpenQB(s);
+                        LoadQBinary(filename);
                         continue;
                     }
 
                     if (textExt.Contains(ext))
                     {
                         alertChanges = false;
-                        OpenQ(s, true);
+                        LoadQSource(filename, true);
                         continue;
                     }
 
-                    WarnUser("Unsupported file.\r\n" + s);
+                    WarnUser("Unsupported file.\r\n" + filename);
                 }
                 //if (!shiftPressed) break;
             }
@@ -523,45 +524,46 @@ namespace ThpsQScriptEd
             UpdateTheme(toolStripComboBox1.Text);
         }
 
-        private void fontToolStripMenuItem_Click_1(object sender, EventArgs e)
+        private void fontToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FontDialog fd = new FontDialog();
-            fd.Font = codeBox.Font;
+            // set up font box properly
+            var fd = new FontDialog() {
+                // existing font
+                FontMustExist = true,
+                // monospace font
+                FixedPitchOnly = true,
+                // load selected font from settings
+                Font = Settings.Default.editorFont
+            };
 
             if (fd.ShowDialog() == DialogResult.OK)
             {
-                try
-                {
-                    Settings.Default.editorFont = fd.Font;
-                    codeBox.Font = fd.Font;
-                    scriptList.Font = fd.Font;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: " + ex.Message);
-                }
+                Settings.Default.editorFont = fd.Font;
+                codeBox.Font = fd.Font;
+                scriptList.Font = fd.Font;
             }
-
         }
 
         private void dumpHasValuesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SymbolCache.Count() > 0)
-            {
-                SaveFileDialog sfd = new SaveFileDialog();
-                sfd.Filter = "CSV files (*.csv)|*.csv|Text files (*.txt)|*.txt";
-                if (sfd.ShowDialog() == DialogResult.OK)
-                    SymbolCache.DumpText(sfd.FileName);
-                //System.Diagnostics.Process.Start(sfd.FileName);
-            }
-            else
+            if (SymbolCache.Count() == 0)
             {
                 WarnUser("Nothing to dump!");
+                return;
             }
+
+            var sfd = new SaveFileDialog() {
+                Filter = "CSV files (*.csv)|*.csv|Text files (*.txt)|*.txt"
+            };
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+                SymbolCache.DumpText(sfd.FileName);
+            //System.Diagnostics.Process.Start(sfd.FileName);
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Settings.Default.Save();
             Application.Exit();
         }
 
@@ -584,12 +586,12 @@ namespace ThpsQScriptEd
 
         private void dumpHashInQBToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SymbolCache.DumpQB();
+            SymbolCache.DumpSymbolCache();
         }
 
         private void sortOfManualToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/DCxDemo/LegacyThps/wiki/ThpsQScriptEd");
+            Process.Start("https://github.com/DCxDemo/LegacyThps/wiki/ThpsQScriptEd");
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -604,13 +606,11 @@ namespace ThpsQScriptEd
         {
             sf = new SettingsForm();
 
-            Point x = new Point(0, 0);
-            x.X = this.Location.X + this.Size.Width / 2 - sf.Size.Width / 2;
-            x.Y = this.Location.Y + this.Size.Height / 2 - sf.Size.Height / 2;
-
-            sf.MoveTo(x);
-            sf.Show();
             sf.Sync();
+            if (sf.ShowDialog(this) == DialogResult.OK)
+            {
+            }
+            
         }
 
 
@@ -656,15 +656,14 @@ namespace ThpsQScriptEd
 
         private void parseNodeArrayToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<Node> nodeArray = QBuilder.GetNodeArray();
+            var nodeArray = QBuilder.GetNodeArray();
+
+            var sb = new StringBuilder();
+
+            foreach (var node in nodeArray)
+                sb.Append(node.ToCSV());
 
             codeBox.Clear();
-
-            StringBuilder sb = new StringBuilder();
-
-            foreach (Node n in nodeArray)
-                sb.Append(n.ToCSV());
-
             FillTextBox(codeBox, sb.ToString());
         }
 
@@ -678,7 +677,7 @@ namespace ThpsQScriptEd
 
             grepConfirmed = true;
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             foreach (string s in codeBox.Lines)
             {
@@ -699,7 +698,7 @@ namespace ThpsQScriptEd
 
             grepConfirmed = true;
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             foreach (string s in codeBox.Lines)
             {
                 if (s.Trim().IndexOf("script") == 0)
@@ -721,14 +720,9 @@ namespace ThpsQScriptEd
             codeBox.ShowFindDialog();
         }
 
-        private void toolStripComboBox1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void validateSymbolCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string result = SymbolCache.Validate();
+            string result = SymbolCache.ReportErrors();
 
             MainForm.WarnUser(result == "" ? $"{SymbolCache.Count()} symbols checked: Symbol cache OK!" : result);
         }
@@ -736,24 +730,23 @@ namespace ThpsQScriptEd
         private void openScriptsFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (Directory.Exists(Settings.Default.scriptsPath))
-                System.Diagnostics.Process.Start(Settings.Default.scriptsPath);
+                Process.Start(Settings.Default.scriptsPath);
             else
-                WarnUser("No scripts path found, please select one in Settings.");
+                WarnUser("No scripts path found, please choose a valid path in Settings.");
         }
 
         private void codeBox_MouseUp_1(object sender, MouseEventArgs e)
         {
             string text = codeBox.SelectedText;
 
-            //no nulls
+            // no nulls
             if (text == "") return;
 
-            //no multilines
-            if (text.Contains("\r\n")) return;
+            // no multilines
+            if (text.Contains(Environment.NewLine)) return;
 
             checksumHelper.Tag = SymbolCache.GetSymbolHash(text);
             checksumHelper.Text = $"{text} = {((uint)checksumHelper.Tag).ToString("X8")}";
-
         }
 
         private void checksumHelper_Click(object sender, EventArgs e)

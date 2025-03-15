@@ -13,11 +13,6 @@ namespace ThpsQScriptEd
             InitializeComponent();
         }
 
-        public void MoveTo(Point pt)
-        {
-            this.Location = pt;
-        }
-
         public void Sync()
         {
             useTabCb.Checked = Settings.Default.useTab;
@@ -44,7 +39,6 @@ namespace ThpsQScriptEd
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            this.Hide();
 
         }
 
@@ -75,12 +69,10 @@ namespace ThpsQScriptEd
 
         private void button1_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Executables (*.exe)|*.exe";
-            if (extEditor.Text != "")
-                ofd.InitialDirectory = Path.GetDirectoryName(extEditor.Text);
-
-            //MessageBox.Show(ofd.InitialDirectory);
+            var ofd = new OpenFileDialog() {
+                Filter = "Executables (*.exe)|*.exe",
+                InitialDirectory = extEditor.Text == "" ? "" : Path.GetDirectoryName(extEditor.Text)
+            };
 
             if (ofd.ShowDialog() == DialogResult.OK)
                 extEditor.Text = ofd.FileName;

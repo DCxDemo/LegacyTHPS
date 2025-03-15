@@ -299,7 +299,7 @@ namespace ThpsQScriptEd
             // 
             this.wordWrapToolStripMenuItem.CheckOnClick = true;
             this.wordWrapToolStripMenuItem.Name = "wordWrapToolStripMenuItem";
-            this.wordWrapToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.wordWrapToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.wordWrapToolStripMenuItem.Text = "Word wrap";
             this.wordWrapToolStripMenuItem.ToolTipText = resources.GetString("wordWrapToolStripMenuItem.ToolTipText");
             this.wordWrapToolStripMenuItem.Click += new System.EventHandler(this.wordWrapToolStripMenuItem_Click_1);
@@ -307,9 +307,9 @@ namespace ThpsQScriptEd
             // fontToolStripMenuItem
             // 
             this.fontToolStripMenuItem.Name = "fontToolStripMenuItem";
-            this.fontToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
-            this.fontToolStripMenuItem.Text = "Font... (only monospaced)";
-            this.fontToolStripMenuItem.Click += new System.EventHandler(this.fontToolStripMenuItem_Click_1);
+            this.fontToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.fontToolStripMenuItem.Text = "Font...";
+            this.fontToolStripMenuItem.Click += new System.EventHandler(this.fontToolStripMenuItem_Click);
             // 
             // toolStripComboBox1
             // 
@@ -320,13 +320,12 @@ namespace ThpsQScriptEd
             this.toolStripComboBox1.Name = "toolStripComboBox1";
             this.toolStripComboBox1.Size = new System.Drawing.Size(121, 23);
             this.toolStripComboBox1.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBox1_SelectedIndexChanged);
-            this.toolStripComboBox1.Click += new System.EventHandler(this.toolStripComboBox1_Click);
             // 
             // hideScriptsListToolStripMenuItem
             // 
             this.hideScriptsListToolStripMenuItem.CheckOnClick = true;
             this.hideScriptsListToolStripMenuItem.Name = "hideScriptsListToolStripMenuItem";
-            this.hideScriptsListToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.hideScriptsListToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.hideScriptsListToolStripMenuItem.Text = "Hide scripts list";
             this.hideScriptsListToolStripMenuItem.Click += new System.EventHandler(this.hideScriptsListToolStripMenuItem_Click);
             // 
@@ -344,21 +343,21 @@ namespace ThpsQScriptEd
             // sortOfManualToolStripMenuItem
             // 
             this.sortOfManualToolStripMenuItem.Name = "sortOfManualToolStripMenuItem";
-            this.sortOfManualToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.sortOfManualToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.sortOfManualToolStripMenuItem.Text = "Documentation";
             this.sortOfManualToolStripMenuItem.Click += new System.EventHandler(this.sortOfManualToolStripMenuItem_Click);
             // 
             // legacyThpsGithubToolStripMenuItem
             // 
             this.legacyThpsGithubToolStripMenuItem.Name = "legacyThpsGithubToolStripMenuItem";
-            this.legacyThpsGithubToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.legacyThpsGithubToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.legacyThpsGithubToolStripMenuItem.Text = "LegacyThps Github";
             this.legacyThpsGithubToolStripMenuItem.Click += new System.EventHandler(this.legacyThpsGithubToolStripMenuItem_Click);
             // 
             // legacyThpsToolStripMenuItem
             // 
             this.legacyThpsToolStripMenuItem.Name = "legacyThpsToolStripMenuItem";
-            this.legacyThpsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.legacyThpsToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.legacyThpsToolStripMenuItem.Text = "LegacyThps Discord";
             this.legacyThpsToolStripMenuItem.Click += new System.EventHandler(this.legacyThpsToolStripMenuItem_Click);
             // 
@@ -367,7 +366,7 @@ namespace ThpsQScriptEd
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.ShortcutKeyDisplayString = "F1";
             this.aboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 

@@ -264,7 +264,7 @@ namespace LegacyThps.QScript
                     result = code.GetSyntax();
                     break;
 
-                default: ThpsQScriptEd.MainForm.WarnUser("unimplemented logic: " + code.Logic); break;
+                default: MainForm.WarnUser("unimplemented logic: " + code.Logic); break;
 
             }
 

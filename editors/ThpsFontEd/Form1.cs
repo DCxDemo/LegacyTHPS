@@ -7,7 +7,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Diagnostics;
-using System.ComponentModel.Design;
 
 namespace ThpsFontEd
 {
