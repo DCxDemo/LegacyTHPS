@@ -563,6 +563,9 @@ namespace LegacyThps.QScript
 
         public static int lineNumber = 0;
 
+
+        public static QBcode SelectedNewLine => Settings.Default.useShortLine ? QBcode.newline1 : QBcode.newline2;
+
         /// <summary>
         /// Converts source Q code string to a list of QChunks.
         /// </summary>
@@ -588,7 +591,7 @@ namespace LegacyThps.QScript
                     case ' ':
                     case '\t': ParseBuf(); break;
 
-                    case '\n': ParseBuf(); chunks.Add(new QChunk((Settings.Default.useShortLine ? QBcode.newline1 : QBcode.newline2))); lineNumber++; break;
+                    case '\n': ParseBuf(); chunks.Add(new QChunk(SelectedNewLine)); lineNumber++; break;
                     case '=': ParseBuf(); chunks.Add(new QChunk(QBcode.math_eq)); break;
                     case ',': ParseBuf(); chunks.Add(new QChunk(QBcode.comma)); break;
                     case '{': ParseBuf(); chunks.Add(new QChunk(QBcode.structure)); break;
@@ -609,10 +612,10 @@ namespace LegacyThps.QScript
                     case '#': ParseBuf(); symbolmarker = true; break;
 
                     //commenting
-                    case ';': ParseBuf(); i = Skip(sourceText, i); chunks.Add(new QChunk(QBcode.newline1)); break;
+                    case ';': ParseBuf(); i = SkipLine(sourceText, i); chunks.Add(new QChunk(SelectedNewLine)); break;
                     case '/':
                         ParseBuf();
-                        if (sourceText[i + 1] == '/') { i = Skip(sourceText, i); chunks.Add(new QChunk(QBcode.newline1)); }
+                        if (sourceText[i + 1] == '/') { i = SkipLine(sourceText, i); chunks.Add(new QChunk(SelectedNewLine)); }
                         else chunks.Add(new QChunk(QBcode.qbdiv));
                         break;
 
@@ -943,18 +946,23 @@ namespace LegacyThps.QScript
         }
 
 
-
-        public static int Skip(string src, int i)
+        /// <summary>
+        /// Seek for the next new line symbol.
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static int SkipLine(string src, int pos)
         {
             do
             {
-                if (src[i] == '\n') break;
-                i++;
-                if (i == src.Length) break;
+                if (src[pos] == '\n') break;
+                pos++;
+                if (pos == src.Length) break;
             }
             while (true);
 
-            return i;
+            return pos;
         }
 
 
