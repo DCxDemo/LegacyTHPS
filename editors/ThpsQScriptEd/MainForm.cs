@@ -427,20 +427,20 @@ namespace ThpsQScriptEd
 
         private void compileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //maybe we don't have path
+            // maybe we don't have path
             if (path == "") ChoosePath("qb");
 
             if (path == "") return;
 
-            //get correct paths for q and qb
+            // get correct paths for q and qb
             string qpath = Path.ChangeExtension(path, ".q");
             string qbpath = Path.ChangeExtension(path, ".qb");
 
-            //compile and save to binary
+            // compile and save to binary
             QBuilder.Compile(codeBox.Text);
             QBuilder.SaveChunks(qbpath);
 
-            //maybe backup?
+            // maybe backup?
             if (Settings.Default.enableBackups)
                 if (File.Exists(qpath))
                 {
@@ -453,7 +453,7 @@ namespace ThpsQScriptEd
                     File.Copy(qpath, targetpath);
                 }
 
-            //save q script
+            // save q script
             File.WriteAllText(qpath, codeBox.Text);
 
             //old code

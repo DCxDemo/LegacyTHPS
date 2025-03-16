@@ -367,11 +367,11 @@ namespace LegacyThps.QScript
             try
             {
                 opcodes.Clear();
-                XmlNodeList nodes = doc.GetElementsByTagName("opcode");
+                var nodes = doc.GetElementsByTagName("opcode");
 
                 foreach (XmlNode node in nodes)
                 {
-                    QToken qc = new QToken(node);
+                    var qc = new QToken(node);
                     opcodes.Add(qc);
 
                     //syntax.Add(qc.Code, qc.Syntax);
@@ -561,8 +561,16 @@ namespace LegacyThps.QScript
 
         private static List<string> localcache = new List<string>();
 
+        public static int lineNumber = 0;
+
+        /// <summary>
+        /// Converts source Q code string to a list of QChunks.
+        /// </summary>
+        /// <param name="sourceText"></param>
         public static void Compile(string sourceText)
         {
+            lineNumber = 0;
+
             SymbolCache.Validate();
 
             //we need no chunks in our list
@@ -580,7 +588,7 @@ namespace LegacyThps.QScript
                     case ' ':
                     case '\t': ParseBuf(); break;
 
-                    case '\n': ParseBuf(); chunks.Add(new QChunk((Settings.Default.useShortLine ? QBcode.newline1 : QBcode.newline2))); break;
+                    case '\n': ParseBuf(); chunks.Add(new QChunk((Settings.Default.useShortLine ? QBcode.newline1 : QBcode.newline2))); lineNumber++; break;
                     case '=': ParseBuf(); chunks.Add(new QChunk(QBcode.math_eq)); break;
                     case ',': ParseBuf(); chunks.Add(new QChunk(QBcode.comma)); break;
                     case '{': ParseBuf(); chunks.Add(new QChunk(QBcode.structure)); break;
@@ -1302,7 +1310,7 @@ namespace LegacyThps.QScript
             //maybeGlobal?
             if (s == "")
             {
-                if (!suppressError) ThpsQScriptEd.MainForm.WarnUser("wtf null putsymbol called");
+                if (!suppressError) MainForm.WarnUser($"wtf null putsymbol called at line {QBuilder.lineNumber}");
                 return;
             }
 
@@ -1442,6 +1450,7 @@ namespace LegacyThps.QScript
 
             return nodeArray;
         }
+
         public static int SkipUntil(int from, QBcode qc)
         {
             while (chunks[from].QType != qc)
@@ -1451,6 +1460,7 @@ namespace LegacyThps.QScript
             }
             return from;
         }
+
         public static int ReadNode(List<QChunk> chunks, int from)
         {
             var sb = new StringBuilder();
@@ -1612,7 +1622,7 @@ namespace LegacyThps.QScript
                     }
                     else
                     {
-                        ThpsQScriptEd.MainForm.WarnUser(SymbolCache.GetSymbolName(chunks[from].data_uint) + " at " + from);
+                        MainForm.WarnUser(SymbolCache.GetSymbolName(chunks[from].data_uint) + " at " + from);
                         from++;
                     }
                 }
