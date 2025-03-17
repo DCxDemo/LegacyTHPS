@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using Settings = ThpsQScriptEd.Properties.Settings;
+using System.Reflection.Emit;
 
 namespace LegacyThps.QScript
 {
@@ -35,39 +36,36 @@ namespace LegacyThps.QScript
 
 
 
-        public static List<QToken> opcodes = new List<QToken>();
+        public static List<QToken> tokens = new List<QToken>();
         //static Dictionary<byte, string> syntax = new Dictionary<byte, string>();
 
 
         static private string path;
+
         static List<QChunk> chunks = new List<QChunk>();
         static List<QChunk> symbols = new List<QChunk>();
 
         static List<uint> nodes = new List<uint>();
 
-
-        public static QToken GetCode(QBcode q)
+        /// <summary>
+        /// Find QToken by QBcode.
+        /// </summary>
+        /// <param name="oldcode"></param>
+        /// <returns></returns>
+        public static QToken GetCode(QBcode oldcode)
         {
-            foreach (QToken qc in opcodes)
-            {
-                if (qc.Code == (byte)q)
-                    return qc;
-            }
-
-            MainForm.WarnUser(q.ToString());
-
-            return null;
+            return FindCode((byte)oldcode);
         }
 
-
-
-        public static QToken FindCode(byte x)
+        public static QToken FindCode(byte value)
         {
-            foreach (QToken q in opcodes)
+            foreach (var q in tokens)
             {
-                if (q.Code == x)
+                if (q.Code == value)
                     return q;
             }
+
+            MainForm.WarnUser($"FindCode missing token {value} at {lineNumber}");
 
             return null;
         }
@@ -85,7 +83,7 @@ namespace LegacyThps.QScript
         }
 
         /// <summary>
-        /// Scan source code for the script names. Scans actual chunks, won't work if only text is provided.
+        /// Scan source code for script names. Scans actual chunks, won't work if only text is provided.
         /// </summary>
         /// <returns></returns>
         public static List<string> GetScriptsList()
@@ -107,69 +105,67 @@ namespace LegacyThps.QScript
             return scripts;
         }
 
-
-        public static List<QChunk> LoadCompiledScript(string s)
+        /// <summary>
+        /// Looks for .sym.qb and loads it if found.
+        /// </summary>
+        /// <param name="filename"></param>
+        public static void LoadSymbols(string filename)
         {
-            string sympath = Path.ChangeExtension(s, ".sym.qb");
+            string sympath = Path.ChangeExtension(filename, ".sym.qb");
 
             if (File.Exists(sympath))
                 LoadCompiledScript(sympath);
+        }
 
+        /// <summary>
+        /// Converts a compiled qb file to am internal list of QChunks.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public static List<QChunk> LoadCompiledScript(string filename)
+        {
             ForceQBLevel(QBFormat.THPS3);
+
+            LoadSymbols(filename);
 
             chunks.Clear();
 
             try
             {
-
-                byte[] data = File.ReadAllBytes(s);
-
-                /*
-                //file checksum test
-                Stopwatch stopWatch = new Stopwatch();
-                stopWatch.Start();
-                uint zz = Checksum.Calc(data);
-                stopWatch.Stop();
-                QScripted.MainForm.Warn(zz.ToString("X8") + " " + data.Length + " bytes calculated in " + stopWatch.ElapsedMilliseconds + " ms");
-                */
-
-                using (var ms = new MemoryStream(data))
+                using (var br = new BinaryReaderEx(File.OpenRead(filename)))
                 {
-                    using (var br = new BinaryReaderEx(ms))
+                    //bool can = true;
+
+                    QToken qcode;
+                    QChunk chunk;
+
+                    do
                     {
+                        byte x = br.ReadByte();
+                        //MainForm.Warn("" + x.ToString("X8"));
 
-                        //bool can = true;
+                        qcode = FindCode(x);
 
-                        QToken qcode;
-                        QChunk chunk;
+                        if (qcode is null)
+                            MainForm.WarnUser("findcode failed for " + x.ToString("X2"));
 
-                        do
-                        {
-                            byte x = br.ReadByte();
-                            //MainForm.Warn("" + x.ToString("X8"));
+                        chunk = new QChunk(br, qcode);
 
-                            qcode = FindCode(x);
+                        // adjust qb format
+                        SetProperQBFormat(chunk);
 
-                            if (qcode is null)
-                                MainForm.WarnUser("findcode failed for " + x.ToString("X2"));
-
-                            chunk = new QChunk(br, qcode);
-
-                            SetProperQBFormat(chunk);
-
-                            chunks.Add(chunk);
-                            //if (chunk.code.Code == 0) can = false;
-                        }
-                        while (chunk.QType != QBcode.endfile);
+                        chunks.Add(chunk);
+                        //if (chunk.code.Code == 0) can = false;
                     }
+                    while (chunk.QType != QBcode.endfile);
                 }
-                
+
                 SubstituteLinks(true);
                 CosmeticFixes();
             }
             catch (Exception ex)
             {
-                MainForm.WarnUser("parse failed: " + ex.Message + "\r\n" + ex.ToString());
+                MainForm.WarnUser($"parse failed: " + ex.Message + "\r\n" + ex.ToString());
             }
 
             SymbolCache.Validate();
@@ -210,14 +206,17 @@ namespace LegacyThps.QScript
             }
         }
 
-
+        /// <summary>
+        /// Applies additional cosmetic fixes to the decompiled chunks.
+        /// </summary>
         private static void CosmeticFixes()
         {
             //following loops change actual byte code, hence settings are used
 
             if (!Settings.Default.applyCosmetics) return;
 
-            //this one adds extra 1 line before script if no 2 newline codes found 
+
+            // this one adds extra 1 line before script, if no 2 newline codes found 
 
             for (int i = 2; i < chunks.Count; i++)
             {
@@ -225,7 +224,7 @@ namespace LegacyThps.QScript
                 {
                     if (chunks[i - 1].code.Logic != OpLogic.Linefeed ||
                         chunks[i - 2].code.Logic != OpLogic.Linefeed)
-                        chunks.Insert(i, new QChunk(QBcode.newline2));
+                        chunks.Insert(i, new QChunk(SelectedNewLine));
 
                     i++;
                 }
@@ -237,24 +236,40 @@ namespace LegacyThps.QScript
                 {
                     if (chunks[i - 1].code.Logic != OpLogic.Linefeed ||
                         chunks[i - 2].code.Logic != OpLogic.Linefeed)
-                        chunks.Insert(i, new QChunk(QBcode.newline2));
+                        chunks.Insert(i, new QChunk(SelectedNewLine));
 
                     i++;
                 }
             }
 
-            //change }{ to }\r\n{
+            for (int i = 0; i < chunks.Count - 2; i++)
+            {
+                if (chunks[i].code.Code != (byte)QBcode.math_eq) continue;
+                if (chunks[i + 1].code.Logic != OpLogic.Linefeed) continue;
+                if (chunks[i + 2].code.Logic != OpLogic.RegionBegin) continue;
+
+                chunks.RemoveAt(i + 1);
+
+                i++;
+            }
+
+            // changes }{ to }\r\n{, applies to all brackets that follow region begin/end logic
+
             for (int i = 2; i < chunks.Count; i++)
             {
                 if (chunks[i].code.Logic == OpLogic.RegionBegin && chunks[i - 1].code.Logic == OpLogic.RegionEnd)
                 {
-                    chunks.Insert(i, new QChunk(QBcode.newline2));
+                    chunks.Insert(i, new QChunk(SelectedNewLine));
                     i++;
                 }
             }
         }
 
-
+        /// <summary>
+        /// This function essentially replaces array indices with actual node names.
+        /// Allows to painfully reorder nodes the way you want.
+        /// </summary>
+        /// <param name="mode"></param>
         private static void SubstituteLinks(bool mode)
         {
             nodes.Clear();
@@ -291,7 +306,6 @@ namespace LegacyThps.QScript
                                     readName = false;
                                 }
                             }
-
                         }
                     }
 
@@ -346,11 +360,9 @@ namespace LegacyThps.QScript
         }
 
 
-
-
-
-
-        //loads available opcodes
+        /// <summary>
+        /// Loads available opcodes from XML definition file.
+        /// </summary>
         public static void LoadOpcodes()
         {
             string filename = $"{AppDomain.CurrentDomain.BaseDirectory}\\data\\qScript_def.xml";
@@ -366,13 +378,13 @@ namespace LegacyThps.QScript
 
             try
             {
-                opcodes.Clear();
+                tokens.Clear();
                 var nodes = doc.GetElementsByTagName("opcode");
 
                 foreach (XmlNode node in nodes)
                 {
                     var qc = new QToken(node);
-                    opcodes.Add(qc);
+                    tokens.Add(qc);
 
                     //syntax.Add(qc.Code, qc.Syntax);
                 }
@@ -541,6 +553,7 @@ namespace LegacyThps.QScript
             return sb.ToString();
         }
 
+
         static string wordbuf = "";
 
         /// <summary>
@@ -636,9 +649,20 @@ namespace LegacyThps.QScript
             SubstituteLinks(false);
         }
 
-
+        /// <summary>
+        /// Makes sure one does not simply miss a bracket.
+        /// Cause it freezes the game and it's annoying to fix.
+        /// </summary>
         private static void CheckBrackets()
         {
+            // pretty sure it's super inefficient, but it works just fine
+            // it builds a string like "{{[]()}}" by adding every next bracket symbol to stack
+            // then it replaces {} () [] combinations with a null string to eliminate properly enclosed chunks
+            
+            // if closing bracket was added and there is no opening bracket, it throws an error
+            // if string is not empty by the end, there is some error
+            // there is also an arbitrary nesting limit of 16, just for sanity
+
             string stack = "";
             int line = 0;
             int lastemptystack = 0;
@@ -686,13 +710,19 @@ namespace LegacyThps.QScript
             }
 
             if (stack != "")
-                ThpsQScriptEd.MainForm.WarnUser($"Balance check failed!\r\nCheck below line {lastemptystack}.");
+                MainForm.WarnUser($"Balance check failed!\r\nCheck below line {lastemptystack}.");
         }
 
+        /// <summary>
+        /// This is the second higher level parsing step.
+        /// At this step we convert [bracket, number, comma, number, bracket] to pair and such.
+        /// </summary>
         private static void FinalChecks()
         {
-            //these checks may overflow at borderlines, hence try catch
-            //convert vectors
+            // these checks may overflow at borderlines, hence try catch
+
+            // convert pair and vector sequences to opcodes
+
             try
             {
                 for (int i = 0; i < chunks.Count - 1; i++)
@@ -724,9 +754,10 @@ namespace LegacyThps.QScript
             }
             catch (Exception ex)
             {
-                ThpsQScriptEd.MainForm.WarnUser("Error while parsing vectors: " + ex.Message);
+                MainForm.WarnUser("Error while parsing vectors: " + ex.Message);
             }
 
+            // some random line feed cleanup? dont remember
 
             try
             {
@@ -743,15 +774,14 @@ namespace LegacyThps.QScript
             }
             catch (Exception ex)
             {
-                ThpsQScriptEd.MainForm.WarnUser("Error while removing jump linefeeds: " + ex.Message);
+                MainForm.WarnUser("Error while removing jump linefeeds: " + ex.Message);
             }
-
-
 
 
             //fix randoms
 
             //randoms code here
+
             try
             {
                 for (int i = 0; i < chunks.Count - 1; i++)
@@ -764,12 +794,14 @@ namespace LegacyThps.QScript
             }
             catch (Exception ex)
             {
-                ThpsQScriptEd.MainForm.WarnUser("Error while parsing random: " + ex.Message);
+                MainForm.WarnUser("Error while parsing random: " + ex.Message);
             }
 
+            // make sure we have not ruined anything
 
             CheckBrackets();
 
+            // optional fix: remove repeating new line opcodes
 
             if (Settings.Default.removeTrailNewlines)
             {
@@ -789,12 +821,11 @@ namespace LegacyThps.QScript
                 }
                 catch (Exception ex)
                 {
-                    ThpsQScriptEd.MainForm.WarnUser("Error while removing trailing newlines: " + ex.Message);
+                    MainForm.WarnUser("Error while removing trailing newlines: " + ex.Message);
                 }
             }
 
-
-
+            // remove commas if we're in THPS3 mode, it wasn't supported yet 
 
             if (Settings.Default.minQBLevel == (int)QBFormat.THPS3)
             {
@@ -810,26 +841,29 @@ namespace LegacyThps.QScript
                 }
                 catch (Exception ex)
                 {
-                    ThpsQScriptEd.MainForm.WarnUser("Error while removing commas: " + ex.Message);
+                    MainForm.WarnUser("Error while removing commas: " + ex.Message);
                 }
             }
 
 
+            // add qchunk index like in original scripts. doesn't matter really (should be source code line number though)
 
-            //add qchunk index like in original scripts. doesn't matter really
             for (int i = 0; i < chunks.Count - 1; i++)
             {
                 if (chunks[i].QType == QBcode.newline2)
-                    chunks[i].data_int = i;
+                    if (chunks[i].data_int == 0)
+                        chunks[i].data_int = i;
             }
 
-            //dump localcache - only values actually used in current source, hello thqb
+
+            // dump localcache - only values actually used in current source, hello thqb
+
             localcache = localcache.Select(x => x).Distinct().ToList();
             symbols.Clear();
 
             foreach (string lc in localcache)
             {
-                QChunk q = new QChunk(QBcode.symboldef);
+                var q = new QChunk(QBcode.symboldef);
 
                 q.data_uint = SymbolCache.GetSymbolHash(lc);
                 q.data_string = lc;
@@ -846,6 +880,7 @@ namespace LegacyThps.QScript
                 symbols.Add(new QChunk(QBcode.endfile));
             }
 
+            // the end
             chunks.Add(new QChunk(QBcode.endfile));
         }
 
@@ -1028,6 +1063,9 @@ namespace LegacyThps.QScript
         }
 
 
+        // TODO: these 3 maybe funcs are pretty much same
+        // gotta merge and also make sure minus to be on the left and ° on the right. regexp?
+
         public static bool maybeFloat(string w)
         {
             string allowed = "0123456789-.";
@@ -1046,7 +1084,6 @@ namespace LegacyThps.QScript
 
             return true;
         }
-
 
         public static bool maybeInt(string w)
         {
@@ -1284,7 +1321,7 @@ namespace LegacyThps.QScript
                 return;
             }
 
-
+            
 
             if (s.Contains("."))
             {
@@ -1293,7 +1330,7 @@ namespace LegacyThps.QScript
 
                 PutSymbol(buf[0], true);
                 chunks.Add(new QChunk(QBcode.property));
-                PutSymbol(buf[1], false);
+                PutSymbol(buf[1], true); // so im suppressing this error, cause apparently it's a feature
 
                 return;
             }
@@ -1304,7 +1341,7 @@ namespace LegacyThps.QScript
 
                 PutSymbol(buf[0], true);
                 chunks.Add(new QChunk(QBcode.member));
-                PutSymbol(buf[1], false);
+                PutSymbol(buf[1], false); // at least member is always a symbol, i hope?
 
                 return;
             }
@@ -1380,7 +1417,9 @@ namespace LegacyThps.QScript
         public static void SaveChunks(string path)
         {
             SaveChunks(path, chunks);
-            if (Settings.Default.useSymFile) SaveChunks(Path.ChangeExtension(path, ".sym.qb"), symbols);
+
+            if (Settings.Default.useSymFile) 
+                SaveChunks(Path.ChangeExtension(path, ".sym.qb"), symbols);
         }
 
 
@@ -1388,11 +1427,11 @@ namespace LegacyThps.QScript
         {
             byte[] data = new byte[0];
 
-            using (MemoryStream stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
-                using (BinaryWriter bw = new BinaryWriter(stream))
+                using (var bw = new BinaryWriter(stream))
                 {
-                    foreach (QChunk chunk in chunks)
+                    foreach (var chunk in chunks)
                         bw.Write(chunk.ToArray());
 
                     stream.Flush();

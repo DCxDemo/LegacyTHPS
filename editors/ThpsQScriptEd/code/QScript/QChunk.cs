@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Settings = ThpsQScriptEd.Properties.Settings;
+using System.Windows.Forms;
 
 namespace LegacyThps.QScript
 {
@@ -212,7 +213,7 @@ namespace LegacyThps.QScript
 
                     bool isKeyword = false;
 
-                    foreach (QToken q in QBuilder.opcodes)
+                    foreach (QToken q in QBuilder.tokens)
                     {
                         if (result.ToLower() == q.Name.ToLower() &&
                             (q.Logic == OpLogic.Keyword || q.Logic == OpLogic.Logic)
@@ -301,8 +302,11 @@ namespace LegacyThps.QScript
                     else
                         return 1 + 4 + ptrs.Count * 2 + ptrs.Count * 4;
 
-                case DataGroup.Empty:
                 case DataGroup.Unknown:
+                    MessageBox.Show($"Unknown data group! {code.Group} at {QBuilder.lineNumber}");
+                    return 1;
+
+                case DataGroup.Empty:
                 default: return 1;
             }
         }
@@ -311,7 +315,8 @@ namespace LegacyThps.QScript
         /// Converts current chunk to an array of bytes.
         /// </summary>
         /// <returns></returns>
-        public byte[] ToArray()
+        /// TODO: pass binarywriter here, will be faster as well if we wont create stream every time
+        public byte[] ToArray() 
         {
             byte[] data = new byte[0];
 

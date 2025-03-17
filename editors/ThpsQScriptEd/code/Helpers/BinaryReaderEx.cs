@@ -4,7 +4,10 @@ namespace LegacyThps.QScript.Helpers
 {
     public class BinaryReaderEx : BinaryReader
     {
-        public BinaryReaderEx(MemoryStream ms) : base(ms)
+        public BinaryReaderEx(MemoryStream stream) : base(stream)
+        {
+        }
+        public BinaryReaderEx(FileStream stream) : base(stream)
         {
         }
 

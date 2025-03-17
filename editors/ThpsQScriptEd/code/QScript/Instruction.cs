@@ -321,7 +321,7 @@ namespace LegacyThps.QScript
 
                         bool isKeyword = false;
 
-                        foreach (QToken q in QBuilder.opcodes)
+                        foreach (QToken q in QBuilder.tokens)
                         {
                             if (res.ToLower() == q.Name.ToLower())
                                 isKeyword = true;

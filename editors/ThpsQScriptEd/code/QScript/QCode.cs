@@ -44,9 +44,10 @@ namespace LegacyThps.QScript
             //QScripted.MainForm.Warn(Name + " " + Group + " " + Logic);
         }
 
+        // TODO convert to getter
         public string GetSyntax()
         {
-            if (Syntax == "newline") return ("\r\n");
+            if (Syntax == "newline") return Environment.NewLine;
             if (Syntax == "auto") return Name;
             return Syntax;
         }
