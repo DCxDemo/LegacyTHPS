@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using Settings = ThpsQScriptEd.Properties.Settings;
-using System.Reflection.Emit;
 
 namespace LegacyThps.QScript
 {
@@ -282,33 +281,31 @@ namespace LegacyThps.QScript
             uint linkscrc = Checksum.Calc("Links");
             uint triggerscriptscrc = Checksum.Calc("TriggerScripts");
 
-            foreach (QChunk qc in chunks)
+            foreach (var qc in chunks)
             {
-                if (qc.QType == QBcode.symbol)
+                if (qc.QType != QBcode.symbol) continue;
+
+                if (qc.data_uint == nodeArraycrc)
                 {
-                    if (qc.data_uint == nodeArraycrc)
+                    isNodeArray = true;
+                }
+                else
+                {
+                    if (isNodeArray)
                     {
-                        isNodeArray = true;
-                    }
-                    else
-                    {
-                        if (isNodeArray)
+                        if (qc.data_uint == namecrc)
                         {
-                            if (qc.data_uint == namecrc)
+                            readName = true;
+                        }
+                        else
+                        {
+                            if (readName)
                             {
-                                readName = true;
-                            }
-                            else
-                            {
-                                if (readName)
-                                {
-                                    nodes.Add(qc.data_uint);
-                                    readName = false;
-                                }
+                                nodes.Add(qc.data_uint);
+                                readName = false;
                             }
                         }
                     }
-
                 }
             }
 
@@ -400,7 +397,7 @@ namespace LegacyThps.QScript
         {
             QChunk.closeRandomAt = -1;
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             string result = "";
             int i = 0;
 
@@ -423,9 +420,10 @@ namespace LegacyThps.QScript
                 padchar = ' ';
             }
 
-            List<OpLogic> spaceHaters = new List<OpLogic>();
-            spaceHaters.AddRange(new OpLogic[] { OpLogic.Linefeed, OpLogic.Relation });
-
+            var spaceHaters = new List<OpLogic>() { 
+                OpLogic.Linefeed, 
+                OpLogic.Relation 
+            };
 
             //changes angle vector format
             try
@@ -455,19 +453,22 @@ namespace LegacyThps.QScript
                 MainForm.WarnUser("Error while fixing angles: " + ex.Message);
             }
 
-            foreach (QChunk c in chunks)
+
+            foreach (var c in chunks)
             {
                 result = c.ToString(debug);
 
                 if (globalize)
                 {
                     // maybe add 0x16 check here?
-                    result = "<" + result + ">";
+                    result = $"<{result}>";
                     globalize = false;
                 }
 
+                // mark next entry as global
                 if (c.code.Code == (byte)QBcode.global) globalize = true;
 
+                // mayve convert randomMarker to compiletime only opcode here
                 if (c.randomMarker) result = " ) " + result;
 
 
@@ -778,9 +779,10 @@ namespace LegacyThps.QScript
             }
 
 
-            //fix randoms
+            // fix randoms
+            // so at this point we only have random opcode and jump opcode
 
-            //randoms code here
+            // randoms code here
 
             try
             {
@@ -885,7 +887,7 @@ namespace LegacyThps.QScript
         }
 
 
-
+        // omg this is convoluted
 
         public struct RandomResult
         {

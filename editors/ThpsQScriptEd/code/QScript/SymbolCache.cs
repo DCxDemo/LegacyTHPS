@@ -32,7 +32,28 @@ namespace LegacyThps.QScript
                 // load cache file
                 QBuilder.LoadCompiledScript(symbolCachePath);
             }
+
+            LoadCFuncs();
         }
+
+        public static void LoadCFuncs()
+        {
+            LoadCFuncs("data\\exefuncs.txt");
+            LoadCFuncs("data\\exefuncs_th4.txt");
+        }
+
+        public static void LoadCFuncs(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                var list = File.ReadAllLines(filename);
+
+                foreach (var line in list)
+                    SymbolCache.Add(line);
+            }
+        }
+
+
 
         public static void Clear()
         {

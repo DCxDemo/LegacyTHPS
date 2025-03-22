@@ -157,7 +157,7 @@ namespace LegacyThps.QScript
                 case QBcode.randompermute:
                 case QBcode.randomnorepeat:
                     {
-                        int ptrscnt = br.ReadInt32();
+                        int numEntries = br.ReadInt32();
 
                         //now we have to determine whether we're thps or thug
                         //we could do this with a user flag
@@ -166,7 +166,7 @@ namespace LegacyThps.QScript
                         long pos = br.BaseStream.Position;
                         bool isthugrandom = true;
 
-                        for (int i = 0; i < ptrscnt; i++)
+                        for (int i = 0; i < numEntries; i++)
                         {
                             short s = br.ReadInt16();
                             if (s <= 0 || s >= 9) isthugrandom = false;
@@ -184,10 +184,10 @@ namespace LegacyThps.QScript
 
 
                         //then read pointers to code blocks 
-                        List<int> ptrs = new List<int>();
+                        var jumpTable = new List<int>();
 
-                        for (int i = 0; i < ptrscnt; i++)
-                            ptrs.Add(br.ReadInt32());
+                        for (int i = 0; i < numEntries; i++)
+                            jumpTable.Add(br.ReadInt32());
 
 
                         //so now let's jump the last entry and get the closing address for this random
@@ -195,7 +195,7 @@ namespace LegacyThps.QScript
 
                         long f = br.BaseStream.Position;
 
-                        br.Skip(ptrs[ptrscnt - 1] - 5); //5 is the size of randomjump opcode
+                        br.Skip(jumpTable[numEntries - 1] - 5); //5 is the size of randomjump opcode
                         if (br.ReadByte() == (byte)QBcode.randomjump)
                         {
                             int x = br.ReadInt32();

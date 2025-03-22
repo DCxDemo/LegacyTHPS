@@ -9,11 +9,11 @@
 	<!-- datagroup = the type of data this opcode defines  -->
 	<!-- nesting = changes current nesting accordingly (open, break, close) -->
 	
-	<!-- i'll be back -->
+	<!-- i'll be back; end of file -->
 	<opcode code="00" name="terminator"	syntax=""		logic="halt" 		datagroup="empty" />
 	
 	<!-- newline symbols, 02 used in thps games, 01 used in thug+ -->
-	<opcode code="01" name="newline1" 	syntax="newline"	logic="linefeed"	datagroup="empty" />
+	<opcode code="01" game="th3"	name="newline1" 	syntax="newline"	logic="linefeed"	datagroup="empty" />
 	<opcode code="02" game="th3"	name="newline2" 	syntax="newline" 	logic="linefeed"	datagroup="int" />
 	
 	<!-- structure/array -->
@@ -37,8 +37,10 @@
 	<opcode code="0E" name="roundopen" 	syntax="("		    logic="regionbegin" datagroup="empty" nesting="open"/>
 	<opcode code="0F" name="roundclose"	syntax=")" 		    logic="regionend"   datagroup="empty"	nesting="close"/>
 
-	<!-- unknown opcodes -->
+	<!-- debug info, one int? -->
 	<opcode code="10" name="unknown_10" syntax="_10_" 		logic="unknown"     datagroup="empty" />
+	
+	<!-- same as? superseded by equals? -->
 	<opcode code="11" name="unknown_11" syntax="_11_" 		logic="unknown"     datagroup="empty" />
 	
 	<!-- comparison operators -->
@@ -50,13 +52,17 @@
 	<opcode code="16" game="th3"	name="symbol" 	  syntax="" 		    logic="symbol" 		datagroup="uint" />
 	<opcode code="17" game="th3"	name="int" 		    syntax="" 		    logic="numeric" 	datagroup="int" />
 	
-	<!-- unknown opcodes -->
+	<!-- hexinteger, test if th3 supports it? -->
 	<opcode code="18" game="th3"	name="unknown_18" 	syntax="_18_" 		logic="unknown" 	datagroup="empty" />
+	
+	<!-- enum? -->
 	<opcode code="19" name="unknown_19"	syntax="_19_" 		logic="unknown" 	datagroup="empty" />
 	
 	<opcode code="1A" game="th3"	name="float" 		syntax="-"		logic="numeric" 	datagroup="float" />
 	<opcode code="1B" game="th3"	name="string" 	syntax="&quot;" 	logic="string" 		datagroup="fixedstring" />
 	<opcode code="1C" game="th3"	name="param" 		syntax="'" 		logic="string" 		datagroup="fixedstring" />
+
+	<!-- array? of floats? -->
 	<opcode code="1D" name="unknown_1D" 	syntax="_1D_"		logic="unknown" 	datagroup="empty" />
 	
 	<!-- vectors (basically array of floats) -->
@@ -79,28 +85,39 @@
 	<opcode code="28" name="endif" 		syntax="auto" 		logic="keyword" 	datagroup="empty" 	nesting="close" />
 	
 	<opcode code="29" name="return"		syntax="auto" 		logic="keyword" 	datagroup="empty" />
+
+	<!-- unused -->
 	<opcode code="2A" name="unknown_2A" 	syntax="[2A]"		logic="unknown" 	datagroup="empty" />
+
 	<opcode code="2B" game="th3"	name="symboldef" 	syntax="" 		logic="symboldef" 	datagroup="symboldef" />
+	
+	<!-- NS called them arguments -->
 	<opcode code="2C" name="globalall" 	syntax="&lt;...&gt;"	logic="keyword" 	datagroup="empty" />
 	<opcode code="2D" name="global" 	syntax=""		logic="global" 		datagroup="empty" />
+	
 	<opcode code="2E" game="th3"	name="jump"		syntax="@" 		logic="keyword" 	datagroup="int" /> 
 	<opcode code="2F" game="th3"	name="random"		syntax="auto" 		logic="random" 		datagroup="random" />
 	
 	<opcode code="30" name="randomrange" 	syntax="auto" 		logic="keyword" 	datagroup="empty" />
-	<opcode code="31" name="unknown_31" 	syntax="_31_"		logic="unknown" 	datagroup="empty" />
+
+	<!-- this is @ symbol used in randoms, not compiled to final qb. not like they saved much anyways. -->
+	<opcode code="31" name="unknown_31" 	syntax="@"		logic="keyword" 	datagroup="empty" />
 	
 	<opcode code="32" name="or" 		syntax="auto"		logic="logic" 		datagroup="empty" 	alias="||"/>
 	<opcode code="33" name="and" 		syntax="auto"		logic="logic" 		datagroup="empty" 	alias="&#038;&#038;" />
 	
 	<!--let's see how this works -->
 	<!--<opcode code="32" name="sym_or" 	syntax="||"		logic="logic" 		datagroup="empty" />-->
+	<!--<opcode code="32" name="sym_or" 	syntax="||"		logic="logic" 		datagroup="empty" />-->
 	<!--<opcode code="33" name="sym_and" 	syntax="&#038;&#038;"	logic="logic" 		datagroup="empty" />-->
-	
-	<opcode code="34" name="unknown_34" 	syntax="_34_"		logic="unknown" 	datagroup="empty" />
-	<opcode code="35" name="unknown_35" 	syntax="_35_"		logic="unknown" 	datagroup="empty" />
-	<opcode code="36" game="th3!?"	name="unknown_36" 	syntax="_36_"		logic="unknown" 	datagroup="empty" />
-	<opcode code="37" game="th3"	name="randompermute" 	syntax="auto" 		logic="random" 		datagroup="random" />
-	<opcode code="38" game="th3"	name="unknown_38" 	syntax="_38_"		logic="unknown" 	datagroup="empty" />
+
+	<!-- xor, shl, shr -->
+	<opcode code="34" name="xor" 	syntax="auto"		logic="logic" 	datagroup="empty" alias="^"/>
+	<opcode code="35" name="shl" 	syntax="auto"		logic="logic" 	datagroup="empty" alias="&lt;&lt;"/>
+	<opcode code="36" name="shr" 	syntax="auto"		logic="logic" 	datagroup="empty" alias="&gt;&gt;" />
+
+	<opcode code="37" game="th3"	name="random2" 	syntax="auto" 		logic="random" 		datagroup="random" />
+	<opcode code="38" game="th3"	name="randomrange2" 	syntax="_38_"		logic="unknown" 	datagroup="empty" />
 	
 	<opcode code="39" name="not" 		syntax="auto"		logic="logic" 		datagroup="empty" 	alias="!"/>
 	<!--<opcode code="39" name="sym_not" 	syntax="!"		logic="math" 		datagroup="empty" />-->
@@ -110,19 +127,24 @@
 	
 	<!-- switch case -->
 	<opcode code="3C" name="switch" 	syntax="auto"		logic="keyword" 	datagroup="empty" 	nesting="open"/>
-	<opcode code="3D" name="endswitch"  	syntax="auto"		logic="keyword" 	datagroup="empty" 	nesting="close"/>
+	<opcode code="3D" name="endswitch"  syntax="auto"		logic="keyword" 	datagroup="empty" 	nesting="close"/>
 	<opcode code="3E" name="case" 		syntax="auto"		logic="keyword" 	datagroup="empty" 	nesting="break"/>
 	<opcode code="3F" name="default" 	syntax="auto"		logic="keyword" 	datagroup="empty" 	nesting="break"/>
 	
 	<opcode code="40" name="randomnorepeat" syntax="auto"		logic="random" 		datagroup="random" />
-	<opcode code="41" name="random_41" 	syntax="_41_"		logic="random" 	datagroup="random" />
+	<opcode code="41" name="randompermute" 	syntax="auto"		logic="random" 	datagroup="random" />
 	<opcode code="42" name="member" 	    syntax=":"		logic="relation"	datagroup="empty" />
+
+	<!-- runtime opcodes, cfunc and memberfunc -->
 	<opcode code="43" name="unknown_43" 	syntax="_43_"		logic="keyword" 	datagroup="empty" />
 	<opcode code="44" name="unknown_44" 	syntax="_44_"		logic="unknown" 	datagroup="empty" />
+
+	<!-- thug1 ends here -->
+	
 	<opcode code="45" name="unknown_45" 	syntax="_45_"		logic="unknown" 	datagroup="empty" />
 	<opcode code="46" name="unknown_46" 	syntax="_46_"		logic="unknown" 	datagroup="empty" />
 
-  <!-- thug2 if offset -->
+	<!-- thug2 if offset -->
 	<opcode code="47" name="if2"          syntax="auto"		logic="keyword" 	datagroup="short" 	nesting="open"/>
 	<opcode code="48" name="else2" 		    syntax="auto"		logic="keyword" 	datagroup="short" 	nesting="break"/>
 	<opcode code="49" name="??endswitch2??" 	syntax="auto"		logic="keyword" 	datagroup="short" 	nesting="break"/>
