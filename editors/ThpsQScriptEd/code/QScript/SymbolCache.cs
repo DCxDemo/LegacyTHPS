@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript
@@ -40,6 +39,7 @@ namespace LegacyThps.QScript
         {
             LoadCFuncs("data\\exefuncs.txt");
             LoadCFuncs("data\\exefuncs_th4.txt");
+            LoadCFuncs("data\\exefuncs_ug1.txt");
         }
 
         public static void LoadCFuncs(string filename)
@@ -150,7 +150,7 @@ namespace LegacyThps.QScript
                     return entry.Key;
             }
 
-            // if everything failed, calculate itm should we maybe add it here too?
+            // if everything failed, calculate it. should we maybe add it here too?
             return Checksum.Calc(symbol);
         }
 

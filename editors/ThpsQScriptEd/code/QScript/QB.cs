@@ -633,9 +633,10 @@ namespace LegacyThps.QScript
                 return;
             }
 
+            // this is outdated, no need to fix
             if (w == "[unk_41]")
             {
-                WriteInst(bw, QBcode.unk_41);
+                WriteInst(bw, QBcode.randompermute);
                 return;
             }
 

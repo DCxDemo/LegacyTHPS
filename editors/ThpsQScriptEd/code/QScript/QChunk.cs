@@ -17,7 +17,7 @@ namespace LegacyThps.QScript
 
         public int offset;
 
-
+        // C++ uses union for this stuff
         public short data_short = 0;
         public int data_int = 0;
         public uint data_uint = 0;

@@ -21,6 +21,7 @@ namespace LegacyThps.QScript
 
         public static QToken Space = new QToken("space", " ", OpLogic.Reserved);
 
+        // TODO: convert to XML serialization rather than manual node parsing
         public QToken(XmlNode n)
         {
             if (n.Attributes["code"] != null)
@@ -44,7 +45,7 @@ namespace LegacyThps.QScript
             //QScripted.MainForm.Warn(Name + " " + Group + " " + Logic);
         }
 
-        // TODO convert to getter
+        // TODO: convert to getter
         public string GetSyntax()
         {
             if (Syntax == "newline") return Environment.NewLine;

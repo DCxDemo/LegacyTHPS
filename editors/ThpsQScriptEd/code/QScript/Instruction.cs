@@ -73,7 +73,6 @@ namespace LegacyThps.QScript
                 case QBcode.qbdiv:
                 case QBcode.qbmul:
                 case QBcode.property:
-                case QBcode.unk_41:
                 case QBcode.member:
                 case QBcode.unk_43:
                 case QBcode.unk_44:
@@ -127,6 +126,7 @@ namespace LegacyThps.QScript
                     }
 
                 case QBcode.randomrange:
+                case QBcode.randomrange2:
                     {
                         byte c = br.ReadByte();
                         if (c == (byte)QBcode.val_vector2)
@@ -154,14 +154,15 @@ namespace LegacyThps.QScript
                     }
 
                 case QBcode.random:
-                case QBcode.randompermute:
+                case QBcode.random2:
                 case QBcode.randomnorepeat:
+                case QBcode.randompermute:
                     {
                         int numEntries = br.ReadInt32();
 
                         //now we have to determine whether we're thps or thug
                         //we could do this with a user flag
-                        //but we don't want to fail due to incorrent user settings, right?
+                        //but we don't want to fail due to incorrect user settings, right?
 
                         long pos = br.BaseStream.Position;
                         bool isthugrandom = true;
@@ -196,6 +197,7 @@ namespace LegacyThps.QScript
                         long f = br.BaseStream.Position;
 
                         br.Skip(jumpTable[numEntries - 1] - 5); //5 is the size of randomjump opcode
+
                         if (br.ReadByte() == (byte)QBcode.randomjump)
                         {
                             int x = br.ReadInt32();
@@ -288,9 +290,11 @@ namespace LegacyThps.QScript
                 case QBcode.qbdefault: return "default";
 
                 case QBcode.random: return "Random (@";
+                case QBcode.random2: return "Random2 (@";
                 case QBcode.randomnorepeat: return "RandomNoRepeat (@";
+                case QBcode.randompermute:  return "RandomPermute (@";
                 case QBcode.randomrange: return "RandomRange" + data_vector.ToString();
-                case QBcode.randompermute: return "RandomPermute (@"; //is this correct?
+                case QBcode.randomrange2: return "RandomRange2" + data_vector.ToString();
                 case QBcode.randomjump: return "@";
 
                 case QBcode.repeat: increaseIndent = true; return "begin";

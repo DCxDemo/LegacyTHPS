@@ -1,11 +1,8 @@
 ﻿using FastColoredTextBoxNS;
 using LegacyThps.QScript;
 using LegacyThps.QScript.Helpers;
-using LegacyThps.QScript.Nodes;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -143,9 +140,10 @@ namespace ThpsQScriptEd
 
             FillTextBox(codeBox, codeBuilder.ToString());
 
-            qb = new QB();
-            qb.UpdateText(codeBox.Text);
-            qb.filename = filename;
+            // TODO: get rid of old code, as 
+            //qb = new QB();
+            //qb.UpdateText(codeBox.Text);
+            //qb.filename = filename;
 
 
             scriptList.Items.Clear();
@@ -358,12 +356,6 @@ namespace ThpsQScriptEd
             FillTextBox(codeBox, codeBuilder.ToString());
         }
 
-
-
-
-
-
-
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
             alertChanges = true;
@@ -371,13 +363,6 @@ namespace ThpsQScriptEd
             if (e.KeyCode == Keys.A && e.Control)
                 codeBox.SelectAll();
         }
-
-        private void wordWrapToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Settings.Default.wordWrap = wordWrapToolStripMenuItem.Checked;
-            if (Settings.Default.wordWrap) WrapOn(); else WrapOff();
-        }
-
 
         private bool ChoosePath(string ext)
         {
@@ -471,6 +456,17 @@ namespace ThpsQScriptEd
 
         private void openInNotepadToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // external editor functionality
+            // the idea is to save entire source text to a temporary file
+            // lock the form and open the temp file in the external editor
+            // then wait for the external editor to close
+            // reload temporary file and unlock the form
+
+            // downsides are:
+            // cursor position is lost
+            // must close external editor
+            // wont work properly with multiple instances (only tracks the first one)
+            
             try
             {
                 if (Settings.Default.extrenalEditor.Trim() == "")
@@ -482,28 +478,22 @@ namespace ThpsQScriptEd
                 string pth = (path != null) ? Path.GetFileNameWithoutExtension(path) : "";
                 string tmp = Path.Combine(Path.GetTempPath(), $"temp_{pth}_{Checksum.Calc(DateTime.Now.ToString())}.q");
 
-                //MainForm.Warn(tmp);
-
-                //pass source code text to QB object
-                //qb.UpdateText(codeBox.Text);
-                //qb.SaveText(tmp);
-
                 File.WriteAllText(tmp, codeBox.Text);
 
-                var process = System.Diagnostics.Process.Start(Settings.Default.extrenalEditor, tmp);
-                process = System.Diagnostics.Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Settings.Default.extrenalEditor))[0];
+                var process = Process.Start(Settings.Default.extrenalEditor, tmp);
+                process = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Settings.Default.extrenalEditor))[0];
 
 
                 LockForm();
 
-                //wait for the editor
+                // wait for the editor to exit
                 while (!process.HasExited)
                 {
                     Application.DoEvents();
-                    System.Threading.Thread.Sleep(100); //stay awhile and listen...
+                    System.Threading.Thread.Sleep(100); // stay awhile and listen...
                 }
 
-                //import text
+                // import text
                 if (File.Exists(tmp))
                 {
                     codeBox.Text = File.ReadAllText(tmp);
@@ -538,8 +528,11 @@ namespace ThpsQScriptEd
 
             if (fd.ShowDialog() == DialogResult.OK)
             {
+                // save selection to settings
                 Settings.Default.editorFont = fd.Font;
+                // set editor font
                 codeBox.Font = fd.Font;
+                // set scripts list font
                 scriptList.Font = fd.Font;
             }
         }
@@ -567,31 +560,15 @@ namespace ThpsQScriptEd
             Application.Exit();
         }
 
-        private void qBSpecsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("find good specs or remove");
-        }
-
         private void wordWrapToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             Settings.Default.wordWrap = wordWrapToolStripMenuItem.Checked;
             if (Settings.Default.wordWrap) WrapOn(); else WrapOff();
         }
 
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("QScripted.\r\nMany codes.\r\nSuch wow.\r\n\r\n2018, DCxDemo*.");
-        }
-
-
         private void dumpHashInQBToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SymbolCache.DumpSymbolCache();
-        }
-
-        private void sortOfManualToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Process.Start("https://github.com/DCxDemo/LegacyThps/wiki/ThpsQScriptEd");
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -607,25 +584,15 @@ namespace ThpsQScriptEd
             sf = new SettingsForm();
 
             sf.Sync();
-            if (sf.ShowDialog(this) == DialogResult.OK)
-            {
-            }
-            
+            sf.ShowDialog(this);
         }
-
-
 
         private void scriptList_DoubleClick(object sender, EventArgs e)
         {
             try
             {
-                int pos = CultureInfo.InvariantCulture.CompareInfo.IndexOf(codeBox.Text, "script " + scriptList.SelectedItem.ToString(), 0, CompareOptions.IgnoreCase);
-                int nextspace = codeBox.Text.IndexOf(' ', pos);
-
-                this.ActiveControl = codeBox;
-                codeBox.SelectionStart = pos;
-                codeBox.SelectionLength = nextspace - pos;
-                //codeBox.ScrollToCaret();
+                var x = codeBox.FindLines($"script {scriptList.SelectedItem}", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                codeBox.SetSelectedLine(x[0]+1);
             }
             catch
             {
@@ -642,16 +609,6 @@ namespace ThpsQScriptEd
         private void clearGlobalCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SymbolCache.Clear();
-        }
-
-        private void codeBox_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (codeBox.SelectionLength != 0)
-                if (codeBox.SelectedText.IndexOf("\r\n") == -1)
-                {
-                    string str = codeBox.SelectedText.Trim();
-                    infoText.Text = str + " = " + Checksum.Calc(str).ToString("X8");
-                }
         }
 
         private void parseNodeArrayToolStripMenuItem_Click(object sender, EventArgs e)
@@ -732,11 +689,24 @@ namespace ThpsQScriptEd
             if (Directory.Exists(Settings.Default.scriptsPath))
                 Process.Start(Settings.Default.scriptsPath);
             else
-                WarnUser("No scripts path found, please choose a valid path in Settings.");
+            {
+                if (MessageBox.Show("No scripts folder selected, would you like to choose one?", "Scripts folder", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    var fbd = new FolderBrowserDialog();
+
+                    if (fbd.ShowDialog() == DialogResult.OK)
+                    {
+                        Settings.Default.scriptsPath = fbd.SelectedPath;
+                    }
+                }
+            }
         }
 
         private void codeBox_MouseUp_1(object sender, MouseEventArgs e)
         {
+            // on mouse up we want to calculate a checksum for whatever is currently selected
+            // and put in the bottom right box. you can doubleclick that label to copy the checksum
+
             string text = codeBox.SelectedText;
 
             // no nulls
@@ -764,14 +734,26 @@ namespace ThpsQScriptEd
             File.WriteAllText("scripts.txt", sb.ToString());
         }
 
+        #region [Links]
         private void legacyThpsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://discord.gg/vTWucHS");
+            Process.Start("https://discord.gg/vTWucHS");
         }
 
         private void legacyThpsGithubToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/DCxDemo/LegacyThps");
+            Process.Start("https://github.com/DCxDemo/LegacyThps");
         }
+
+        private void sortOfManualToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/DCxDemo/LegacyThps/wiki/ThpsQScriptEd");
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("QScripted.\r\nMany codes.\r\nSuch wow.\r\n\r\n2018, DCxDemo*.");
+        }
+        #endregion
     }
 }

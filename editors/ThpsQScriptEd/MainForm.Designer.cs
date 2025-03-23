@@ -487,6 +487,7 @@ namespace ThpsQScriptEd
             this.codeBox.BackBrush = null;
             this.codeBox.CharHeight = 15;
             this.codeBox.CharWidth = 7;
+            this.codeBox.CurrentLineColor = System.Drawing.Color.Gray;
             this.codeBox.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.codeBox.DefaultMarkerSize = 8;
             this.codeBox.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));

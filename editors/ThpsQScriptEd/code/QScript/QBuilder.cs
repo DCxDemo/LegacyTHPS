@@ -157,6 +157,9 @@ namespace LegacyThps.QScript
                         //if (chunk.code.Code == 0) can = false;
                     }
                     while (chunk.QType != QBcode.endfile);
+
+                    if (br.BaseStream.Position < br.BaseStream.Length)
+                        MainForm.WarnUser("Unexpected EOF, failed to decompile correctly.\r\nThis file is not currently supported.");
                 }
 
                 SubstituteLinks(true);
@@ -453,7 +456,6 @@ namespace LegacyThps.QScript
                 MainForm.WarnUser("Error while fixing angles: " + ex.Message);
             }
 
-
             foreach (var c in chunks)
             {
                 result = c.ToString(debug);
@@ -470,7 +472,6 @@ namespace LegacyThps.QScript
 
                 // mayve convert randomMarker to compiletime only opcode here
                 if (c.randomMarker) result = " ) " + result;
-
 
                 switch (c.code.Nesting)
                 {
@@ -670,13 +671,13 @@ namespace LegacyThps.QScript
             bool die = false;
 
 
-            for (int i = 0; i < chunks.Count; i++)
+            foreach (var c in chunks) // (int i = 0; i < chunks.Count; i++)
             {
-                switch (chunks[i].QType)
+                switch (c.QType)
                 {
                     case QBcode.val_string:
                     case QBcode.val_string_param:
-                        if (chunks[i].data_string.Length > 255) die = true; break;
+                        if (c.data_string.Length > 255) { die = true; } break;
 
                     case QBcode.newline1:
                     case QBcode.newline2: line++; break;
@@ -696,9 +697,12 @@ namespace LegacyThps.QScript
 
                     case QBcode.script: stack += "<"; break;
                     case QBcode.endscript: stack += ">"; if (!stack.Contains("<")) die = true; break;
+
+                    case QBcode.repeat: stack += "l"; break;
+                    case QBcode.repeatend: stack += "e"; if (!stack.Contains("l")) die = true; break;
                 }
 
-                stack = stack.Replace("{}", "").Replace("()", "").Replace("[]", "").Replace("<>", "").Replace("\\-/", "").Replace("\\/", "");
+                stack = stack.Replace("{}", "").Replace("()", "").Replace("[]", "").Replace("<>", "").Replace("\\-/", "").Replace("\\/", "").Replace("le", "");
 
                 if (stack == "")
                     lastemptystack = line;
@@ -1305,9 +1309,9 @@ namespace LegacyThps.QScript
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.randompermute).GetSyntax())
+            if (s == QBuilder.GetCode(QBcode.random2).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.randompermute));
+                chunks.Add(new QChunk(QBcode.random2));
                 return;
             }
 
@@ -1317,13 +1321,24 @@ namespace LegacyThps.QScript
                 return;
             }
 
+            if (s == QBuilder.GetCode(QBcode.randompermute).GetSyntax())
+            {
+                chunks.Add(new QChunk(QBcode.randompermute));
+                return;
+            }
+
             if (s == QBuilder.GetCode(QBcode.randomrange).GetSyntax())
             {
                 chunks.Add(new QChunk(QBcode.randomrange));
                 return;
             }
 
-            
+            if (s == QBuilder.GetCode(QBcode.randomrange2).GetSyntax())
+            {
+                chunks.Add(new QChunk(QBcode.randomrange2));
+                return;
+            }
+
 
             if (s.Contains("."))
             {

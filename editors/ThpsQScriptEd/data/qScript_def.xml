@@ -117,7 +117,7 @@
 	<opcode code="36" name="shr" 	syntax="auto"		logic="logic" 	datagroup="empty" alias="&gt;&gt;" />
 
 	<opcode code="37" game="th3"	name="random2" 	syntax="auto" 		logic="random" 		datagroup="random" />
-	<opcode code="38" game="th3"	name="randomrange2" 	syntax="_38_"		logic="unknown" 	datagroup="empty" />
+	<opcode code="38" game="th3"	name="randomrange2" 	syntax="auto"		logic="keyword" 	datagroup="empty" />
 	
 	<opcode code="39" name="not" 		syntax="auto"		logic="logic" 		datagroup="empty" 	alias="!"/>
 	<!--<opcode code="39" name="sym_not" 	syntax="!"		logic="math" 		datagroup="empty" />-->
@@ -133,11 +133,12 @@
 	
 	<opcode code="40" name="randomnorepeat" syntax="auto"		logic="random" 		datagroup="random" />
 	<opcode code="41" name="randompermute" 	syntax="auto"		logic="random" 	datagroup="random" />
+	
 	<opcode code="42" name="member" 	    syntax=":"		logic="relation"	datagroup="empty" />
 
-	<!-- runtime opcodes, cfunc and memberfunc -->
-	<opcode code="43" name="unknown_43" 	syntax="_43_"		logic="keyword" 	datagroup="empty" />
-	<opcode code="44" name="unknown_44" 	syntax="_44_"		logic="unknown" 	datagroup="empty" />
+	<!-- runtime opcodes, cfunc and memberfunc, never in qb files -->
+	<opcode code="43" name="cfunc" 	syntax="_43_"		logic="keyword" 	datagroup="empty" />
+	<opcode code="44" name="memberfunc" 	syntax="_44_"		logic="unknown" 	datagroup="empty" />
 
 	<!-- thug1 ends here -->
 	

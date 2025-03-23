@@ -80,20 +80,20 @@ namespace LegacyThps.QScript
         qbmul = 0x0D,
         roundopen = 0x0E,
         roundclose = 0x0F,
-        //0x10
-        //0x11
+        //0x10 - debug info?
+        //0x11 - same as?
         less = 0x12,
         lesseq = 0x13,
         greater = 0x14,
         greatereq = 0x15,
         symbol = 0x16,
         val_int = 0x17,
-        //0x18
-        //0x19
+        //0x18 - hexint?
+        //0x19 - enum?
         val_float = 0x1A,
         val_string = 0x1B,
         val_string_param = 0x1C,
-        //0x1D
+        //0x1D - array?
         val_vector3 = 0x1E,
         val_vector2 = 0x1F,
         repeat = 0x20,
@@ -106,21 +106,21 @@ namespace LegacyThps.QScript
         qbelseif = 0x27,
         qbendif = 0x28,
         qbreturn = 0x29,
-        //0x2A
+        //0x2A - unused
         symboldef = 0x2B,
         globalall = 0x2C,
         global = 0x2D,
         randomjump = 0x2E,
         random = 0x2F,
         randomrange = 0x30,
-        //0x31
+        //0x31 - "at" @
         qbor = 0x32,
         qband = 0x33,
-        //0x34
-        //0x35
-        //0x36
-        randompermute = 0x37,
-        //0x38
+        //0x34 - xor
+        //0x35 - shl
+        //0x36 - shr
+        random2 = 0x37,
+        randomrange2 = 0x38,
         qbnot = 0x39,
         //0x3A
         //0x3B
@@ -129,11 +129,11 @@ namespace LegacyThps.QScript
         qbcase = 0x3E,
         qbdefault = 0x3F,
         randomnorepeat = 0x40,
-        unk_41 = 0x41,
+        randompermute = 0x41,
         member = 0x42,
-        unk_43 = 0x43,
-        unk_44 = 0x44,
-        //0x46
+        unk_43 = 0x43, // runtime only - cfunc
+        unk_44 = 0x44, // runtime only - memberfunc
+        //0x45
         unk_46 = 0x46,
         qbif2 = 0x47,
         qbelse2 = 0x48,
