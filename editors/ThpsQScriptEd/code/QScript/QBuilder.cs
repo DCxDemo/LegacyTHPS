@@ -1,12 +1,12 @@
 ﻿using LegacyThps.QScript.Helpers;
 using LegacyThps.QScript.Nodes;
-using ThpsQScriptEd;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using ThpsQScriptEd;
 using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript
@@ -423,9 +423,9 @@ namespace LegacyThps.QScript
                 padchar = ' ';
             }
 
-            var spaceHaters = new List<OpLogic>() { 
-                OpLogic.Linefeed, 
-                OpLogic.Relation 
+            var spaceHaters = new List<OpLogic>() {
+                OpLogic.Linefeed,
+                OpLogic.Relation
             };
 
             //changes angle vector format
@@ -660,7 +660,7 @@ namespace LegacyThps.QScript
             // pretty sure it's super inefficient, but it works just fine
             // it builds a string like "{{[]()}}" by adding every next bracket symbol to stack
             // then it replaces {} () [] combinations with a null string to eliminate properly enclosed chunks
-            
+
             // if closing bracket was added and there is no opening bracket, it throws an error
             // if string is not empty by the end, there is some error
             // there is also an arbitrary nesting limit of 16, just for sanity
@@ -677,7 +677,8 @@ namespace LegacyThps.QScript
                 {
                     case QBcode.val_string:
                     case QBcode.val_string_param:
-                        if (c.data_string.Length > 255) { die = true; } break;
+                        if (c.data_string.Length > 255) { die = true; }
+                        break;
 
                     case QBcode.newline1:
                     case QBcode.newline2: line++; break;
@@ -1435,7 +1436,7 @@ namespace LegacyThps.QScript
         {
             SaveChunks(path, chunks);
 
-            if (Settings.Default.useSymFile) 
+            if (Settings.Default.useSymFile)
                 SaveChunks(Path.ChangeExtension(path, ".sym.qb"), symbols);
         }
 

@@ -292,7 +292,7 @@ namespace LegacyThps.QScript
                 case QBcode.random: return "Random (@";
                 case QBcode.random2: return "Random2 (@";
                 case QBcode.randomnorepeat: return "RandomNoRepeat (@";
-                case QBcode.randompermute:  return "RandomPermute (@";
+                case QBcode.randompermute: return "RandomPermute (@";
                 case QBcode.randomrange: return "RandomRange" + data_vector.ToString();
                 case QBcode.randomrange2: return "RandomRange2" + data_vector.ToString();
                 case QBcode.randomjump: return "@";

@@ -1,10 +1,10 @@
 ﻿using LegacyThps.QScript.Helpers;
-using ThpsQScriptEd;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using ThpsQScriptEd;
 using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript

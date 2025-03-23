@@ -1,12 +1,8 @@
 ﻿using FastColoredTextBoxNS;
-using ThpsQScriptEd.Properties;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using ThpsQScriptEd.Properties;
 
 namespace ThpsQScriptEd
 {
@@ -86,16 +82,16 @@ namespace ThpsQScriptEd
         private void LoadThemes()
         {
             //move to an external file
-            themes.Add("Default",   new Theme("Default", Color.White, Color.Black));
-            themes.Add("Papyrus",   new Theme("Papyrus", Color.OldLace, Color.Sienna));
-            themes.Add("Inverted",  new Theme("Inverted", Color.FromArgb(30, 30, 30), Color.FromArgb(220, 220, 220)));
-            themes.Add("Night",     new Theme("Night", Color.Black, Color.Gray));
-            themes.Add("Danger",    new Theme("Danger", Color.DarkRed, Color.Yellow));
-            themes.Add("Pascal",    new Theme("Pascal", Color.DarkBlue, Color.Yellow));
-            themes.Add("Navy",      new Theme("Navy", Color.MidnightBlue, Color.LightSkyBlue));
-            themes.Add("Rose",      new Theme("Rose", Color.DarkMagenta, Color.Pink));
-            themes.Add("Forest",    new Theme("Forest", Color.DarkGreen, Color.LimeGreen));
-            themes.Add("Matrix",    new Theme("Matrix", Color.Black, Color.Lime));
+            themes.Add("Default", new Theme("Default", Color.White, Color.Black));
+            themes.Add("Papyrus", new Theme("Papyrus", Color.OldLace, Color.Sienna));
+            themes.Add("Inverted", new Theme("Inverted", Color.FromArgb(30, 30, 30), Color.FromArgb(220, 220, 220)));
+            themes.Add("Night", new Theme("Night", Color.Black, Color.Gray));
+            themes.Add("Danger", new Theme("Danger", Color.DarkRed, Color.Yellow));
+            themes.Add("Pascal", new Theme("Pascal", Color.DarkBlue, Color.Yellow));
+            themes.Add("Navy", new Theme("Navy", Color.MidnightBlue, Color.LightSkyBlue));
+            themes.Add("Rose", new Theme("Rose", Color.DarkMagenta, Color.Pink));
+            themes.Add("Forest", new Theme("Forest", Color.DarkGreen, Color.LimeGreen));
+            themes.Add("Matrix", new Theme("Matrix", Color.Black, Color.Lime));
 
             foreach (var theme in themes.Values)
                 toolStripComboBox1.Items.Add(theme.Name);

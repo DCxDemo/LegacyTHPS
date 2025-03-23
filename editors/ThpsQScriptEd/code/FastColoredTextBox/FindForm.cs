@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace FastColoredTextBoxNS
 {

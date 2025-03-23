@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Settings = ThpsQScriptEd.Properties.Settings;
@@ -69,7 +68,8 @@ namespace ThpsQScriptEd
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var ofd = new OpenFileDialog() {
+            var ofd = new OpenFileDialog()
+            {
                 Filter = "Executables (*.exe)|*.exe",
                 InitialDirectory = extEditor.Text == "" ? "" : Path.GetDirectoryName(extEditor.Text)
             };

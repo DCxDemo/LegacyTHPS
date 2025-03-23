@@ -152,7 +152,7 @@ namespace LegacyThps.QScript.Helpers
                 char ch = buf[i];
 
                 // if(ch >= 'A' && ch <= 'Z') ch += 32;
-                
+
                 //this is interesting, in-game func has it, but there is incorrect checksum in casnames.qb cause of it
                 //if (ch == '/') ch = '\\';
 

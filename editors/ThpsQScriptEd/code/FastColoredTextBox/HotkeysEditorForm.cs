@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
@@ -59,19 +57,19 @@ namespace FastColoredTextBoxNS
         private void dgv_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
             var cell = (dgv[0, e.RowIndex] as DataGridViewComboBoxCell);
-            if(cell.Items.Count == 0)
-            foreach(var item in new string[]{"", "Ctrl", "Ctrl + Shift", "Ctrl + Alt", "Shift", "Shift + Alt", "Alt", "Ctrl + Shift + Alt"})
-                cell.Items.Add(item);
+            if (cell.Items.Count == 0)
+                foreach (var item in new string[] { "", "Ctrl", "Ctrl + Shift", "Ctrl + Alt", "Shift", "Shift + Alt", "Alt", "Ctrl + Shift + Alt" })
+                    cell.Items.Add(item);
 
             cell = (dgv[1, e.RowIndex] as DataGridViewComboBoxCell);
             if (cell.Items.Count == 0)
-            foreach (var item in Enum.GetValues(typeof(Keys)))
-                cell.Items.Add(item);
+                foreach (var item in Enum.GetValues(typeof(Keys)))
+                    cell.Items.Add(item);
 
             cell = (dgv[2, e.RowIndex] as DataGridViewComboBoxCell);
             if (cell.Items.Count == 0)
-            foreach (var item in Enum.GetValues(typeof(FCTBAction)))
-                cell.Items.Add(item);
+                foreach (var item in Enum.GetValues(typeof(FCTBAction)))
+                    cell.Items.Add(item);
         }
 
         private void btResore_Click(object sender, EventArgs e)
@@ -89,7 +87,7 @@ namespace FastColoredTextBoxNS
 
         private void HotkeysEditorForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(DialogResult == System.Windows.Forms.DialogResult.OK)
+            if (DialogResult == System.Windows.Forms.DialogResult.OK)
             {
                 var actions = GetUnAssignedActions();
                 if (!string.IsNullOrEmpty(actions))
@@ -109,12 +107,12 @@ namespace FastColoredTextBoxNS
                 dic[w.Action] = w.Action;
 
             foreach (var item in Enum.GetValues(typeof(FCTBAction)))
-            if ((FCTBAction)item != FCTBAction.None)
-            if(!((FCTBAction)item).ToString().StartsWith("CustomAction"))
-            {
-                if(!dic.ContainsKey((FCTBAction)item))
-                    sb.Append(item+", ");
-            }
+                if ((FCTBAction)item != FCTBAction.None)
+                    if (!((FCTBAction)item).ToString().StartsWith("CustomAction"))
+                    {
+                        if (!dic.ContainsKey((FCTBAction)item))
+                            sb.Append(item + ", ");
+                    }
 
             return sb.ToString().TrimEnd(' ', ',');
         }
@@ -146,7 +144,7 @@ namespace FastColoredTextBoxNS
         bool Ctrl;
         bool Shift;
         bool Alt;
-        
+
         public string Modifiers
         {
             get

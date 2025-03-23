@@ -1,11 +1,11 @@
 ﻿using LegacyThps.QScript.Helpers;
-using ThpsQScriptEd;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Settings = ThpsQScriptEd.Properties.Settings;
 using System.Windows.Forms;
+using ThpsQScriptEd;
+using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript
 {
@@ -316,7 +316,7 @@ namespace LegacyThps.QScript
         /// </summary>
         /// <returns></returns>
         /// TODO: pass binarywriter here, will be faster as well if we wont create stream every time
-        public byte[] ToArray() 
+        public byte[] ToArray()
         {
             byte[] data = new byte[0];
 

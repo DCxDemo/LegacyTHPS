@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Text;
-using System.Drawing;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace FastColoredTextBoxNS
 {

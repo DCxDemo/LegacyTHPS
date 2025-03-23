@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 
 namespace FastColoredTextBoxNS
 {
@@ -26,7 +26,7 @@ namespace FastColoredTextBoxNS
         /// <summary>
         /// Background brush.
         /// </summary>
-        public Brush BackgroundBrush { get; set;}
+        public Brush BackgroundBrush { get; set; }
         /// <summary>
         /// Unique ID
         /// </summary>
@@ -67,9 +67,10 @@ namespace FastColoredTextBoxNS
         /// </summary>
         public virtual string Text
         {
-            get{
+            get
+            {
                 StringBuilder sb = new StringBuilder(Count);
-                foreach(Char c in this)
+                foreach (Char c in this)
                     sb.Append(c.c);
                 return sb.ToString();
             }
@@ -158,7 +159,7 @@ namespace FastColoredTextBoxNS
 
         public bool IsReadOnly
         {
-            get {  return false; }
+            get { return false; }
         }
 
         public bool Remove(Char item)
@@ -238,9 +239,9 @@ namespace FastColoredTextBoxNS
                 switch (VisibleState)
                 {
                     case VisibleState.Visible:
-                         if (cutOffPositions == null)
+                        if (cutOffPositions == null)
                             return 1;
-                         else
+                        else
                             return cutOffPositions.Count + 1;
                     case VisibleState.Hidden: return 0;
                     case VisibleState.StartOfHiddenBlock: return 1;
@@ -275,7 +276,7 @@ namespace FastColoredTextBoxNS
         }
     }
 
-    public enum VisibleState: byte
+    public enum VisibleState : byte
     {
         Visible, StartOfHiddenBlock, Hidden
     }

@@ -2,8 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Text;
 
 namespace FastColoredTextBoxNS
 {
@@ -64,9 +64,9 @@ namespace FastColoredTextBoxNS
                     base.lines[i] = null;
                     count++;
                 }
-            #if debug
+#if debug
             Console.WriteLine("UnloadUnusedLines: " + count);
-            #endif
+#endif
         }
 
         public void OpenFile(string fileName, Encoding enc)
@@ -88,7 +88,7 @@ namespace FastColoredTextBoxNS
             sourceFileLinePositions.Add((int)fs.Position);
             base.lines.Add(null);
             //other lines
-            sourceFileLinePositions.Capacity = (int)(length/7 + 1000);
+            sourceFileLinePositions.Capacity = (int)(length / 7 + 1000);
 
             //int prev = 0;
             //while(fs.Position < length)
@@ -146,7 +146,7 @@ namespace FastColoredTextBoxNS
                 base.lines.Add(null);
             }
 
-            if(length > 2000000)
+            if (length > 2000000)
                 GC.Collect();
 
             Line[] temp = new Line[100];
@@ -162,13 +162,13 @@ namespace FastColoredTextBoxNS
             sourceFileLinePositions.AddRange(temp2);
             sourceFileLinePositions.TrimExcess();
             sourceFileLinePositions.RemoveRange(c, temp.Length);
-            
+
 
             fileEncoding = enc;
 
             OnLineInserted(0, Count);
             //load first lines for calc width of the text
-            var linesCount = Math.Min(lines.Count, CurrentTB.ClientRectangle.Height/CurrentTB.CharHeight);
+            var linesCount = Math.Min(lines.Count, CurrentTB.ClientRectangle.Height / CurrentTB.CharHeight);
             for (int i = 0; i < linesCount; i++)
                 LoadLineFromSourceFile(i);
             //
@@ -239,7 +239,7 @@ namespace FastColoredTextBoxNS
 
         public void CloseFile()
         {
-            if(fs!=null)
+            if (fs != null)
                 try
                 {
                     fs.Dispose();
@@ -290,7 +290,7 @@ namespace FastColoredTextBoxNS
                         var args = new LinePushedEventArgs(sourceLine, i, lineIsChanged ? line : null);
                         LinePushed(this, args);
 
-                        if(args.SavedText != null)
+                        if (args.SavedText != null)
                             line = args.SavedText;
                     }
 
@@ -337,13 +337,13 @@ namespace FastColoredTextBoxNS
         public override void ClearIsChanged()
         {
             foreach (var line in lines)
-                if(line!=null)
+                if (line != null)
                     line.IsChanged = false;
         }
 
         public override Line this[int i]
         {
-            get 
+            get
             {
                 if (base.lines[i] != null)
                     return lines[i];
@@ -369,7 +369,7 @@ namespace FastColoredTextBoxNS
                 s = "";
 
             //call event handler
-            if(LineNeeded!=null)
+            if (LineNeeded != null)
             {
                 var args = new LineNeededEventArgs(s, i);
                 LineNeeded(this, args);

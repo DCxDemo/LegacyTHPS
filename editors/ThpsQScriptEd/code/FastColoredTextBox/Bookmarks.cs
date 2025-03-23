@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Text;
 
 namespace FastColoredTextBoxNS
 {
@@ -61,36 +60,37 @@ namespace FastColoredTextBoxNS
 
         protected virtual void tb_LineRemoved(object sender, LineRemovedEventArgs e)
         {
-            for(int i=0; i<Count; i++)
-            if (items[i].LineIndex >= e.Index)
-            {
-                if (items[i].LineIndex >= e.Index + e.Count)
+            for (int i = 0; i < Count; i++)
+                if (items[i].LineIndex >= e.Index)
                 {
-                    items[i].LineIndex = items[i].LineIndex - e.Count;
-                    continue;
+                    if (items[i].LineIndex >= e.Index + e.Count)
+                    {
+                        items[i].LineIndex = items[i].LineIndex - e.Count;
+                        continue;
+                    }
+
+                    var was = e.Index <= 0;
+                    foreach (var b in items)
+                        if (b.LineIndex == e.Index - 1)
+                            was = true;
+
+                    if (was)
+                    {
+                        items.RemoveAt(i);
+                        i--;
+                    }
+                    else
+                        items[i].LineIndex = e.Index - 1;
+
+                    //if (items[i].LineIndex == e.Index + e.Count - 1)
+                    //{
+                    //    items[i].LineIndex = items[i].LineIndex - e.Count;
+                    //    continue;
+                    //}
+                    //
+                    //items.RemoveAt(i);
+                    //i--;
                 }
-
-                var was = e.Index <= 0;
-                foreach (var b in items)
-                    if (b.LineIndex == e.Index - 1)
-                        was = true;
-
-                if(was)
-                {
-                    items.RemoveAt(i);
-                    i--;
-                }else
-                    items[i].LineIndex = e.Index - 1;
-
-                //if (items[i].LineIndex == e.Index + e.Count - 1)
-                //{
-                //    items[i].LineIndex = items[i].LineIndex - e.Count;
-                //    continue;
-                //}
-                //
-                //items.RemoveAt(i);
-                //i--;
-            }
         }
 
         protected virtual void tb_LineInserted(object sender, LineInsertedEventArgs e)
@@ -99,14 +99,15 @@ namespace FastColoredTextBoxNS
                 if (items[i].LineIndex >= e.Index)
                 {
                     items[i].LineIndex = items[i].LineIndex + e.Count;
-                }else
+                }
+                else
                 if (items[i].LineIndex == e.Index - 1 && e.Count == 1)
                 {
-                    if(tb[e.Index - 1].StartSpacesCount == tb[e.Index - 1].Count)
+                    if (tb[e.Index - 1].StartSpacesCount == tb[e.Index - 1].Count)
                         items[i].LineIndex = items[i].LineIndex + e.Count;
                 }
         }
-    
+
         public override void Dispose()
         {
             tb.LineInserted -= tb_LineInserted;
@@ -187,12 +188,12 @@ namespace FastColoredTextBoxNS
         {
             bool was = false;
             for (int i = 0; i < Count; i++)
-            if (items[i].LineIndex == lineIndex)
-            {
-                items.RemoveAt(i);
-                i--;
-                was = true;
-            }
+                if (items[i].LineIndex == lineIndex)
+                {
+                    items.RemoveAt(i);
+                    i--;
+                    was = true;
+                }
             tb.Invalidate();
 
             return was;
@@ -220,7 +221,7 @@ namespace FastColoredTextBoxNS
         /// <summary>
         /// Line index
         /// </summary>
-        public int LineIndex {get; set; }
+        public int LineIndex { get; set; }
         /// <summary>
         /// Color of bookmark sign
         /// </summary>

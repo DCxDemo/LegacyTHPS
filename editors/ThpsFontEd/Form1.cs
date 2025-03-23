@@ -1,12 +1,12 @@
 ﻿using LegacyThps.Fonts;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace ThpsFontEd
 {
@@ -543,7 +543,7 @@ namespace ThpsFontEd
             if (fnt is null) return;
 
             var ofd = new OpenFileDialog();
-            
+
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 var bitmap = (Bitmap)Bitmap.FromFile(ofd.FileName);

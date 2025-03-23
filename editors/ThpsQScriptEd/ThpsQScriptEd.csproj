@@ -255,7 +255,9 @@
     <Content Include="data\exefuncs_th4.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="data\exefuncs_ug1.txt" />
+    <Content Include="data\exefuncs_ug1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="data\qScript_def.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
@@ -274,7 +276,6 @@
     <Content Include="data\exefuncs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="data\SettingsHelp.txt" />
   </ItemGroup>
   <ItemGroup>
     <PublishFile Include="ru\QScripted.resources">

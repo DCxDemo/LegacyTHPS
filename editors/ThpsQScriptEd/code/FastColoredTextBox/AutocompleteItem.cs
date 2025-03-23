@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Printing;
-using System.Windows.Forms;
 
 namespace FastColoredTextBoxNS
 {
@@ -17,7 +15,7 @@ namespace FastColoredTextBoxNS
         string toolTipText;
         string menuText;
         public AutocompleteMenu Parent { get; internal set; }
-        
+
 
         public AutocompleteItem()
         {
@@ -96,9 +94,9 @@ namespace FastColoredTextBoxNS
         /// Tooltip text.
         /// </summary>
         /// <remarks>For display tooltip text, ToolTipTitle must be not null</remarks>
-        public virtual string ToolTipText 
+        public virtual string ToolTipText
         {
-            get{ return toolTipText; }
+            get { return toolTipText; }
             set { toolTipText = value; }
         }
 
@@ -237,10 +235,10 @@ namespace FastColoredTextBoxNS
             string lastPart = fragmentText.Substring(i + 1);
             firstPart = fragmentText.Substring(0, i);
 
-            if(lastPart=="") return CompareResult.Visible;
-            if(Text.StartsWith(lastPart, StringComparison.InvariantCultureIgnoreCase))
+            if (lastPart == "") return CompareResult.Visible;
+            if (Text.StartsWith(lastPart, StringComparison.InvariantCultureIgnoreCase))
                 return CompareResult.VisibleAndSelected;
-            if(lowercaseText.Contains(lastPart.ToLower()))
+            if (lowercaseText.Contains(lastPart.ToLower()))
                 return CompareResult.Visible;
 
             return CompareResult.Hidden;
@@ -258,8 +256,8 @@ namespace FastColoredTextBoxNS
     /// </summary>
     public class SuggestItem : AutocompleteItem
     {
-        public SuggestItem(string text, int imageIndex):base(text, imageIndex)
-        {   
+        public SuggestItem(string text, int imageIndex) : base(text, imageIndex)
+        {
         }
 
         public override CompareResult Compare(string fragmentText)

@@ -218,7 +218,7 @@ namespace FastColoredTextBoxNS
 
                 if ((suspiciousUTF8SequenceCount * 500000.0 / SampleBytes.Length >= 1) //suspicious sequences
                     && (
-                    //all suspicious, so cannot evaluate proportion of US-Ascii
+                           //all suspicious, so cannot evaluate proportion of US-Ascii
                            SampleBytes.Length - suspiciousUTF8BytesTotal == 0
                            ||
                            likelyUSASCIIBytesInSample * 1.0 / (SampleBytes.Length - suspiciousUTF8BytesTotal) >= 0.8

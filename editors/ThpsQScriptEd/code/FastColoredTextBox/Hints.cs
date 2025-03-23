@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Text;
 using System.Windows.Forms;
 
 namespace FastColoredTextBoxNS
@@ -98,8 +96,8 @@ namespace FastColoredTextBoxNS
                 var p2 = tb.PlaceToPoint(hint.Range.End);
                 var cx = (p1.X + p2.X) / 2;
                 var x = cx - hint.HostPanel.Width / 2;
-                hint.HostPanel.Left = Math.Max( tb.LeftIndent, x);
-                if(hint.HostPanel.Right > tb.ClientSize.Width)
+                hint.HostPanel.Left = Math.Max(tb.LeftIndent, x);
+                if (hint.HostPanel.Right > tb.ClientSize.Width)
                     hint.HostPanel.Left = Math.Max(tb.LeftIndent, x - (hint.HostPanel.Right - tb.ClientSize.Width));
             }
         }
@@ -207,7 +205,7 @@ namespace FastColoredTextBoxNS
     /// <summary>
     /// Hint of FastColoredTextbox
     /// </summary>
-    public class Hint 
+    public class Hint
     {
         /// <summary>
         /// Text of simple hint
@@ -244,7 +242,7 @@ namespace FastColoredTextBoxNS
         /// <summary>
         /// Occurs when user click on simple hint
         /// </summary>
-        public event EventHandler Click 
+        public event EventHandler Click
         {
             add { HostPanel.Click += value; }
             remove { HostPanel.Click -= value; }
@@ -282,7 +280,7 @@ namespace FastColoredTextBoxNS
         /// <summary>
         /// Inlining. If True then hint will moves apart text.
         /// </summary>
-        public bool Inline{get; set;}
+        public bool Inline { get; set; }
 
         /// <summary>
         /// Scroll textbox to the hint
@@ -291,7 +289,7 @@ namespace FastColoredTextBoxNS
         {
             Range.tb.DoRangeVisible(Range, true);
             Range.tb.DoVisibleRectangle(HostPanel.Bounds);
-            
+
             Range.tb.Invalidate();
         }
 
@@ -314,7 +312,7 @@ namespace FastColoredTextBoxNS
         /// <param name="text">Text for simple hint</param>
         /// <param name="inline">Inlining. If True then hint will moves apart text</param>
         /// <param name="dock">Docking. If True then hint will fill whole line</param>
-        public Hint(Range range, string text, bool inline, bool dock) 
+        public Hint(Range range, string text, bool inline, bool dock)
             : this(range, null, text, inline, dock)
         {
         }

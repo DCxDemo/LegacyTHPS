@@ -3,13 +3,13 @@ using LegacyThps.QScript;
 using LegacyThps.QScript.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using System.Diagnostics;
 using Settings = ThpsQScriptEd.Properties.Settings;
-using System.Linq;
 
 namespace ThpsQScriptEd
 {
@@ -198,7 +198,7 @@ namespace ThpsQScriptEd
                 rollbackToolStripMenuItem.Enabled = true;
             }
         }
-        
+
         //gets backup date, much wow
         private string GetBackupDate(string s)
         {
@@ -470,7 +470,7 @@ namespace ThpsQScriptEd
             // cursor position is lost
             // must close external editor
             // wont work properly with multiple instances (only tracks the first one)
-            
+
             try
             {
                 if (Settings.Default.extrenalEditor.Trim() == "")
@@ -521,7 +521,8 @@ namespace ThpsQScriptEd
         private void fontToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // set up font box properly
-            var fd = new FontDialog() {
+            var fd = new FontDialog()
+            {
                 // existing font
                 FontMustExist = true,
                 // monospace font
@@ -549,7 +550,8 @@ namespace ThpsQScriptEd
                 return;
             }
 
-            var sfd = new SaveFileDialog() {
+            var sfd = new SaveFileDialog()
+            {
                 Filter = "CSV files (*.csv)|*.csv|Text files (*.txt)|*.txt"
             };
 
@@ -596,7 +598,7 @@ namespace ThpsQScriptEd
             try
             {
                 var x = codeBox.FindLines($"script {scriptList.SelectedItem}", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                codeBox.SetSelectedLine(x[0]+1);
+                codeBox.SetSelectedLine(x[0] + 1);
             }
             catch
             {
