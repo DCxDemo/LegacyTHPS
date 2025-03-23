@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using Settings = ThpsQScriptEd.Properties.Settings;
+using System.Linq;
 
 namespace ThpsQScriptEd
 {
@@ -140,20 +141,23 @@ namespace ThpsQScriptEd
 
             FillTextBox(codeBox, codeBuilder.ToString());
 
-            // TODO: get rid of old code, as 
-            //qb = new QB();
-            //qb.UpdateText(codeBox.Text);
-            //qb.filename = filename;
 
+            scriptList.BeginUpdate();
 
             scriptList.Items.Clear();
-            foreach (string scr in qb.scripts)
-            {
-                scriptList.Items.Add(scr);
 
-                if (!SymbolCache.Scripts.Contains(scr))
-                    SymbolCache.Scripts.Add(scr);
+            var scriptLines = codeBox.FindLines("script ", System.Text.RegularExpressions.RegexOptions.IgnoreCase).Distinct();
+
+            foreach (var i in scriptLines)
+            {
+                var list = codeBox.Lines[i].Trim().Split(' ');
+
+                if (list.Length >= 2)
+                    if (list[0] == "script")
+                        scriptList.Items.Add(list[1]);
             }
+
+            scriptList.EndUpdate();
         }
 
         //load rollback file
