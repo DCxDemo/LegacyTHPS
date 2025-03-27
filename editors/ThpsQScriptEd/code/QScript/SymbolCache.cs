@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using ThpsQScriptEd;
 using Settings = ThpsQScriptEd.Properties.Settings;
 
@@ -136,12 +137,19 @@ namespace LegacyThps.QScript
                 }
             }
 
+            return Checksum.Calc(symbol);
+
+            // honestly this is redundant and slows the process drastically.
+            // since it only handles mismatching hashes, maybe just put wrong keys on a separate list, if found any?
+
             // then try fast linear lookup without casing first due to performance
             foreach (var entry in SymbolCache.Entries)
             {
                 if (symbol == entry.Value)
                     return entry.Key;
             }
+
+            //MessageBox.Show($"im looking for {symbol} and found no match?");
 
             // since we got no match here, try the slow uppercase
             foreach (var entry in SymbolCache.Entries)
@@ -151,7 +159,11 @@ namespace LegacyThps.QScript
             }
 
             // if everything failed, calculate it. should we maybe add it here too?
-            return Checksum.Calc(symbol);
+            var result = Checksum.Calc(symbol);
+
+            SymbolCache.Add(result, symbol);
+
+            return result;
         }
 
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Numerics;
 using System.Xml;
 using ThpsQScriptEd;
 using Settings = ThpsQScriptEd.Properties.Settings;
@@ -447,7 +448,7 @@ namespace LegacyThps.QScript
 
                     if (chunks[ii].code.Logic == OpLogic.Vector && nextvectorisangle)
                     {
-                        chunks[ii].data_vector.isAngle = true;
+                        chunks[ii].isAngle = true;
                         nextvectorisangle = false;
                     }
                 }
@@ -741,8 +742,8 @@ namespace LegacyThps.QScript
                                     if (chunks[i + 4].QType == QBcode.roundclose)
                                     {
                                         //vector2!
-                                        QChunk q = new QChunk(QBcode.val_vector2);
-                                        q.data_vector = new Vector3f(chunks[i + 1].GetNumericValue(), chunks[i + 3].GetNumericValue());
+                                        var q = new QChunk(QBcode.val_vector2);
+                                        q.data_vector = new Vector3(chunks[i + 1].GetNumericValue(), chunks[i + 3].GetNumericValue(), 0);
                                         chunks.RemoveRange(i, 5);
                                         chunks.Insert(i, q);
                                     }
@@ -752,8 +753,8 @@ namespace LegacyThps.QScript
                                             if (chunks[i + 6].QType == QBcode.roundclose)
                                             {
                                                 //vector3!
-                                                QChunk q = new QChunk(QBcode.val_vector3);
-                                                q.data_vector = new Vector3f(chunks[i + 1].GetNumericValue(), chunks[i + 3].GetNumericValue(), chunks[i + 5].GetNumericValue());
+                                                var q = new QChunk(QBcode.val_vector3);
+                                                q.data_vector = new Vector3(chunks[i + 1].GetNumericValue(), chunks[i + 3].GetNumericValue(), chunks[i + 5].GetNumericValue());
                                                 chunks.RemoveRange(i, 7);
                                                 chunks.Insert(i, q);
                                             }
@@ -1185,7 +1186,7 @@ namespace LegacyThps.QScript
             {
                 QChunk q = new QChunk(QBcode.val_int);
                 q.data_float = Single.Parse(s.Replace("°", ""));
-                q.data_float = (float)(q.data_float / Vector3f.radian);
+                q.data_float = (float)(q.data_float / QChunk.Radian);
                 chunks.Add(q);
                 //QScripted.MainForm.Warn(q.data_int + "");
                 return;

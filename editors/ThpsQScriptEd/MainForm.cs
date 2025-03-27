@@ -380,6 +380,7 @@ namespace ThpsQScriptEd
                 {
                     path = sfd.FileName;
                     SetTitle(path);
+
                     return true;
                 }
 

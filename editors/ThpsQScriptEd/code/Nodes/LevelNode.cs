@@ -1,13 +1,13 @@
-﻿using LegacyThps.QScript.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace LegacyThps.QScript.Nodes
 {
     public class Node
     {
-        public Vector3f Position = Vector3f.Zero;
-        public Vector3f Angles = Vector3f.Zero;
+        public Vector3 Position = Vector3.Zero;
+        public Vector3 Angles = Vector3.Zero;
         public string Name = "";
         public bool CreatedAtStart = false;
         public TerrainType terrainType = TerrainType.None;
@@ -32,8 +32,8 @@ namespace LegacyThps.QScript.Nodes
 
         public Node()
         {
-            Position = new Vector3f(200, 500, 4000);
-            Angles = new Vector3f(0, 3.14f, 0);
+            Position = new Vector3(200, 500, 4000);
+            Angles = new Vector3(0, 3.14f, 0);
             Name = "test_node";
         }
 
@@ -42,9 +42,9 @@ namespace LegacyThps.QScript.Nodes
             string res = "";
 
             res += "{ ";
-            if (Position != Vector3f.Zero) res += String.Format("Position = {0} ", Position.ToString());
-            if (Angles != Vector3f.Zero) res += String.Format("Angles = {0} ", Angles.ToString());
-            if (Name != "") res += "Name = " + Name + " ";
+            if (Position != Vector3.Zero) res += $"Position = {Position} ";
+            if (Angles != Vector3.Zero) res += $"Angles = {Angles} ";
+            if (Name != "") res += $"Name = {Name} ";
 
             if (terrainType != TerrainType.None) res += "TerrainType = " + terrainType.ToString() + " ";
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using ThpsQScriptEd;
+using System.Numerics;
 using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript
@@ -23,7 +24,10 @@ namespace LegacyThps.QScript
         public uint data_uint = 0;
         public float data_float = 0;
         public string data_string = "";
-        public Vector3f data_vector = Vector3f.Zero;
+        public Vector3 data_vector = Vector3.Zero;
+
+        public bool isAngle = false;
+        public bool isVector2 = false;
 
         //this is to get float for vector
         public float GetNumericValue()
@@ -84,8 +88,8 @@ namespace LegacyThps.QScript
                     data_uint = br.ReadUInt32();
                     break;
                 case DataGroup.Float: data_float = br.ReadSingle(); break;
-                case DataGroup.Vector2: data_vector = br.ReadVector2(); break;
-                case DataGroup.Vector3: data_vector = br.ReadVector3(); break;
+                case DataGroup.Vector2: data_vector = br.ReadVector2(); isVector2 = true; break;
+                case DataGroup.Vector3: data_vector = br.ReadVector3(); isVector2 = false; break;
                 case DataGroup.FixedString:
                     {
                         data_int = br.ReadInt32();
@@ -206,14 +210,14 @@ namespace LegacyThps.QScript
                     break;
 
                 case OpLogic.Symbol:
-                    //get string from global symbol cache
+                    // get string from global symbol cache
                     result = SymbolCache.GetSymbolName(data_uint);
 
-                    //loop through keywords to find if symbol is a keyword (like "not" or "switch" for example)
+                    // loop through keywords to find if symbol is a keyword (like "not" or "switch" for example)
 
                     bool isKeyword = false;
 
-                    foreach (QToken q in QBuilder.tokens)
+                    foreach (var q in QBuilder.tokens)
                     {
                         if (result.ToLower() == q.Name.ToLower() &&
                             (q.Logic == OpLogic.Keyword || q.Logic == OpLogic.Logic)
@@ -221,7 +225,7 @@ namespace LegacyThps.QScript
                             isKeyword = true;
                     }
 
-                    //find if symbol is all numbers. without hash it will be treated as int.
+                    // find if symbol is all numbers. without hash it will be treated as int.
 
                     bool isNumeric = true;
                     string digits = "0123456789";
@@ -232,7 +236,7 @@ namespace LegacyThps.QScript
                             isNumeric = false;
                     }
 
-                    //add hash symbol if got one of these cases
+                    // add hash symbol if got one of these cases
                     if (
                             result.Contains(" ") ||
                             result.Contains("'") ||
@@ -247,9 +251,9 @@ namespace LegacyThps.QScript
                     break;
 
                 case OpLogic.SymbolDef:
-                    //this is a syboldef entry, we don't need it to be in the resulting code
+                    // this is a syboldef entry, we don't need it to be in the resulting code
                     result = "";
-                    //result = "#\"" + data_string + "\"";
+                    // result = "#\"" + data_string + "\"";
                     break;
 
                 case OpLogic.Random:
@@ -257,11 +261,11 @@ namespace LegacyThps.QScript
                     break;
 
                 case OpLogic.Vector:
-                    result = data_vector.ToString();
+                    result = VectorToString();
                     break;
 
                 case OpLogic.Unknown:
-                    ThpsQScriptEd.MainForm.WarnUser("unknown code found: " + code.GetSyntax());
+                    MainForm.WarnUser("unknown code found: " + code.GetSyntax());
                     result = code.GetSyntax();
                     break;
 
@@ -275,6 +279,39 @@ namespace LegacyThps.QScript
                 + result + " -> "
                 : result;
         }
+
+        public static double Radian = 180.0 / Math.PI;
+
+        public string VectorToString()
+        {
+            if (!isAngle || !Settings.Default.useDegrees)
+            {
+                return
+                    "(" + data_vector.X.ToString("0.#####") +
+                    ", " + data_vector.Y.ToString("0.#####") +
+                    ((!isVector2) ? (", " + data_vector.Z.ToString("0.#####")) : "") + ")";
+            }
+            else
+            {
+                double fx = data_vector.X * Radian;
+                double fy = data_vector.Y * Radian;
+                double fz = data_vector.Z * Radian;
+
+                //without it most 180 will be like 180.00001
+                if (Settings.Default.roundAngles)
+                {
+                    fx = Math.Round(fx, 2);
+                    fy = Math.Round(fy, 2);
+                    fz = Math.Round(fz, 2);
+                }
+
+                return
+                    "(" + fx.ToString("0.#####") +
+                    "°, " + fy.ToString("0.#####") +
+                    ((!isVector2) ? ("°, " + fz.ToString("0.#####")) : "") + "°)";
+            }
+        }
+
 
         /// <summary>
         /// Retrieves the resulting chunk size based on data group.

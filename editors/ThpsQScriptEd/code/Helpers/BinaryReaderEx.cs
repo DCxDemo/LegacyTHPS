@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Numerics;
 
 namespace LegacyThps.QScript.Helpers
 {
@@ -21,17 +22,17 @@ namespace LegacyThps.QScript.Helpers
             this.BaseStream.Position = x;
         }
 
-        public Vector3f ReadVector3()
+        public Vector3 ReadVector3()
         {
             float X = ReadSingle();
             float Y = ReadSingle();
             float Z = ReadSingle();
-            return new Vector3f(X, Y, Z);
+            return new Vector3(X, Y, Z);
         }
 
-        public Vector3f ReadVector2()
+        public Vector3 ReadVector2()
         {
-            return new Vector3f(ReadSingle(), ReadSingle());
+            return new Vector3(ReadSingle(), ReadSingle(), 0);
         }
 
         public string ReadFixedString(int count)
@@ -52,22 +53,6 @@ namespace LegacyThps.QScript.Helpers
             BaseStream.Position = pos;
 
             return ReadFixedString(len);
-
-            /* rewrote using readfixedstring
-            List<byte> str = new List<byte>();
-
-            byte x;
-
-            do
-            {
-                x = ReadByte();
-                if (x != 0) str.Add(x);
-            }
-            while (x != 0);
-
-            return UTF8Encoding.UTF8.GetString(str.ToArray());
-             * 
-             * */
         }
     }
 }
