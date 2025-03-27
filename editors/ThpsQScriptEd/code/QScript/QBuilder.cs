@@ -77,6 +77,7 @@ namespace LegacyThps.QScript
             if (!initialized)
             {
                 LoadOpcodes();
+                SymbolCache.Create();
                 initialized = true;
             }
         }

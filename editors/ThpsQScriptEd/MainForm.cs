@@ -105,7 +105,6 @@ namespace ThpsQScriptEd
         }
 
         string path = "";
-        QB qb = new QB();
 
         public static bool alertChanges = false;
 

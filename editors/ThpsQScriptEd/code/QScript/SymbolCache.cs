@@ -63,7 +63,7 @@ namespace LegacyThps.QScript
 
         public static int Count() => Entries.Count;
 
-        public static void Add(Instruction i)
+        public static void Add(QChunk i)
         {
             if (!SymbolCache.Entries.ContainsKey(i.data_uint))
             {

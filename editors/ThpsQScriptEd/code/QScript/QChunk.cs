@@ -242,7 +242,7 @@ namespace LegacyThps.QScript
                             isNumeric
                         )
                     {
-                        result = "#\"" + result + "\"";
+                        result = $"#\"{result}\"";
                     }
                     break;
 

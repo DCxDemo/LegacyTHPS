@@ -166,8 +166,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="code\QScript\Enums.cs" />
-    <Compile Include="code\QScript\Instruction.cs" />
-    <Compile Include="code\QScript\QB.cs" />
     <Compile Include="code\QScript\QBuilder.cs" />
     <Compile Include="code\QScript\QChunk.cs" />
     <Compile Include="code\QScript\QCode.cs" />

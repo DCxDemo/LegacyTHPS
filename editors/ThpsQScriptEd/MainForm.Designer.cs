@@ -68,7 +68,6 @@ namespace ThpsQScriptEd
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openInNotepadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openScriptsFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.dumpScriptsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStripFiller = new System.Windows.Forms.ToolStripStatusLabel();
@@ -95,8 +94,7 @@ namespace ThpsQScriptEd
             this.editorToolStripMenuItem,
             this.helpToolStripMenuItem,
             this.openInNotepadToolStripMenuItem,
-            this.openScriptsFolderToolStripMenuItem,
-            this.dumpScriptsToolStripMenuItem});
+            this.openScriptsFolderToolStripMenuItem});
             this.menuStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -123,8 +121,8 @@ namespace ThpsQScriptEd
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+O";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.openToolStripMenuItem.Text = "&Open";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
@@ -132,7 +130,7 @@ namespace ThpsQScriptEd
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.ToolTipText = "Only saves source as a Q file";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
@@ -140,8 +138,10 @@ namespace ThpsQScriptEd
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.saveAsToolStripMenuItem.Text = "Save As";
+            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // compileToolStripMenuItem
@@ -149,7 +149,7 @@ namespace ThpsQScriptEd
             this.compileToolStripMenuItem.Name = "compileToolStripMenuItem";
             this.compileToolStripMenuItem.ShortcutKeyDisplayString = "F5";
             this.compileToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.compileToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.compileToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.compileToolStripMenuItem.Text = "Compile";
             this.compileToolStripMenuItem.ToolTipText = "Compiles QB file and saves source as a Q file";
             this.compileToolStripMenuItem.Click += new System.EventHandler(this.compileToolStripMenuItem_Click);
@@ -157,14 +157,14 @@ namespace ThpsQScriptEd
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(143, 6);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(183, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeyDisplayString = "";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -246,14 +246,14 @@ namespace ThpsQScriptEd
             // grepScriptToolStripMenuItem
             // 
             this.grepScriptToolStripMenuItem.Name = "grepScriptToolStripMenuItem";
-            this.grepScriptToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.grepScriptToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.grepScriptToolStripMenuItem.Text = "Scripts";
             this.grepScriptToolStripMenuItem.Click += new System.EventHandler(this.grepScriptToolStripMenuItem_Click);
             // 
             // grepEnfgapToolStripMenuItem
             // 
             this.grepEnfgapToolStripMenuItem.Name = "grepEnfgapToolStripMenuItem";
-            this.grepEnfgapToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.grepEnfgapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.grepEnfgapToolStripMenuItem.Text = "Gaps";
             this.grepEnfgapToolStripMenuItem.Click += new System.EventHandler(this.grepEnfgapToolStripMenuItem_Click_1);
             // 
@@ -386,13 +386,6 @@ namespace ThpsQScriptEd
             this.openScriptsFolderToolStripMenuItem.Size = new System.Drawing.Size(119, 20);
             this.openScriptsFolderToolStripMenuItem.Text = "Open scripts folder";
             this.openScriptsFolderToolStripMenuItem.Click += new System.EventHandler(this.openScriptsFolderToolStripMenuItem_Click);
-            // 
-            // dumpScriptsToolStripMenuItem
-            // 
-            this.dumpScriptsToolStripMenuItem.Name = "dumpScriptsToolStripMenuItem";
-            this.dumpScriptsToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
-            this.dumpScriptsToolStripMenuItem.Text = "dump scripts";
-            this.dumpScriptsToolStripMenuItem.Click += new System.EventHandler(this.dumpScriptsToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -586,7 +579,6 @@ namespace ThpsQScriptEd
         private ToolStripMenuItem validateSymbolCacheToolStripMenuItem;
         private ToolStripMenuItem openScriptsFolderToolStripMenuItem;
         private ToolStripStatusLabel checksumHelper;
-        private ToolStripMenuItem dumpScriptsToolStripMenuItem;
         private ToolStripMenuItem legacyThpsToolStripMenuItem;
         private ToolStripMenuItem legacyThpsGithubToolStripMenuItem;
     }
