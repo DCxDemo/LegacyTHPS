@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ThpsFontEd")]
 [assembly: AssemblyDescription("Font editor for Tony Hawk's games")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("LegacyThps")]
 [assembly: AssemblyProduct("ThpsFontEd")]
 [assembly: AssemblyCopyright("dcxdemo")]
 [assembly: AssemblyTrademark("")]

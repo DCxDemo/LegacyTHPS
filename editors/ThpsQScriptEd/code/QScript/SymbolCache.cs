@@ -125,7 +125,7 @@ namespace LegacyThps.QScript
         public static uint GetSymbolHash(string symbol)
         {
             // first we check if it's a hex string
-            if (symbol[0] == '0' && (symbol[1] == 'x' || symbol[1] == 'X'))
+            if (symbol != "" && symbol[0] == '0' && (symbol[1] == 'x' || symbol[1] == 'X'))
             {
                 try
                 {

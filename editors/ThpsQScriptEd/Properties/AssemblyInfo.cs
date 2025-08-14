@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("QScripted")]
 [assembly: AssemblyDescription("Lightweight and powerful Neversoft's QScript editor")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("LegacyThps")]
 [assembly: AssemblyProduct("QScripted")]
 [assembly: AssemblyCopyright("dcxdemo, 2018, 2023")]
 [assembly: AssemblyTrademark("")]
