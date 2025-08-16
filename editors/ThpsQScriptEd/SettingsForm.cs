@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LegacyThps.QScript;
+using System;
 using System.IO;
 using System.Windows.Forms;
 using Settings = ThpsQScriptEd.Properties.Settings;
@@ -10,6 +11,8 @@ namespace ThpsQScriptEd
         public SettingsForm()
         {
             InitializeComponent();
+
+            Sync();
         }
 
         public void Sync()
@@ -32,8 +35,7 @@ namespace ThpsQScriptEd
             fixIncorrectChecksumsCb.Checked = Settings.Default.fixIncorrectChecksums;
 
 
-            minQBlevelCb.SelectedIndex = 0;
-            minQBlevelCb.Enabled = false;
+            minQBlevelCb.SelectedIndex = Settings.Default.minQBLevel - 3;
         }
 
         private void okButton_Click(object sender, EventArgs e)
@@ -137,6 +139,17 @@ namespace ThpsQScriptEd
         private void scriptsPathBox_TextChanged(object sender, EventArgs e)
         {
             Settings.Default.scriptsPath = scriptsPathBox.Text;
+        }
+
+        private void minQBlevelCb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (minQBlevelCb.Text == "") return;
+
+            QBFormat val = (QBFormat)(minQBlevelCb.SelectedIndex + 3);
+
+            Settings.Default.minQBLevel = (byte)val;
+
+            QBuilder.ForceQBLevel(val);
         }
     }
 }

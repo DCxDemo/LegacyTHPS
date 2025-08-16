@@ -13,8 +13,8 @@
 	<opcode code="00" name="terminator"	syntax=""		logic="halt" 		datagroup="empty" />
 	
 	<!-- newline symbols, 02 used in thps games, 01 used in thug+ -->
-	<opcode code="01" game="th3"	name="newline1" 	syntax="newline"	logic="linefeed"	datagroup="empty" />
-	<opcode code="02" game="th3"	name="newline2" 	syntax="newline" 	logic="linefeed"	datagroup="int" />
+	<opcode code="01" game="th3"	name="newline" 	syntax="newline"	logic="linefeed"	datagroup="empty" />
+	<opcode code="02" game="th3"	name="newline_debug" 	syntax="newline" 	logic="linefeed"	datagroup="int" />
 	
 	<!-- structure/array -->
 	<opcode code="03" name="struct"		  syntax="{" 		    logic="regionbegin" datagroup="empty"	nesting="open"  />

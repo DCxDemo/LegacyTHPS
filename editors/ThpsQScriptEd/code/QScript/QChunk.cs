@@ -66,6 +66,7 @@ namespace LegacyThps.QScript
 
         public static int closeRandomAt = -1;
 
+        public static int maxRandomValue = 0;
 
         public QChunk(BinaryReaderEx br, QToken c)
         {
@@ -99,14 +100,18 @@ namespace LegacyThps.QScript
                 case DataGroup.Random:
                     {
                         data_int = br.ReadInt32();
-                        /*
+
+
+
                         long pos = br.BaseStream.Position;
                         bool isthugrandom = true;
 
                         for (int i = 0; i < data_int; i++)
                         {
                             short s = br.ReadInt16();
-                            if (s <= 0 || s >= 9) isthugrandom = false;
+                            if (s <= 0 || s >= 64) isthugrandom = false;
+
+                            if (maxRandomValue < s) maxRandomValue = s;
 
                             //dafuq? 
                             //we basically assume that thug vals are never zero or above 10. 
@@ -114,12 +119,13 @@ namespace LegacyThps.QScript
                             //this might be totally wrong
                             //ask someone
 
-                            //could it be random chance? like 2 entries with 9 and 1 leads to 90% and 10%?
+                                //could it be random chance? like 2 entries with 9 and 1 leads to 90% and 10%?
                         }
 
                         if (!isthugrandom) br.Jump(pos);
                         else QBuilder.SetQBLevel(QBFormat.THUG1);
-                        */
+                        
+
 
                         for (int i = 0; i < data_int; i++)
                             ptrs.Add(br.ReadInt32());
@@ -334,7 +340,7 @@ namespace LegacyThps.QScript
                 case DataGroup.SymbolDef: return 1 + 4 + data_string.Length + 1; //null terminated
 
                 case DataGroup.Random:
-                    if (Settings.Default.minQBLevel < (int)QBFormat.THUG1)
+                    if (QBuilder.currentQBlevel < QBFormat.THUG1)
                         return 1 + 4 + ptrs.Count * 4;
                     else
                         return 1 + 4 + ptrs.Count * 2 + ptrs.Count * 4;
@@ -349,56 +355,57 @@ namespace LegacyThps.QScript
         }
 
         /// <summary>
-        /// Converts current chunk to an array of bytes.
+        /// Writes opcode data using a provided binary writer.
         /// </summary>
-        /// <returns></returns>
-        /// TODO: pass binarywriter here, will be faster as well if we wont create stream every time
-        public byte[] ToArray()
+        /// <param name="bw">Binary writer instance.</param>
+        public void Write(BinaryWriter bw)
         {
-            byte[] data = new byte[0];
+            bw.Write(code.Code);
 
-            using (var stream = new MemoryStream())
+            switch (code.Group)
             {
-                using (var bw = new BinaryWriter(stream))
-                {
-                    bw.Write(code.Code);
+                default:
+                case DataGroup.Unknown:
+                case DataGroup.Empty: break;
 
-                    switch (code.Group)
-                    {
-                        default:
-                        case DataGroup.Unknown:
-                        case DataGroup.Empty: break;
+                case DataGroup.FixedString: 
+                    // account for terminating 0
+                    bw.Write(data_string.Length + 1);
+                    bw.Write(System.Text.Encoding.Default.GetBytes(data_string));
+                    bw.Write((byte)0);
+                    break;
 
-                        case DataGroup.FixedString: bw.Write(data_string.Length + 1); bw.Write(System.Text.Encoding.Default.GetBytes(data_string)); bw.Write((byte)0); break;
-                        case DataGroup.SymbolDef: bw.Write(data_uint); bw.Write(System.Text.Encoding.Default.GetBytes(data_string)); bw.Write((byte)0); break;
+                case DataGroup.SymbolDef: bw.Write(data_uint); bw.Write(System.Text.Encoding.Default.GetBytes(data_string)); bw.Write((byte)0); break;
 
-                        case DataGroup.Short: bw.Write(data_short); break;
-                        case DataGroup.Uint: bw.Write(data_uint); break;
-                        case DataGroup.Float: bw.Write(data_float); break;
-                        case DataGroup.Int: bw.Write(data_int); break;
-                        case DataGroup.Vector2: bw.Write(data_vector.X); bw.Write(data_vector.Y); break;
-                        case DataGroup.Vector3: bw.Write(data_vector.X); bw.Write(data_vector.Y); bw.Write(data_vector.Z); break;
+                case DataGroup.Short: bw.Write(data_short); break;
+                case DataGroup.Uint: bw.Write(data_uint); break;
+                case DataGroup.Float: bw.Write(data_float); break;
+                case DataGroup.Int: bw.Write(data_int); break;
 
-                        case DataGroup.Random:
-                            bw.Write(ptrs.Count());
+                case DataGroup.Vector2: 
+                    bw.Write(data_vector.X);
+                    bw.Write(data_vector.Y);
+                    break;
 
-                            if (Settings.Default.minQBLevel < (int)QBFormat.THUG1)
-                                foreach (int pt in thugstuff) bw.Write(pt);
+                case DataGroup.Vector3: 
+                    bw.Write(data_vector.X);
+                    bw.Write(data_vector.Y);
+                    bw.Write(data_vector.Z);
+                    break;
 
-                            foreach (int pt in ptrs) bw.Write(pt);
-                            break;
-                    }
+                case DataGroup.Random:
+                    bw.Write(ptrs.Count());
 
-                    stream.Flush();
-                    data = stream.GetBuffer();
+                    // if we're in thug+ mode
+                    if (QBuilder.currentQBlevel >= QBFormat.THUG1)
+                        for (int i = 0; i < ptrs.Count; i++)
+                            bw.Write((short)1);
 
-                    //removing trailing zeroes here
-                    Array.Resize(ref data, (int)bw.BaseStream.Position);
+                    foreach (int pt in ptrs)
+                        bw.Write(pt);
 
-                }
+                    break;
             }
-
-            return data;
         }
     }
 }

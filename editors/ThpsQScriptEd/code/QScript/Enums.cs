@@ -65,8 +65,8 @@ namespace LegacyThps.QScript
     {
         none = 0xFF, // just used an empty instruction
         endfile = 0x00,
-        newline1 = 0x01,
-        newline2 = 0x02,
+        newline = 0x01,
+        newline_debug = 0x02,
         structure = 0x03,
         endstructure = 0x04,
         array = 0x05,

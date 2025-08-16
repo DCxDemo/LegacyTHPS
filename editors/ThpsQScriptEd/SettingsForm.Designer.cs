@@ -239,9 +239,9 @@
             this.useOldLineCb.Location = new System.Drawing.Point(14, 27);
             this.useOldLineCb.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.useOldLineCb.Name = "useOldLineCb";
-            this.useOldLineCb.Size = new System.Drawing.Size(164, 19);
+            this.useOldLineCb.Size = new System.Drawing.Size(159, 19);
             this.useOldLineCb.TabIndex = 2;
-            this.useOldLineCb.Text = "Use short new line symbol";
+            this.useOldLineCb.Text = "Strip debug line numbers";
             this.useOldLineCb.UseVisualStyleBackColor = true;
             this.useOldLineCb.CheckedChanged += new System.EventHandler(this.useOldLineCb_CheckedChanged);
             // 
@@ -327,6 +327,7 @@
             this.minQBlevelCb.Name = "minQBlevelCb";
             this.minQBlevelCb.Size = new System.Drawing.Size(94, 23);
             this.minQBlevelCb.TabIndex = 8;
+            this.minQBlevelCb.SelectedIndexChanged += new System.EventHandler(this.minQBlevelCb_SelectedIndexChanged);
             // 
             // label1
             // 

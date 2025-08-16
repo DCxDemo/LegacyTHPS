@@ -605,7 +605,6 @@ namespace ThpsQScriptEd
         {
             sf = new SettingsForm();
 
-            sf.Sync();
             sf.ShowDialog(this);
         }
 

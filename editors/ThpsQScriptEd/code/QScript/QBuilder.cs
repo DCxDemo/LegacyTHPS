@@ -582,7 +582,7 @@ namespace LegacyThps.QScript
         public static int lineNumber = 0;
 
 
-        public static QBcode SelectedNewLine => Settings.Default.useShortLine ? QBcode.newline1 : QBcode.newline2;
+        public static QBcode SelectedNewLine => Settings.Default.useShortLine ? QBcode.newline : QBcode.newline_debug;
 
         /// <summary>
         /// Converts source Q code string to a list of QChunks.
@@ -683,8 +683,8 @@ namespace LegacyThps.QScript
                         if (c.data_string.Length > 255) { die = true; }
                         break;
 
-                    case QBcode.newline1:
-                    case QBcode.newline2: line++; break;
+                    case QBcode.newline:
+                    case QBcode.newline_debug: line++; break;
 
                     case QBcode.roundopen: stack += "("; break;
                     case QBcode.roundclose: stack += ")"; if (!stack.Contains("(")) die = true; break;
@@ -858,11 +858,17 @@ namespace LegacyThps.QScript
 
             // add qchunk index like in original scripts. doesn't matter really (should be source code line number though)
 
+            int line = 0;
+
             for (int i = 0; i < chunks.Count - 1; i++)
             {
-                if (chunks[i].QType == QBcode.newline2)
+                if (chunks[i].QType == QBcode.newline_debug || chunks[i].QType == QBcode.newline)
+                {
                     if (chunks[i].data_int == 0)
-                        chunks[i].data_int = i;
+                        chunks[i].data_int = line;
+
+                    line++;
+                }
             }
 
 
@@ -1457,7 +1463,8 @@ namespace LegacyThps.QScript
                 using (var bw = new BinaryWriter(stream))
                 {
                     foreach (var chunk in chunks)
-                        bw.Write(chunk.ToArray());
+                        chunk.Write(bw);
+                        //bw.Write(chunk.ToArray());
 
                     stream.Flush();
                     data = stream.GetBuffer();
