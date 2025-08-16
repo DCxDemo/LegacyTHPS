@@ -458,8 +458,6 @@ namespace LegacyThps.QScript
                 MainForm.WarnUser("Error while fixing angles: " + ex.Message);
             }
 
-            bool inLoop = false;
-
             foreach (var c in chunks)
             {
                 result = c.ToString(debug);
@@ -484,16 +482,6 @@ namespace LegacyThps.QScript
                     default: break;
                 }
 
-
-                // mark we're in loop
-                if (c.code.Code == (byte)QBcode.repeat) inLoop = true;
-
-                // if we're not in loop, compensate the indentation
-                if (c.code.Code == (byte)QBcode.repeatend && !inLoop)
-                {
-                    inLoop = false;
-                    indent += indentStep;
-                }
 
 
                 if (lastwasnewline)

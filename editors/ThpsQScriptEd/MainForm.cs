@@ -297,9 +297,24 @@ namespace ThpsQScriptEd
             codeBox.Text = "";
             codeBuilder.Clear();
 
+
+            // maybe it's a folder?
+            if (Directory.Exists(files[0]))
+            {
+                var list = Directory.GetFiles(files[0], "*.qb");
+
+                var message = list.Count() > 0 ? "This folder contains QB scripts." : "This folder has no QB scripts.";
+
+                if (AskUser($"{message}\r\nWould you like to set this path as the default scripts path?") == DialogResult.Yes)
+                    Settings.Default.scriptsPath = files[0];
+
+                // either way, drop processing
+                return;
+            }
+
+
             foreach (string filename in files)
             {
-
                 if (!ctrlState)
                 {
 
