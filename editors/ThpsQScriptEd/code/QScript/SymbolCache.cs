@@ -50,10 +50,10 @@ namespace LegacyThps.QScript
                 var list = File.ReadAllLines(filename);
 
                 foreach (var line in list)
-                    SymbolCache.Add(line);
+                    if (!String.IsNullOrEmpty(line))
+                        SymbolCache.Add(line.Trim());
             }
         }
-
 
 
         public static void Clear()

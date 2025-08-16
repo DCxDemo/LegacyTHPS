@@ -458,6 +458,8 @@ namespace LegacyThps.QScript
                 MainForm.WarnUser("Error while fixing angles: " + ex.Message);
             }
 
+            bool inLoop = false;
+
             foreach (var c in chunks)
             {
                 result = c.ToString(debug);
@@ -480,6 +482,17 @@ namespace LegacyThps.QScript
                     case NestCommand.Close: indent -= indentStep; break;
                     case NestCommand.Break: indent -= indentStep; break;
                     default: break;
+                }
+
+
+                // mark we're in loop
+                if (c.code.Code == (byte)QBcode.repeat) inLoop = true;
+
+                // if we're not in loop, compensate the indentation
+                if (c.code.Code == (byte)QBcode.repeatend && !inLoop)
+                {
+                    inLoop = false;
+                    indent += indentStep;
                 }
 
 
@@ -535,8 +548,8 @@ namespace LegacyThps.QScript
         /// <summary>
         /// Splits the source code in lines and trims line edges
         /// </summary>
-        /// <param name="sourceText"></param>
-        /// <returns></returns>
+        /// <param name="sourceText">Arbitrary text string.</param>
+        /// <returns>Normalized text string.</returns>
         private static string NormalizeSource(string sourceText)
         {
             var sb = new StringBuilder();
@@ -722,8 +735,8 @@ namespace LegacyThps.QScript
         }
 
         /// <summary>
-        /// This is the second higher level parsing step.
-        /// At this step we convert [bracket, number, comma, number, bracket] to pair and such.
+        /// This is the second higher level token parsing step.
+        /// At this step we convert a sequence of tokens [bracket, number, comma, number, bracket] to a single pair token and such.
         /// </summary>
         private static void FinalChecks()
         {
@@ -918,7 +931,7 @@ namespace LegacyThps.QScript
             int offset = 0;
             int jumps = 0;
 
-            List<int> jumpstofix = new List<int>();
+            var jumpstofix = new List<int>();
 
 
             i++;
@@ -1442,7 +1455,11 @@ namespace LegacyThps.QScript
                 SaveChunks(Path.ChangeExtension(path, ".sym.qb"), symbols);
         }
 
-
+        /// <summary>
+        /// Dumps QChunk array to disk.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="chunks"></param>
         public static void SaveChunks(string path, List<QChunk> chunks)
         {
             byte[] data = new byte[0];
@@ -1469,9 +1486,7 @@ namespace LegacyThps.QScript
 
 
 
-
-
-
+        // stuff below is a messy node array parser
 
         static uint positioncrc = Checksum.Calc("Position");
         static uint anglescrc = Checksum.Calc("Angles");

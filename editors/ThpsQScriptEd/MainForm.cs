@@ -37,18 +37,30 @@ namespace ThpsQScriptEd
             //load from settings
             //Location = Settings.Default.formLocation;
 
-            Size = Settings.Default.formSize;
             scriptList.Font = Settings.Default.editorFont;
             splitContainer1.Panel1Collapsed = Settings.Default.hideScriptsList;
             hideScriptsListToolStripMenuItem.Checked = Settings.Default.hideScriptsList;
-            if (Settings.Default.wordWrap) WrapOn(); else WrapOff();
 
+            WindowState = (FormWindowState)Settings.Default.windowState;
+
+            // we don't need it to be minimized by default
+            // may happen if user kills the minimized app
+            if (WindowState == FormWindowState.Minimized )
+                WindowState = FormWindowState.Normal;
+
+            // only apply size if we're windowed
+            if (WindowState == FormWindowState.Normal)
+                Size = Settings.Default.formSize;
+
+            if (Settings.Default.wordWrap) WrapOn(); else WrapOff();
 
             codeBox.Text = "ThpsQScriptEd\r\n2018, DCxDemo*.";
             codeBox.Font = Settings.Default.editorFont;
 
             SetTitle("");
             //SetTabWidth(codeBox, 4);
+
+
 
             QBuilder.Init();
 
@@ -220,22 +232,10 @@ namespace ThpsQScriptEd
 
             UpdateRollbacks(qpath);
 
-
-            if (File.Exists(qpath))
+            if (File.Exists(qpath) && (Settings.Default.alwaysLoadSource || MainForm.AskUser(Strings.SourceFileDetected) == DialogResult.Yes))
             {
-                if (Settings.Default.alwaysLoadSource)
-                {
-                    LoadQSource(qpath, true);
-                    return;
-                }
-                else
-                {
-                    if (MainForm.AskUser(Strings.SourceFileDetected) == DialogResult.Yes)
-                    {
-                        LoadQSource(qpath, true);
-                        return;
-                    }
-                }
+                LoadQSource(qpath, true);
+                return;
             }
 
             QBuilder.Init();
@@ -581,6 +581,7 @@ namespace ThpsQScriptEd
         {
             Settings.Default.formLocation = this.Location;
             Settings.Default.formSize = this.Size;
+            Settings.Default.windowState = (int)this.WindowState;
             Settings.Default.Save();
         }
 
