@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
 using ThpsQScriptEd;
-using System.Numerics;
 using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript
@@ -101,11 +101,16 @@ namespace LegacyThps.QScript
                     {
                         data_int = br.ReadInt32();
 
-
-
                         long pos = br.BaseStream.Position;
-                        bool isthugrandom = true;
 
+                        //bool isthugrandom = true;
+
+                        // read extra thug+ table
+                        if (Settings.Default.minQBLevel >= (byte)QBFormat.THUG1)
+                            for (int i = 0; i < data_int; i++)
+                                thugstuff.Add(br.ReadInt16());
+
+                        /*
                         for (int i = 0; i < data_int; i++)
                         {
                             short s = br.ReadInt16();
@@ -119,14 +124,14 @@ namespace LegacyThps.QScript
                             //this might be totally wrong
                             //ask someone
 
-                                //could it be random chance? like 2 entries with 9 and 1 leads to 90% and 10%?
+                            //could it be random chance? like 2 entries with 9 and 1 leads to 90% and 10%?
                         }
 
                         if (!isthugrandom) br.Jump(pos);
                         else QBuilder.SetQBLevel(QBFormat.THUG1);
-                        
+                        */
 
-
+                        // read jump table
                         for (int i = 0; i < data_int; i++)
                             ptrs.Add(br.ReadInt32());
 
@@ -207,7 +212,7 @@ namespace LegacyThps.QScript
                     {
                         case DataGroup.Int: result = data_int.ToString(); break;
                         case DataGroup.Float: result = data_float.ToString("0.0####"); break;
-                        default: result = code.GetSyntax(); ThpsQScriptEd.MainForm.WarnUser("Unknown numeric entry!\r\n" + result); break;
+                        default: result = code.GetSyntax(); MainForm.WarnUser("Unknown numeric entry!\r\n" + result); break;
                     }
                     break;
 
@@ -368,7 +373,7 @@ namespace LegacyThps.QScript
                 case DataGroup.Unknown:
                 case DataGroup.Empty: break;
 
-                case DataGroup.FixedString: 
+                case DataGroup.FixedString:
                     // account for terminating 0
                     bw.Write(data_string.Length + 1);
                     bw.Write(System.Text.Encoding.Default.GetBytes(data_string));
@@ -382,12 +387,12 @@ namespace LegacyThps.QScript
                 case DataGroup.Float: bw.Write(data_float); break;
                 case DataGroup.Int: bw.Write(data_int); break;
 
-                case DataGroup.Vector2: 
+                case DataGroup.Vector2:
                     bw.Write(data_vector.X);
                     bw.Write(data_vector.Y);
                     break;
 
-                case DataGroup.Vector3: 
+                case DataGroup.Vector3:
                     bw.Write(data_vector.X);
                     bw.Write(data_vector.Y);
                     bw.Write(data_vector.Z);

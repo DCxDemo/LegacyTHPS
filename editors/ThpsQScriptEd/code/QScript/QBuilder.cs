@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Numerics;
+using System.Text;
 using System.Xml;
 using ThpsQScriptEd;
 using Settings = ThpsQScriptEd.Properties.Settings;
@@ -37,7 +37,7 @@ namespace LegacyThps.QScript
 
 
         public static List<QToken> tokens = new List<QToken>();
-        //static Dictionary<byte, string> syntax = new Dictionary<byte, string>();
+
 
 
         static private string path;
@@ -1441,12 +1441,14 @@ namespace LegacyThps.QScript
         }
 
 
-        public static void SaveChunks(string path)
+        public static void Save(string path)
         {
-            SaveChunks(path, chunks);
+            // dump the script
+            Save(path, chunks);
 
+            // dump a separate symbol file, if required.
             if (Settings.Default.useSymFile)
-                SaveChunks(Path.ChangeExtension(path, ".sym.qb"), symbols);
+                Save(Path.ChangeExtension(path, ".sym.qb"), symbols);
         }
 
         /// <summary>
@@ -1454,27 +1456,16 @@ namespace LegacyThps.QScript
         /// </summary>
         /// <param name="path"></param>
         /// <param name="chunks"></param>
-        public static void SaveChunks(string path, List<QChunk> chunks)
+        public static void Save(string filepath, List<QChunk> chunks)
         {
-            byte[] data = new byte[0];
-
-            using (var stream = new MemoryStream())
+            using (var bw = new BinaryWriter(File.Create(filepath)))
             {
-                using (var bw = new BinaryWriter(stream))
-                {
-                    foreach (var chunk in chunks)
-                        chunk.Write(bw);
-                        //bw.Write(chunk.ToArray());
+                foreach (var chunk in chunks)
+                    chunk.Write(bw);
 
-                    stream.Flush();
-                    data = stream.GetBuffer();
-
-                    //removing trailing zeroes here
-                    Array.Resize(ref data, (int)bw.BaseStream.Position);
-                }
+                bw.BaseStream.SetLength(bw.BaseStream.Position);
+                bw.Flush();
             }
-
-            File.WriteAllBytes(path, data);
         }
 
 

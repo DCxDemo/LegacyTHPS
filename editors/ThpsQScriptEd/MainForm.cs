@@ -1,6 +1,4 @@
 ﻿using FastColoredTextBoxNS;
-using LegacyThps.QScript;
-using LegacyThps.QScript.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,6 +8,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using Settings = ThpsQScriptEd.Properties.Settings;
+using LegacyThps.QScript;
+using LegacyThps.QScript.Helpers;
 
 namespace ThpsQScriptEd
 {
@@ -23,7 +23,7 @@ namespace ThpsQScriptEd
         public List<string> scrfuncs = new List<string>();
 
 
-        public MainForm()
+        public MainForm(string filename)
         {
             InitializeComponent();
 
@@ -45,7 +45,7 @@ namespace ThpsQScriptEd
 
             // we don't need it to be minimized by default
             // may happen if user kills the minimized app
-            if (WindowState == FormWindowState.Minimized )
+            if (WindowState == FormWindowState.Minimized)
                 WindowState = FormWindowState.Normal;
 
             // only apply size if we're windowed
@@ -91,6 +91,11 @@ namespace ThpsQScriptEd
             autocomplete = new AutocompleteMenu(codeBox);
             autocomplete.Font = codeBox.Font;
             BuildAutocompleteMenu();
+
+
+            // maybe we got a file to load
+            if (!String.IsNullOrEmpty(filename))
+                LoadFile(filename);
         }
 
         private void UpdateTheme(string name)
@@ -128,14 +133,18 @@ namespace ThpsQScriptEd
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                switch (Path.GetExtension(ofd.FileName).ToUpper())
-                {
-                    case ".Q": LoadQSource(ofd.FileName, true); break;
-                    case ".QB": LoadQBinary(ofd.FileName); break;
-                }
+                LoadFile(ofd.FileName);
             }
+        }
 
-            alertChanges = false;
+        private void LoadFile(string filename)
+        {
+            switch (Path.GetExtension(filename).ToUpper())
+            {
+                case ".Q": LoadQSource(filename, true); break;
+                case ".QB": LoadQBinary(filename); break;
+                default: WarnUser("Unsupported file!"); break;
+            }
         }
 
         //opens text q file
@@ -169,6 +178,8 @@ namespace ThpsQScriptEd
             }
 
             scriptList.EndUpdate();
+
+            alertChanges = false;
         }
 
         //load rollback file
@@ -276,6 +287,7 @@ namespace ThpsQScriptEd
 
             QBlevelbox.Text = "QB mode: " + QBuilder.currentQBlevel.ToString();
 
+            alertChanges = false;
         }
 
 
@@ -442,7 +454,7 @@ namespace ThpsQScriptEd
 
             // compile and save to binary
             QBuilder.Compile(codeBox.Text);
-            QBuilder.SaveChunks(qbpath);
+            QBuilder.Save(qbpath);
 
             // maybe backup?
             if (Settings.Default.enableBackups)
