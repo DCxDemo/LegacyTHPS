@@ -173,7 +173,7 @@ namespace ThpsQScriptEd
                 var list = codeBox.Lines[i].Trim().Split(' ');
 
                 if (list.Length >= 2)
-                    if (list[0] == "script")
+                    if (list[0].ToUpper() == "SCRIPT")
                         scriptList.Items.Add(list[1]);
             }
 
@@ -250,7 +250,7 @@ namespace ThpsQScriptEd
             }
 
             QBuilder.Init();
-            QBuilder.LoadCompiledScript(filename);
+            QBuilder.Parse(filename);
 
             if (ctrlState)
             {
@@ -453,7 +453,7 @@ namespace ThpsQScriptEd
             string qbpath = Path.ChangeExtension(path, ".qb");
 
             // compile and save to binary
-            QBuilder.Compile(codeBox.Text);
+            QBuilder.Tokenizer_ParseText(codeBox.Text);
             QBuilder.Save(qbpath);
 
             // maybe backup?

@@ -10,11 +10,11 @@ using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript
 {
-    public class QChunk
+    public class QToken
     {
-        public QToken code;
+        public QTokenType tokenType;
 
-        public QBcode QType { get { return (QBcode)code.Code; } }
+        public QBcode QType { get { return (QBcode)tokenType.Code; } }
 
         public int offset;
 
@@ -54,26 +54,26 @@ namespace LegacyThps.QScript
 
 
 
-        public QChunk(QToken c)
+        public QToken(QTokenType c)
         {
-            code = c;
+            tokenType = c;
         }
 
-        public QChunk(QBcode c)
+        public QToken(QBcode c)
         {
-            code = QBuilder.GetCode(c);
+            tokenType = QBuilder.Tokenizer_GetTokenType(c);
         }
 
         public static int closeRandomAt = -1;
 
         public static int maxRandomValue = 0;
 
-        public QChunk(BinaryReaderEx br, QToken c)
+        public QToken(BinaryReaderEx br, QTokenType c)
         {
-            code = c;
+            tokenType = c;
 
             offset = (int)br.BaseStream.Position - 1;
-            if (offset == QChunk.closeRandomAt) randomMarker = true;
+            if (offset == QToken.closeRandomAt) randomMarker = true;
             //QScripted.MainForm.Warn(c.Code.ToString("X8"));
 
             //if (QType == QBcode.random) QScripted.MainForm.Warn("random at: " +offset.ToString("X8"));
@@ -173,7 +173,7 @@ namespace LegacyThps.QScript
 
                         break;
                     }
-                default: ThpsQScriptEd.MainForm.WarnUser("unimplemented datagroup!: " + code.Group); break;
+                default: ThpsQScriptEd.MainForm.WarnUser("unimplemented datagroup!: " + tokenType.Group); break;
             }
         }
 
@@ -185,9 +185,9 @@ namespace LegacyThps.QScript
         /// <returns></returns>
         public string ToString(bool debug)
         {
-            string result = "[unparsed! " + code.Code.ToString("x2") + "]";
+            string result = "[unparsed! " + tokenType.Code.ToString("x2") + "]";
 
-            switch (code.Logic)
+            switch (tokenType.Logic)
             {
                 case OpLogic.Reserved:
                 case OpLogic.Global:
@@ -199,25 +199,25 @@ namespace LegacyThps.QScript
                 case OpLogic.Logic:
                 case OpLogic.Relation:
                 case OpLogic.Separator:
-                    result = code.GetSyntax();
+                    result = tokenType.GetSyntax();
                     break;
 
                 case OpLogic.Keyword:
-                    result = code.GetSyntax();
+                    result = tokenType.GetSyntax();
                     if (Settings.Default.useCaps) result = result.ToUpper();
                     break;
 
                 case OpLogic.Numeric:
-                    switch (code.Group)
+                    switch (tokenType.Group)
                     {
                         case DataGroup.Int: result = data_int.ToString(); break;
                         case DataGroup.Float: result = data_float.ToString("0.0####"); break;
-                        default: result = code.GetSyntax(); MainForm.WarnUser("Unknown numeric entry!\r\n" + result); break;
+                        default: result = tokenType.GetSyntax(); MainForm.WarnUser("Unknown numeric entry!\r\n" + result); break;
                     }
                     break;
 
                 case OpLogic.String:
-                    result = code.GetSyntax() + EscapedString() + code.GetSyntax();
+                    result = tokenType.GetSyntax() + EscapedString() + tokenType.GetSyntax();
                     break;
 
                 case OpLogic.Symbol:
@@ -228,7 +228,7 @@ namespace LegacyThps.QScript
 
                     bool isKeyword = false;
 
-                    foreach (var q in QBuilder.tokens)
+                    foreach (var q in QBuilder.tokenTypes)
                     {
                         if (result.ToLower() == q.Name.ToLower() &&
                             (q.Logic == OpLogic.Keyword || q.Logic == OpLogic.Logic)
@@ -268,7 +268,7 @@ namespace LegacyThps.QScript
                     break;
 
                 case OpLogic.Random:
-                    result = code.GetSyntax() + "( @";
+                    result = tokenType.GetSyntax() + "( @";
                     break;
 
                 case OpLogic.Vector:
@@ -276,17 +276,17 @@ namespace LegacyThps.QScript
                     break;
 
                 case OpLogic.Unknown:
-                    MainForm.WarnUser("unknown code found: " + code.GetSyntax());
-                    result = code.GetSyntax();
+                    MainForm.WarnUser("unknown code found: " + tokenType.GetSyntax());
+                    result = tokenType.GetSyntax();
                     break;
 
-                default: MainForm.WarnUser("unimplemented logic: " + code.Logic); break;
+                default: MainForm.WarnUser("unimplemented logic: " + tokenType.Logic); break;
 
             }
 
             return (debug)
-                ? "(" + code.Code.ToString("X2") + ") " +
-                ((code.Code == 0x02) ? data_int.ToString("X8") : "")
+                ? "(" + tokenType.Code.ToString("X2") + ") " +
+                ((tokenType.Code == 0x02) ? data_int.ToString("X8") : "")
                 + result + " -> "
                 : result;
         }
@@ -330,7 +330,7 @@ namespace LegacyThps.QScript
         /// <returns></returns>
         public int GetSize()
         {
-            switch (code.Group)
+            switch (tokenType.Group)
             {
                 case DataGroup.Short: return 1 + 2; //single word
 
@@ -351,7 +351,7 @@ namespace LegacyThps.QScript
                         return 1 + 4 + ptrs.Count * 2 + ptrs.Count * 4;
 
                 case DataGroup.Unknown:
-                    MessageBox.Show($"Unknown data group! {code.Group} at {QBuilder.lineNumber}");
+                    MessageBox.Show($"Unknown data group! {tokenType.Group} at {QBuilder.lineNumber}");
                     return 1;
 
                 case DataGroup.Empty:
@@ -360,14 +360,14 @@ namespace LegacyThps.QScript
         }
 
         /// <summary>
-        /// Writes opcode data using a provided binary writer.
+        /// Writes token data using a provided binary writer.
         /// </summary>
         /// <param name="bw">Binary writer instance.</param>
         public void Write(BinaryWriter bw)
         {
-            bw.Write(code.Code);
+            bw.Write(tokenType.Code);
 
-            switch (code.Group)
+            switch (tokenType.Group)
             {
                 default:
                 case DataGroup.Unknown:

@@ -12,6 +12,8 @@ using Settings = ThpsQScriptEd.Properties.Settings;
 
 namespace LegacyThps.QScript
 {
+    // TODO: convert QBuilder to QTokenCollection : List<QToken>
+    // tokenizer should return a collection.
     public class QBuilder
     {
         public static QBFormat currentQBlevel;
@@ -36,14 +38,15 @@ namespace LegacyThps.QScript
 
 
 
-        public static List<QToken> tokens = new List<QToken>();
+        public static List<QTokenType> tokenTypes = new List<QTokenType>();
 
 
 
         static private string path;
 
-        static List<QChunk> chunks = new List<QChunk>();
-        static List<QChunk> symbols = new List<QChunk>();
+
+        static List<QToken> tokens = new List<QToken>();
+        static List<QToken> symbols = new List<QToken>();
 
         static List<uint> nodes = new List<uint>();
 
@@ -52,14 +55,14 @@ namespace LegacyThps.QScript
         /// </summary>
         /// <param name="oldcode"></param>
         /// <returns></returns>
-        public static QToken GetCode(QBcode oldcode)
+        public static QTokenType Tokenizer_GetTokenType(QBcode oldcode)
         {
-            return FindCode((byte)oldcode);
+            return Tokenizer_GetTokenType((byte)oldcode);
         }
 
-        public static QToken FindCode(byte value)
+        public static QTokenType Tokenizer_GetTokenType(byte value)
         {
-            foreach (var q in tokens)
+            foreach (var q in tokenTypes)
             {
                 if (q.Code == value)
                     return q;
@@ -77,7 +80,7 @@ namespace LegacyThps.QScript
         {
             if (!initialized)
             {
-                LoadOpcodes();
+                Tokenizer_LoadTokenTypes();
                 SymbolCache.Create();
                 initialized = true;
             }
@@ -91,15 +94,15 @@ namespace LegacyThps.QScript
         {
             var scripts = new List<string>();
 
-            for (int i = 0; i < chunks.Count; i++)
+            for (int i = 0; i < tokens.Count; i++)
             {
-                if (chunks[i].QType == QBcode.script)
+                if (tokens[i].QType == QBcode.script)
                 {
                     i++;
-                    if (chunks[i].QType != QBcode.symbol)
+                    if (tokens[i].QType != QBcode.symbol)
                         MainForm.WarnUser("something's wrong! no script name.");
 
-                    scripts.Add(SymbolCache.GetSymbolName(chunks[i].data_uint));
+                    scripts.Add(SymbolCache.GetSymbolName(tokens[i].data_uint));
                 }
             }
 
@@ -115,21 +118,21 @@ namespace LegacyThps.QScript
             string sympath = Path.ChangeExtension(filename, ".sym.qb");
 
             if (File.Exists(sympath))
-                LoadCompiledScript(sympath);
+                Parse(sympath);
         }
 
         /// <summary>
-        /// Converts a compiled qb file to am internal list of QChunks.
+        /// Parses a binary Q file to an list of QTokens.
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public static List<QChunk> LoadCompiledScript(string filename)
+        public static List<QToken> Parse(string filename)
         {
-            ForceQBLevel(QBFormat.THPS3);
+            //ForceQBLevel(QBFormat.THPS3);
 
             LoadSymbols(filename);
 
-            chunks.Clear();
+            tokens.Clear();
 
             try
             {
@@ -137,25 +140,25 @@ namespace LegacyThps.QScript
                 {
                     //bool can = true;
 
-                    QToken qcode;
-                    QChunk chunk;
+                    QTokenType qcode;
+                    QToken chunk;
 
                     do
                     {
                         byte x = br.ReadByte();
                         //MainForm.Warn("" + x.ToString("X8"));
 
-                        qcode = FindCode(x);
+                        qcode = Tokenizer_GetTokenType(x);
 
                         if (qcode is null)
                             MainForm.WarnUser("findcode failed for " + x.ToString("X2"));
 
-                        chunk = new QChunk(br, qcode);
+                        chunk = new QToken(br, qcode);
 
                         // adjust qb format
                         SetProperQBFormat(chunk);
 
-                        chunks.Add(chunk);
+                        tokens.Add(chunk);
                         //if (chunk.code.Code == 0) can = false;
                     }
                     while (chunk.QType != QBcode.endfile);
@@ -165,7 +168,7 @@ namespace LegacyThps.QScript
                 }
 
                 SubstituteLinks(true);
-                CosmeticFixes();
+                ApplyCosmeticFixes(tokens);
             }
             catch (Exception ex)
             {
@@ -174,11 +177,11 @@ namespace LegacyThps.QScript
 
             SymbolCache.Validate();
 
-            return chunks;
+            return tokens;
         }
 
 
-        private static void SetProperQBFormat(QChunk q)
+        private static void SetProperQBFormat(QToken q)
         {
             switch (q.QType)
             {
@@ -213,7 +216,7 @@ namespace LegacyThps.QScript
         /// <summary>
         /// Applies additional cosmetic fixes to the decompiled chunks.
         /// </summary>
-        private static void CosmeticFixes()
+        private static void ApplyCosmeticFixes(List<QToken> tokens)
         {
             //following loops change actual byte code, hence settings are used
 
@@ -222,48 +225,48 @@ namespace LegacyThps.QScript
 
             // this one adds extra 1 line before script, if no 2 newline codes found 
 
-            for (int i = 2; i < chunks.Count; i++)
+            for (int i = 2; i < tokens.Count; i++)
             {
-                if (chunks[i].QType == QBcode.script)
+                if (tokens[i].QType == QBcode.script)
                 {
-                    if (chunks[i - 1].code.Logic != OpLogic.Linefeed ||
-                        chunks[i - 2].code.Logic != OpLogic.Linefeed)
-                        chunks.Insert(i, new QChunk(SelectedNewLine));
+                    if (tokens[i - 1].tokenType.Logic != OpLogic.Linefeed ||
+                        tokens[i - 2].tokenType.Logic != OpLogic.Linefeed)
+                        tokens.Insert(i, new QToken(SelectedNewLine));
 
                     i++;
                 }
             }
 
-            for (int i = 2; i < chunks.Count; i++)
+            for (int i = 2; i < tokens.Count; i++)
             {
-                if (chunks[i].QType == QBcode.script)
+                if (tokens[i].QType == QBcode.script)
                 {
-                    if (chunks[i - 1].code.Logic != OpLogic.Linefeed ||
-                        chunks[i - 2].code.Logic != OpLogic.Linefeed)
-                        chunks.Insert(i, new QChunk(SelectedNewLine));
+                    if (tokens[i - 1].tokenType.Logic != OpLogic.Linefeed ||
+                        tokens[i - 2].tokenType.Logic != OpLogic.Linefeed)
+                        tokens.Insert(i, new QToken(SelectedNewLine));
 
                     i++;
                 }
             }
 
-            for (int i = 0; i < chunks.Count - 2; i++)
+            for (int i = 0; i < tokens.Count - 2; i++)
             {
-                if (chunks[i].code.Code != (byte)QBcode.math_eq) continue;
-                if (chunks[i + 1].code.Logic != OpLogic.Linefeed) continue;
-                if (chunks[i + 2].code.Logic != OpLogic.RegionBegin) continue;
+                if (tokens[i].tokenType.Code != (byte)QBcode.math_eq) continue;
+                if (tokens[i + 1].tokenType.Logic != OpLogic.Linefeed) continue;
+                if (tokens[i + 2].tokenType.Logic != OpLogic.RegionBegin) continue;
 
-                chunks.RemoveAt(i + 1);
+                tokens.RemoveAt(i + 1);
 
                 i++;
             }
 
             // changes }{ to }\r\n{, applies to all brackets that follow region begin/end logic
 
-            for (int i = 2; i < chunks.Count; i++)
+            for (int i = 2; i < tokens.Count; i++)
             {
-                if (chunks[i].code.Logic == OpLogic.RegionBegin && chunks[i - 1].code.Logic == OpLogic.RegionEnd)
+                if (tokens[i].tokenType.Logic == OpLogic.RegionBegin && tokens[i - 1].tokenType.Logic == OpLogic.RegionEnd)
                 {
-                    chunks.Insert(i, new QChunk(SelectedNewLine));
+                    tokens.Insert(i, new QToken(SelectedNewLine));
                     i++;
                 }
             }
@@ -286,7 +289,7 @@ namespace LegacyThps.QScript
             uint linkscrc = Checksum.Calc("Links");
             uint triggerscriptscrc = Checksum.Calc("TriggerScripts");
 
-            foreach (var qc in chunks)
+            foreach (var qc in tokens)
             {
                 if (qc.QType != QBcode.symbol) continue;
 
@@ -320,7 +323,7 @@ namespace LegacyThps.QScript
             if (isNodeArray)
             {
 
-                foreach (QChunk qc in chunks)
+                foreach (QToken qc in tokens)
                 {
                     if (qc.data_uint == linkscrc)
                     {
@@ -340,7 +343,7 @@ namespace LegacyThps.QScript
                                 {
                                     //if (qc.data_int >= nodes.Count) QScripted.MainForm.Warn("wow " + qc.data_int);
                                     qc.data_uint = nodes[qc.data_int];
-                                    qc.code = QBuilder.GetCode(QBcode.symbol);
+                                    qc.tokenType = QBuilder.Tokenizer_GetTokenType(QBcode.symbol);
                                 }
                             }
                             else
@@ -349,7 +352,7 @@ namespace LegacyThps.QScript
                                 {
                                     //if (qc.data_int >= nodes.Count) QScripted.MainForm.Warn("wow " + qc.data_int);
                                     qc.data_int = nodes.FindIndex(a => a == qc.data_uint);
-                                    qc.code = QBuilder.GetCode(QBcode.val_int);
+                                    qc.tokenType = QBuilder.Tokenizer_GetTokenType(QBcode.val_int);
                                 }
                             }
                         }
@@ -363,9 +366,9 @@ namespace LegacyThps.QScript
 
 
         /// <summary>
-        /// Loads available opcodes from XML definition file.
+        /// Loads available token types from XML definition file.
         /// </summary>
-        public static void LoadOpcodes()
+        public static void Tokenizer_LoadTokenTypes()
         {
             string filename = $"{AppDomain.CurrentDomain.BaseDirectory}\\data\\qScript_def.xml";
 
@@ -380,13 +383,13 @@ namespace LegacyThps.QScript
 
             try
             {
-                tokens.Clear();
+                tokenTypes.Clear();
                 var nodes = doc.GetElementsByTagName("opcode");
 
                 foreach (XmlNode node in nodes)
                 {
-                    var qc = new QToken(node);
-                    tokens.Add(qc);
+                    var qc = new QTokenType(node);
+                    tokenTypes.Add(qc);
 
                     //syntax.Add(qc.Code, qc.Syntax);
                 }
@@ -398,9 +401,14 @@ namespace LegacyThps.QScript
         }
 
 
+        /// <summary>
+        /// Converts a list of tokens to source code.
+        /// </summary>
+        /// <param name="debug"></param>
+        /// <returns></returns>
         public static string GetSource(bool debug)
         {
-            QChunk.closeRandomAt = -1;
+            QToken.closeRandomAt = -1;
 
             var sb = new StringBuilder();
             string result = "";
@@ -435,20 +443,20 @@ namespace LegacyThps.QScript
             {
                 bool nextvectorisangle = false;
 
-                for (int ii = 0; ii < chunks.Count - 1; ii++)
+                for (int ii = 0; ii < tokens.Count - 1; ii++)
                 {
-                    if (chunks[ii].code.Logic == OpLogic.Symbol)
+                    if (tokens[ii].tokenType.Logic == OpLogic.Symbol)
                     {
-                        if (chunks[ii].data_uint == Checksum.Calc("angles"))
+                        if (tokens[ii].data_uint == Checksum.Calc("angles"))
                         {
                             nextvectorisangle = true;
                             continue;
                         }
                     }
 
-                    if (chunks[ii].code.Logic == OpLogic.Vector && nextvectorisangle)
+                    if (tokens[ii].tokenType.Logic == OpLogic.Vector && nextvectorisangle)
                     {
-                        chunks[ii].isAngle = true;
+                        tokens[ii].isAngle = true;
                         nextvectorisangle = false;
                     }
                 }
@@ -458,7 +466,7 @@ namespace LegacyThps.QScript
                 MainForm.WarnUser("Error while fixing angles: " + ex.Message);
             }
 
-            foreach (var c in chunks)
+            foreach (var c in tokens)
             {
                 result = c.ToString(debug);
 
@@ -470,12 +478,12 @@ namespace LegacyThps.QScript
                 }
 
                 // mark next entry as global
-                if (c.code.Code == (byte)QBcode.global) globalize = true;
+                if (c.tokenType.Code == (byte)QBcode.global) globalize = true;
 
                 // mayve convert randomMarker to compiletime only opcode here
                 if (c.randomMarker) result = " ) " + result;
 
-                switch (c.code.Nesting)
+                switch (c.tokenType.Nesting)
                 {
                     case NestCommand.Close: indent -= indentStep; break;
                     case NestCommand.Break: indent -= indentStep; break;
@@ -497,7 +505,7 @@ namespace LegacyThps.QScript
                 }
 
 
-                switch (c.code.Nesting)
+                switch (c.tokenType.Nesting)
                 {
                     case NestCommand.Open: indent += indentStep; break;
                     case NestCommand.Break: indent += indentStep; break;
@@ -505,24 +513,24 @@ namespace LegacyThps.QScript
                 }
 
 
-                if (c.code.Logic == OpLogic.Linefeed) lastwasnewline = true;
+                if (c.tokenType.Logic == OpLogic.Linefeed) lastwasnewline = true;
 
 
                 if (result != "")
                     if (wantSpace)
                     {
-                        if (spaceHaters.Contains(c.code.Logic)) { wantSpace = false; }
+                        if (spaceHaters.Contains(c.tokenType.Logic)) { wantSpace = false; }
                         else result = " " + result;
                     }
                     else
                     {
-                        if (!spaceHaters.Contains(c.code.Logic)) wantSpace = true;
+                        if (!spaceHaters.Contains(c.tokenType.Logic)) wantSpace = true;
                     }
 
                 //implicitly kill some spaces
-                if (c.code.Code == (byte)QBcode.randomjump) wantSpace = false;
-                if (c.code.Logic == OpLogic.Random) wantSpace = false;
-                if (c.code.Code == (byte)QBcode.randomrange) wantSpace = false;
+                if (c.tokenType.Code == (byte)QBcode.randomjump) wantSpace = false;
+                if (c.tokenType.Logic == OpLogic.Random) wantSpace = false;
+                if (c.tokenType.Code == (byte)QBcode.randomrange) wantSpace = false;
 
                 sb.Append(result);
 
@@ -533,30 +541,7 @@ namespace LegacyThps.QScript
         }
 
 
-        /// <summary>
-        /// Splits the source code in lines and trims line edges
-        /// </summary>
-        /// <param name="sourceText">Arbitrary text string.</param>
-        /// <returns>Normalized text string.</returns>
-        private static string NormalizeSource(string sourceText)
-        {
-            var sb = new StringBuilder();
 
-            // get all lines separated by environment set new line symbol
-            string[] lines = sourceText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-
-            // add a single new line symbol as we scan chars and convert it later to newline opcode
-            foreach (string line in lines)
-            {
-                sb.Append(line.Trim());
-                sb.Append("\n");
-            }
-
-            // remove last line? guess there was a reason?
-            sb.Length -= 1;
-
-            return sb.ToString();
-        }
 
 
         static string wordbuf = "";
@@ -564,10 +549,10 @@ namespace LegacyThps.QScript
         /// <summary>
         /// Parses whatever we currently got in the char buffer.
         /// </summary>
-        public static void ParseBuf()
+        public static void Tokenizer_ParseBuffer()
         {
             // parse the buffer
-            ParseWord(wordbuf);
+            Tokenizer_ParseWord(wordbuf);
 
             // clear the buffer
             wordbuf = "";
@@ -588,17 +573,21 @@ namespace LegacyThps.QScript
         /// Converts source Q code string to a list of QChunks.
         /// </summary>
         /// <param name="sourceText"></param>
-        public static void Compile(string sourceText)
+        public static List<QToken> Tokenizer_ParseText(string sourceText)
         {
+            // TODO: gotta refactor Tokenizer functions to a separate class that will operate on its own list of token
+            // cause now it would require to add list param to all individual functions.
+            // var tokens = new List<QToken>();
+
             lineNumber = 0;
 
             SymbolCache.Validate();
 
             //we need no chunks in our list
-            chunks.Clear();
+            tokens.Clear();
             localcache.Clear();
 
-            sourceText = NormalizeSource(sourceText);
+            sourceText = TextProcessor.Normalize(sourceText);
 
             //foreach symbol in our source text
             for (int i = 0; i < sourceText.Length; i++)
@@ -607,39 +596,39 @@ namespace LegacyThps.QScript
                 {
                     //detect stop chars. should somehow use xml values probably?
                     case ' ':
-                    case '\t': ParseBuf(); break;
+                    case '\t': Tokenizer_ParseBuffer(); break;
 
-                    case '\n': ParseBuf(); chunks.Add(new QChunk(SelectedNewLine)); lineNumber++; break;
-                    case '=': ParseBuf(); chunks.Add(new QChunk(QBcode.math_eq)); break;
-                    case ',': ParseBuf(); chunks.Add(new QChunk(QBcode.comma)); break;
-                    case '{': ParseBuf(); chunks.Add(new QChunk(QBcode.structure)); break;
-                    case '}': ParseBuf(); chunks.Add(new QChunk(QBcode.endstructure)); break;
-                    case '[': ParseBuf(); chunks.Add(new QChunk(QBcode.array)); break;
-                    case ']': ParseBuf(); chunks.Add(new QChunk(QBcode.endarray)); break;
-                    case '+': ParseBuf(); chunks.Add(new QChunk(QBcode.qbadd)); break;
+                    case '\n': Tokenizer_ParseBuffer(); tokens.Add(new QToken(SelectedNewLine)); lineNumber++; break;
+                    case '=': Tokenizer_ParseBuffer(); tokens.Add(new QToken(QBcode.math_eq)); break;
+                    case ',': Tokenizer_ParseBuffer(); tokens.Add(new QToken(QBcode.comma)); break;
+                    case '{': Tokenizer_ParseBuffer(); tokens.Add(new QToken(QBcode.structure)); break;
+                    case '}': Tokenizer_ParseBuffer(); tokens.Add(new QToken(QBcode.endstructure)); break;
+                    case '[': Tokenizer_ParseBuffer(); tokens.Add(new QToken(QBcode.array)); break;
+                    case ']': Tokenizer_ParseBuffer(); tokens.Add(new QToken(QBcode.endarray)); break;
+                    case '+': Tokenizer_ParseBuffer(); tokens.Add(new QToken(QBcode.qbadd)); break;
 
                     //minus can be a part of numeric. currently resolved at last point if word is "-". 
                     //case '-': ParseBuf(); chunks.Add(new QChunk(GetCode(QBcode.qbsub))); break;
 
-                    case '*': ParseBuf(); chunks.Add(new QChunk(QBcode.qbmul)); break;
-                    case '@': ParseBuf(); chunks.Add(new QChunk(QBcode.randomjump)); break;
-                    case '(': ParseBuf(); chunks.Add(new QChunk(QBcode.roundopen)); break;
-                    case ')': ParseBuf(); chunks.Add(new QChunk(QBcode.roundclose)); break;
-                    case '!': ParseBuf(); chunks.Add(new QChunk(QBcode.qbnot)); break;
+                    case '*': Tokenizer_ParseBuffer(); tokens.Add(new QToken(QBcode.qbmul)); break;
+                    case '@': Tokenizer_ParseBuffer(); tokens.Add(new QToken(QBcode.randomjump)); break;
+                    case '(': Tokenizer_ParseBuffer(); tokens.Add(new QToken(QBcode.roundopen)); break;
+                    case ')': Tokenizer_ParseBuffer(); tokens.Add(new QToken(QBcode.roundclose)); break;
+                    case '!': Tokenizer_ParseBuffer(); tokens.Add(new QToken(QBcode.qbnot)); break;
 
-                    case '#': ParseBuf(); symbolmarker = true; break;
+                    case '#': Tokenizer_ParseBuffer(); symbolmarker = true; break;
 
                     //commenting
-                    case ';': ParseBuf(); i = SkipLine(sourceText, i); chunks.Add(new QChunk(SelectedNewLine)); break;
+                    case ';': Tokenizer_ParseBuffer(); i = Tokenizer_SkipLine(sourceText, i); tokens.Add(new QToken(SelectedNewLine)); break;
                     case '/':
-                        ParseBuf();
-                        if (sourceText[i + 1] == '/') { i = SkipLine(sourceText, i); chunks.Add(new QChunk(SelectedNewLine)); }
-                        else chunks.Add(new QChunk(QBcode.qbdiv));
+                        Tokenizer_ParseBuffer();
+                        if (sourceText[i + 1] == '/') { i = Tokenizer_SkipLine(sourceText, i); tokens.Add(new QToken(SelectedNewLine)); }
+                        else tokens.Add(new QToken(QBcode.qbdiv));
                         break;
 
                     //region based stop symbols
-                    case '"': ParseBuf(); i = ReadString(sourceText, i + 1, '"'); PutString(); break;
-                    case '\'': ParseBuf(); i = ReadString(sourceText, i + 1, '\''); PutParamString(); break;
+                    case '"': Tokenizer_ParseBuffer(); i = Tokenizer_ReadString(sourceText, i + 1, '"'); Tokenizer_PutString(); break;
+                    case '\'': Tokenizer_ParseBuffer(); i = Tokenizer_ReadString(sourceText, i + 1, '\''); Tokenizer_PutParamString(); break;
 
                     //oh what a pity, there is nothing to parse yet!
                     default: wordbuf += sourceText[i]; break;
@@ -648,85 +637,20 @@ namespace LegacyThps.QScript
 
 
             //one last word to parse
-            ParseBuf();
+            Tokenizer_ParseBuffer();
 
-            FinalChecks();
+            Tokenizer_PostProcess();
             SubstituteLinks(false);
+
+            return tokens;
         }
 
-        /// <summary>
-        /// Makes sure one does not simply miss a bracket.
-        /// Cause it freezes the game and it's annoying to fix.
-        /// </summary>
-        private static void CheckBrackets()
-        {
-            // pretty sure it's super inefficient, but it works just fine
-            // it builds a string like "{{[]()}}" by adding every next bracket symbol to stack
-            // then it replaces {} () [] combinations with a null string to eliminate properly enclosed chunks
-
-            // if closing bracket was added and there is no opening bracket, it throws an error
-            // if string is not empty by the end, there is some error
-            // there is also an arbitrary nesting limit of 16, just for sanity
-
-            string stack = "";
-            int line = 0;
-            int lastemptystack = 0;
-            bool die = false;
-
-
-            foreach (var c in chunks) // (int i = 0; i < chunks.Count; i++)
-            {
-                switch (c.QType)
-                {
-                    case QBcode.val_string:
-                    case QBcode.val_string_param:
-                        if (c.data_string.Length > 255) { die = true; }
-                        break;
-
-                    case QBcode.newline:
-                    case QBcode.newline_debug: line++; break;
-
-                    case QBcode.roundopen: stack += "("; break;
-                    case QBcode.roundclose: stack += ")"; if (!stack.Contains("(")) die = true; break;
-
-                    case QBcode.array: stack += "["; break;
-                    case QBcode.endarray: stack += "]"; if (!stack.Contains("[")) die = true; break;
-
-                    case QBcode.structure: stack += "{"; break;
-                    case QBcode.endstructure: stack += "}"; if (!stack.Contains("{")) die = true; break;
-
-                    case QBcode.qbif: stack += "\\"; break;
-                    case QBcode.qbelse: stack += "-"; if (!stack.Contains("\\")) die = true; break;
-                    case QBcode.qbendif: stack += "/"; if (!stack.Contains("\\")) die = true; break;
-
-                    case QBcode.script: stack += "<"; break;
-                    case QBcode.endscript: stack += ">"; if (!stack.Contains("<")) die = true; break;
-
-                    case QBcode.repeat: stack += "l"; break;
-                    case QBcode.repeatend: stack += "e"; if (!stack.Contains("l")) die = true; break;
-                }
-
-                stack = stack.Replace("{}", "").Replace("()", "").Replace("[]", "").Replace("<>", "").Replace("\\-/", "").Replace("\\/", "").Replace("le", "");
-
-                if (stack == "")
-                    lastemptystack = line;
-
-                if (stack.Length > 32)
-                    break;
-
-                if (die)
-                    break;
-            }
-
-            if (stack != "")
-                MainForm.WarnUser($"Balance check failed!\r\nCheck below line {lastemptystack}.");
-        }
 
         /// <summary>
         /// This is the second higher level token parsing step.
         /// At this step we convert a sequence of tokens [bracket, number, comma, number, bracket] to a single pair token and such.
         /// </summary>
-        private static void FinalChecks()
+        private static void Tokenizer_PostProcess()
         {
             // these checks may overflow at borderlines, hence try catch
 
@@ -734,30 +658,30 @@ namespace LegacyThps.QScript
 
             try
             {
-                for (int i = 0; i < chunks.Count - 1; i++)
+                for (int i = 0; i < tokens.Count - 1; i++)
                 {
-                    if (chunks[i].QType == QBcode.roundopen)
-                        if (chunks[i + 1].code.Logic == OpLogic.Numeric)
-                            if (chunks[i + 2].QType == QBcode.comma)
-                                if (chunks[i + 3].code.Logic == OpLogic.Numeric)
-                                    if (chunks[i + 4].QType == QBcode.roundclose)
+                    if (tokens[i].QType == QBcode.roundopen)
+                        if (tokens[i + 1].tokenType.Logic == OpLogic.Numeric)
+                            if (tokens[i + 2].QType == QBcode.comma)
+                                if (tokens[i + 3].tokenType.Logic == OpLogic.Numeric)
+                                    if (tokens[i + 4].QType == QBcode.roundclose)
                                     {
                                         //vector2!
-                                        var q = new QChunk(QBcode.val_vector2);
-                                        q.data_vector = new Vector3(chunks[i + 1].GetNumericValue(), chunks[i + 3].GetNumericValue(), 0);
-                                        chunks.RemoveRange(i, 5);
-                                        chunks.Insert(i, q);
+                                        var q = new QToken(QBcode.val_vector2);
+                                        q.data_vector = new Vector3(tokens[i + 1].GetNumericValue(), tokens[i + 3].GetNumericValue(), 0);
+                                        tokens.RemoveRange(i, 5);
+                                        tokens.Insert(i, q);
                                     }
                                     else
-                                        if (chunks[i + 4].QType == QBcode.comma)
-                                        if (chunks[i + 5].code.Logic == OpLogic.Numeric)
-                                            if (chunks[i + 6].QType == QBcode.roundclose)
+                                        if (tokens[i + 4].QType == QBcode.comma)
+                                        if (tokens[i + 5].tokenType.Logic == OpLogic.Numeric)
+                                            if (tokens[i + 6].QType == QBcode.roundclose)
                                             {
                                                 //vector3!
-                                                var q = new QChunk(QBcode.val_vector3);
-                                                q.data_vector = new Vector3(chunks[i + 1].GetNumericValue(), chunks[i + 3].GetNumericValue(), chunks[i + 5].GetNumericValue());
-                                                chunks.RemoveRange(i, 7);
-                                                chunks.Insert(i, q);
+                                                var q = new QToken(QBcode.val_vector3);
+                                                q.data_vector = new Vector3(tokens[i + 1].GetNumericValue(), tokens[i + 3].GetNumericValue(), tokens[i + 5].GetNumericValue());
+                                                tokens.RemoveRange(i, 7);
+                                                tokens.Insert(i, q);
                                             }
                 }
             }
@@ -770,13 +694,13 @@ namespace LegacyThps.QScript
 
             try
             {
-                for (int i = 0; i < chunks.Count - 1; i++)
+                for (int i = 0; i < tokens.Count - 1; i++)
                 {
-                    if (chunks[i].QType == QBcode.randomjump)
+                    if (tokens[i].QType == QBcode.randomjump)
                     {
-                        while (chunks[i + 1].code.Logic == OpLogic.Linefeed)
+                        while (tokens[i + 1].tokenType.Logic == OpLogic.Linefeed)
                         {
-                            chunks.RemoveAt(i + 1);
+                            tokens.RemoveAt(i + 1);
                         }
                     }
                 }
@@ -794,9 +718,9 @@ namespace LegacyThps.QScript
 
             try
             {
-                for (int i = 0; i < chunks.Count - 1; i++)
+                for (int i = 0; i < tokens.Count - 1; i++)
                 {
-                    if (chunks[i].code.Group == DataGroup.Random)
+                    if (tokens[i].tokenType.Group == DataGroup.Random)
                     {
                         i = CalcRandom(i).pos;
                     }
@@ -809,7 +733,10 @@ namespace LegacyThps.QScript
 
             // make sure we have not ruined anything
 
-            CheckBrackets();
+            int result = QValidator.PerformBracketsCheck(tokens);
+
+            if (result != -1)
+                MainForm.WarnUser($"Balance check failed!\r\nCheck below line {result}.");
 
             // optional fix: remove repeating new line opcodes
 
@@ -817,14 +744,14 @@ namespace LegacyThps.QScript
             {
                 try
                 {
-                    for (int i = 0; i < chunks.Count - 1; i++)
+                    for (int i = 0; i < tokens.Count - 1; i++)
                     {
-                        if (chunks[i].code.Logic == OpLogic.Linefeed)
+                        if (tokens[i].tokenType.Logic == OpLogic.Linefeed)
                         {
-                            while (chunks[i + 1].code.Logic == OpLogic.Linefeed)
+                            while (tokens[i + 1].tokenType.Logic == OpLogic.Linefeed)
                             {
-                                chunks.RemoveAt(i + 1);
-                                if (i + 1 == chunks.Count) break;
+                                tokens.RemoveAt(i + 1);
+                                if (i + 1 == tokens.Count) break;
                             }
                         }
                     }
@@ -841,11 +768,11 @@ namespace LegacyThps.QScript
             {
                 try
                 {
-                    for (int i = 0; i < chunks.Count - 1; i++)
+                    for (int i = 0; i < tokens.Count - 1; i++)
                     {
-                        if (chunks[i].QType == QBcode.comma)
+                        if (tokens[i].QType == QBcode.comma)
                         {
-                            chunks.RemoveAt(i);
+                            tokens.RemoveAt(i);
                         }
                     }
                 }
@@ -860,12 +787,12 @@ namespace LegacyThps.QScript
 
             int line = 0;
 
-            for (int i = 0; i < chunks.Count - 1; i++)
+            for (int i = 0; i < tokens.Count - 1; i++)
             {
-                if (chunks[i].QType == QBcode.newline_debug || chunks[i].QType == QBcode.newline)
+                if (tokens[i].QType == QBcode.newline_debug || tokens[i].QType == QBcode.newline)
                 {
-                    if (chunks[i].data_int == 0)
-                        chunks[i].data_int = line;
+                    if (tokens[i].data_int == 0)
+                        tokens[i].data_int = line;
 
                     line++;
                 }
@@ -879,7 +806,7 @@ namespace LegacyThps.QScript
 
             foreach (string lc in localcache)
             {
-                var q = new QChunk(QBcode.symboldef);
+                var q = new QToken(QBcode.symboldef);
 
                 q.data_uint = SymbolCache.GetSymbolHash(lc);
                 q.data_string = lc;
@@ -889,16 +816,18 @@ namespace LegacyThps.QScript
 
             if (!Settings.Default.useSymFile)
             {
-                chunks.AddRange(symbols);
+                tokens.AddRange(symbols);
             }
             else
             {
-                symbols.Add(new QChunk(QBcode.endfile));
+                symbols.Add(new QToken(QBcode.endfile));
             }
 
             // the end
-            chunks.Add(new QChunk(QBcode.endfile));
+            tokens.Add(new QToken(QBcode.endfile));
         }
+
+
 
 
         // omg this is convoluted
@@ -920,7 +849,7 @@ namespace LegacyThps.QScript
 
             bool rand_opened = true;
 
-            chunks[rand].ptrs.Clear();
+            tokens[rand].ptrs.Clear();
 
             int offset = 0;
             int jumps = 0;
@@ -932,46 +861,46 @@ namespace LegacyThps.QScript
 
             do
             {
-                if (chunks[i].code.Group == DataGroup.Random)
+                if (tokens[i].tokenType.Group == DataGroup.Random)
                 {
                     RandomResult rr = CalcRandom(i);
                     offset += rr.size;
                     i = rr.pos;
                 }
-                else if (chunks[i].QType == QBcode.roundopen)
+                else if (tokens[i].QType == QBcode.roundopen)
                 {
-                    chunks.RemoveAt(i);
+                    tokens.RemoveAt(i);
                     continue;
                 }
-                else if (chunks[i].QType == QBcode.roundclose && rand_opened)
+                else if (tokens[i].QType == QBcode.roundclose && rand_opened)
                 {
-                    chunks.RemoveAt(i);
+                    tokens.RemoveAt(i);
                     rand_opened = false;
 
                     continue;
                 }
-                else if (chunks[i].QType == QBcode.randomjump && rand_opened)
+                else if (tokens[i].QType == QBcode.randomjump && rand_opened)
                 {
                     jumps++;
 
                     if (jumps == 1)
                     {
-                        chunks.RemoveAt(i);
-                        chunks[rand].ptrs.Add(offset);
+                        tokens.RemoveAt(i);
+                        tokens[rand].ptrs.Add(offset);
                         continue;
                     }
                     else
                     {
-                        offset += chunks[i].GetSize();
+                        offset += tokens[i].GetSize();
                         // QScripted.MainForm.Warn("" + offset);
-                        chunks[i].data_int = offset;
+                        tokens[i].data_int = offset;
                         jumpstofix.Add(i);
-                        chunks[rand].ptrs.Add(offset);
+                        tokens[rand].ptrs.Add(offset);
                     }
                 }
                 else
                 {
-                    offset += chunks[i].GetSize();
+                    offset += tokens[i].GetSize();
                 }
 
                 i++;
@@ -979,15 +908,15 @@ namespace LegacyThps.QScript
             while (rand_opened);
 
 
-            for (int k = 0; k < chunks[rand].ptrs.Count; k++)
+            for (int k = 0; k < tokens[rand].ptrs.Count; k++)
             {
-                chunks[rand].ptrs[k] += (chunks[rand].ptrs.Count - k - 1) * 4;
+                tokens[rand].ptrs[k] += (tokens[rand].ptrs.Count - k - 1) * 4;
             }
 
 
             foreach (int f in jumpstofix)
             {
-                chunks[f].data_int = offset - chunks[f].data_int;
+                tokens[f].data_int = offset - tokens[f].data_int;
             }
 
 
@@ -1003,7 +932,7 @@ namespace LegacyThps.QScript
         /// <param name="src"></param>
         /// <param name="pos"></param>
         /// <returns></returns>
-        public static int SkipLine(string src, int pos)
+        public static int Tokenizer_SkipLine(string src, int pos)
         {
             do
             {
@@ -1017,7 +946,7 @@ namespace LegacyThps.QScript
         }
 
 
-        public static int ReadString(string src, int i, char stopchar)
+        public static int Tokenizer_ReadString(string src, int i, char stopchar)
         {
             do
             {
@@ -1041,20 +970,20 @@ namespace LegacyThps.QScript
         }
 
 
-        public static void PutString()
+        public static void Tokenizer_PutString()
         {
             if (!symbolmarker)
             {
-                QChunk q = new QChunk(QBcode.val_string);
+                QToken q = new QToken(QBcode.val_string);
                 q.data_string = wordbuf;
                 wordbuf = "";
-                chunks.Add(q);
+                tokens.Add(q);
                 return;
             }
             else
             {
                 //QScripted.MainForm.Warn("got symbol!" + wordbuf);
-                QChunk q = new QChunk(QBcode.symbol);
+                QToken q = new QToken(QBcode.symbol);
                 q.data_string = wordbuf;
                 q.data_uint = Checksum.Calc(q.data_string);
 
@@ -1062,139 +991,73 @@ namespace LegacyThps.QScript
                 localcache.Add(wordbuf);
 
                 wordbuf = "";
-                chunks.Add(q);
+                tokens.Add(q);
                 symbolmarker = false;
                 return;
             }
         }
 
-
-        public static void PutParamString()
+        public static void Tokenizer_PutParamString()
         {
-            QChunk q = new QChunk(QBcode.val_string_param);
+            QToken q = new QToken(QBcode.val_string_param);
             q.data_string = wordbuf;
             wordbuf = "";
-            chunks.Add(q);
+            tokens.Add(q);
             return;
         }
 
-
-        // TODO: these 3 maybe funcs are pretty much same
-        // gotta merge and also make sure minus to be on the left and ° on the right. regexp?
-
-        public static bool maybeFloat(string w)
-        {
-            string allowed = "0123456789-.";
-
-            int cnt = 0;
-
-            foreach (char c in w)
-            {
-                if (!allowed.Contains(c.ToString()))
-                    return false;
-
-                if (c == '-') cnt++;
-            }
-
-            if (cnt > 1) return false;
-
-            return true;
-        }
-
-        public static bool maybeInt(string w)
-        {
-            //it's a very loose check. "123-456" is a number. much wow.
-
-            string allowed = "0123456789-";
-
-            int cnt = 0;
-
-            foreach (char c in w)
-            {
-                if (!allowed.Contains(c.ToString()))
-                    return false;
-
-                if (c == '-') cnt++;
-            }
-
-            if (cnt > 1) return false;
-
-            return true;
-        }
-
-        public static bool maybeAngle(string w)
-        {
-            string allowed = "0123456789.-°";
-
-            int cnt = 0;
-
-            foreach (char c in w)
-            {
-                if (!allowed.Contains(c.ToString()))
-                    return false;
-
-                if (c == '-') cnt++;
-            }
-
-            if (cnt > 1) return false;
-
-            //QScripted.MainForm.Warn(w + " is angle");
-            return true;
-        }
-
-
-        private static void ParseWord(string ss)
+        private static void Tokenizer_ParseWord(string ss)
         {
             //shouldn't really matter, but still
-            string s = ss.ToString().Trim().ToLower();
+            string s = ss.Trim().ToLower();
 
             //empty word, do nothing
             if (s == "") return;
 
             if (s == "-")
             {
-                QChunk p = new QChunk(QBcode.qbsub);
+                QToken p = new QToken(QBcode.qbsub);
                 //p.data_float = Single.Parse(s);
-                chunks.Add(p);
+                tokens.Add(p);
                 return;
             }
 
 
-            if (maybeInt(s))
+            if (TextProcessor.maybeInt(s))
             {
-                QChunk q = new QChunk(QBcode.val_int);
+                QToken q = new QToken(QBcode.val_int);
                 q.data_int = Int32.Parse(s);
-                chunks.Add(q);
+                tokens.Add(q);
                 //QScripted.MainForm.Warn(q.data_int + "");
                 return;
             }
 
 
 
-            if (maybeFloat(s))
+            if (TextProcessor.maybeFloat(s))
             {
                 if (s == ".")
                 {
-                    QChunk p = new QChunk(QBcode.property);
+                    QToken p = new QToken(QBcode.property);
                     //p.data_float = Single.Parse(s);
-                    chunks.Add(p);
+                    tokens.Add(p);
                     return;
                 }
 
-                QChunk q = new QChunk(GetCode(QBcode.val_float));
+                QToken q = new QToken(Tokenizer_GetTokenType(QBcode.val_float));
                 q.data_float = Single.Parse(s);
-                chunks.Add(q);
+                tokens.Add(q);
                 return;
             }
 
 
 
-            if (maybeAngle(s))
+            if (TextProcessor.maybeAngle(s))
             {
-                QChunk q = new QChunk(QBcode.val_int);
+                QToken q = new QToken(QBcode.val_int);
                 q.data_float = Single.Parse(s.Replace("°", ""));
-                q.data_float = (float)(q.data_float / QChunk.Radian);
-                chunks.Add(q);
+                q.data_float = (float)(q.data_float / QToken.Radian);
+                tokens.Add(q);
                 //QScripted.MainForm.Warn(q.data_int + "");
                 return;
             }
@@ -1203,149 +1066,149 @@ namespace LegacyThps.QScript
             // TODO: we definitely can make that a loop over a QBcode enum
             // just gotta make sure only a valid subset is used
 
-            if (s == QBuilder.GetCode(QBcode.script).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.script).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.script));
+                tokens.Add(new QToken(QBcode.script));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.endscript).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.endscript).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.endscript));
-                return;
-            }
-
-
-            if (s == QBuilder.GetCode(QBcode.globalall).GetSyntax())
-            {
-                chunks.Add(new QChunk(QBcode.globalall));
-                return;
-            }
-
-            if (s == QBuilder.GetCode(QBcode.qbif).GetSyntax())
-            {
-                chunks.Add(new QChunk(QBcode.qbif));
-                return;
-            }
-
-            if (s == QBuilder.GetCode(QBcode.qbelse).GetSyntax())
-            {
-                chunks.Add(new QChunk(QBcode.qbelse));
-                return;
-            }
-
-            if (s == QBuilder.GetCode(QBcode.qbelseif).GetSyntax())
-            {
-                chunks.Add(new QChunk(QBcode.qbelseif));
-                return;
-            }
-
-            if (s == QBuilder.GetCode(QBcode.qbendif).GetSyntax())
-            {
-                chunks.Add(new QChunk(QBcode.qbendif));
+                tokens.Add(new QToken(QBcode.endscript));
                 return;
             }
 
 
-            if (s == QBuilder.GetCode(QBcode.repeat).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.globalall).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.repeat));
+                tokens.Add(new QToken(QBcode.globalall));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.repeatbreak).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.qbif).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.repeatbreak));
+                tokens.Add(new QToken(QBcode.qbif));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.repeatend).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.qbelse).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.repeatend));
+                tokens.Add(new QToken(QBcode.qbelse));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.qbnot).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.qbelseif).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.qbnot));
+                tokens.Add(new QToken(QBcode.qbelseif));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.qbor).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.qbendif).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.qbor));
+                tokens.Add(new QToken(QBcode.qbendif));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.qband).GetSyntax())
+
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.repeat).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.qband));
+                tokens.Add(new QToken(QBcode.repeat));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.qbswitch).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.repeatbreak).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.qbswitch));
+                tokens.Add(new QToken(QBcode.repeatbreak));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.qbendswitch).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.repeatend).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.qbendswitch));
+                tokens.Add(new QToken(QBcode.repeatend));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.qbcase).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.qbnot).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.qbcase));
+                tokens.Add(new QToken(QBcode.qbnot));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.qbdefault).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.qbor).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.qbdefault));
+                tokens.Add(new QToken(QBcode.qbor));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.qbreturn).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.qband).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.qbreturn));
+                tokens.Add(new QToken(QBcode.qband));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.random).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.qbswitch).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.random));
+                tokens.Add(new QToken(QBcode.qbswitch));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.random2).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.qbendswitch).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.random2));
+                tokens.Add(new QToken(QBcode.qbendswitch));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.randomnorepeat).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.qbcase).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.randomnorepeat));
+                tokens.Add(new QToken(QBcode.qbcase));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.randompermute).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.qbdefault).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.randompermute));
+                tokens.Add(new QToken(QBcode.qbdefault));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.randomrange).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.qbreturn).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.randomrange));
+                tokens.Add(new QToken(QBcode.qbreturn));
                 return;
             }
 
-            if (s == QBuilder.GetCode(QBcode.randomrange2).GetSyntax())
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.random).GetSyntax())
             {
-                chunks.Add(new QChunk(QBcode.randomrange2));
+                tokens.Add(new QToken(QBcode.random));
+                return;
+            }
+
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.random2).GetSyntax())
+            {
+                tokens.Add(new QToken(QBcode.random2));
+                return;
+            }
+
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.randomnorepeat).GetSyntax())
+            {
+                tokens.Add(new QToken(QBcode.randomnorepeat));
+                return;
+            }
+
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.randompermute).GetSyntax())
+            {
+                tokens.Add(new QToken(QBcode.randompermute));
+                return;
+            }
+
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.randomrange).GetSyntax())
+            {
+                tokens.Add(new QToken(QBcode.randomrange));
+                return;
+            }
+
+            if (s == QBuilder.Tokenizer_GetTokenType(QBcode.randomrange2).GetSyntax())
+            {
+                tokens.Add(new QToken(QBcode.randomrange2));
                 return;
             }
 
@@ -1355,9 +1218,9 @@ namespace LegacyThps.QScript
                 //QScripted.MainForm.Warn(s + " got into .!");
                 string[] buf = s.Split('.');
 
-                PutSymbol(buf[0], true);
-                chunks.Add(new QChunk(QBcode.property));
-                PutSymbol(buf[1], true); // so im suppressing this error, cause apparently it's a feature
+                Tokenizer_PutSymbol(buf[0], true);
+                tokens.Add(new QToken(QBcode.property));
+                Tokenizer_PutSymbol(buf[1], true); // so im suppressing this error, cause apparently it's a feature
 
                 return;
             }
@@ -1366,18 +1229,18 @@ namespace LegacyThps.QScript
             {
                 string[] buf = s.Split(':');
 
-                PutSymbol(buf[0], true);
-                chunks.Add(new QChunk(QBcode.member));
-                PutSymbol(buf[1], false); // at least member is always a symbol, i hope?
+                Tokenizer_PutSymbol(buf[0], true);
+                tokens.Add(new QToken(QBcode.member));
+                Tokenizer_PutSymbol(buf[1], false); // at least member is always a symbol, i hope?
 
                 return;
             }
 
             //so nothing worked. let's put a symbol
-            PutSymbol(ss, false);
+            Tokenizer_PutSymbol(ss, false);
         }
 
-        private static void PutSymbol(string s, bool suppressError)
+        private static void Tokenizer_PutSymbol(string s, bool suppressError)
         {
             //maybeGlobal?
             if (s == "")
@@ -1388,25 +1251,25 @@ namespace LegacyThps.QScript
 
             if (s == "<")
             {
-                chunks.Add(new QChunk(QBcode.less));
+                tokens.Add(new QToken(QBcode.less));
                 return;
             }
 
             if (s == "<=")
             {
-                chunks.Add(new QChunk(QBcode.lesseq));
+                tokens.Add(new QToken(QBcode.lesseq));
                 return;
             }
 
             if (s == ">")
             {
-                chunks.Add(new QChunk(QBcode.greater));
+                tokens.Add(new QToken(QBcode.greater));
                 return;
             }
 
             if (s == ">=")
             {
-                chunks.Add(new QChunk(QBcode.greatereq));
+                tokens.Add(new QToken(QBcode.greatereq));
                 return;
             }
 
@@ -1414,8 +1277,8 @@ namespace LegacyThps.QScript
             if (s[0] == '<' && s[s.Length - 1] == '>')
             {
                 //yes!
-                QChunk q = new QChunk(QBcode.global);
-                chunks.Add(q);
+                QToken q = new QToken(QBcode.global);
+                tokens.Add(q);
             }
 
             s = s.Trim('<', '>');
@@ -1434,17 +1297,17 @@ namespace LegacyThps.QScript
 
             uint crc = SymbolCache.GetSymbolHash(s);
 
-            QChunk q2 = new QChunk(QBcode.symbol);
+            QToken q2 = new QToken(QBcode.symbol);
             q2.data_uint = crc;
             q2.data_string = s;
-            chunks.Add(q2);
+            tokens.Add(q2);
         }
 
 
         public static void Save(string path)
         {
             // dump the script
-            Save(path, chunks);
+            Save(path, tokens);
 
             // dump a separate symbol file, if required.
             if (Settings.Default.useSymFile)
@@ -1456,7 +1319,7 @@ namespace LegacyThps.QScript
         /// </summary>
         /// <param name="path"></param>
         /// <param name="chunks"></param>
-        public static void Save(string filepath, List<QChunk> chunks)
+        public static void Save(string filepath, List<QToken> chunks)
         {
             using (var bw = new BinaryWriter(File.Create(filepath)))
             {
@@ -1467,8 +1330,6 @@ namespace LegacyThps.QScript
                 bw.Flush();
             }
         }
-
-
 
 
 
@@ -1499,18 +1360,18 @@ namespace LegacyThps.QScript
             bool inNodeArray = false;
 
 
-            for (int i = 0; i < chunks.Count; i++)
+            for (int i = 0; i < tokens.Count; i++)
             {
-                if (chunks[i].QType == QBcode.symbol)
-                    if (chunks[i].data_uint == nodeArraycrc)
+                if (tokens[i].QType == QBcode.symbol)
+                    if (tokens[i].data_uint == nodeArraycrc)
                     {
                         //it's node array!
                         i = SkipUntil(i, QBcode.array);
 
-                        while (chunks[i].QType != QBcode.endarray)
+                        while (tokens[i].QType != QBcode.endarray)
                         {
                             i = SkipUntil(i, QBcode.structure) + 1;
-                            i = ReadNode(chunks, i);
+                            i = ReadNode(tokens, i);
                             i = SkipUntil(i, QBcode.structure) + 1;
                         }
                     }
@@ -1521,15 +1382,15 @@ namespace LegacyThps.QScript
 
         public static int SkipUntil(int from, QBcode qc)
         {
-            while (chunks[from].QType != qc)
+            while (tokens[from].QType != qc)
             {
-                if (chunks[from].QType == QBcode.endstructure) return from;
+                if (tokens[from].QType == QBcode.endstructure) return from;
                 from++;
             }
             return from;
         }
 
-        public static int ReadNode(List<QChunk> chunks, int from)
+        public static int ReadNode(List<QToken> chunks, int from)
         {
             var sb = new StringBuilder();
 
@@ -1677,7 +1538,7 @@ namespace LegacyThps.QScript
 
                         while (chunks[from].QType != QBcode.endarray)
                         {
-                            if (chunks[from].code.Logic == OpLogic.Numeric)
+                            if (chunks[from].tokenType.Logic == OpLogic.Numeric)
                             {
                                 n.Links.Add(chunks[from].data_int);
                             }
@@ -1707,6 +1568,5 @@ namespace LegacyThps.QScript
 
             return from++;
         }
-
     }
 }

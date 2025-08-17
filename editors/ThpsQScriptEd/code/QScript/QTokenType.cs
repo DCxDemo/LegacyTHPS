@@ -3,7 +3,10 @@ using System.Xml;
 
 namespace LegacyThps.QScript
 {
-    public class QToken
+    /// <summary>
+    /// It's a definition of a token type, obtained from an external XML file.
+    /// </summary>
+    public class QTokenType
     {
         public byte Code = 0xFF;
         public string Name = "default";
@@ -12,17 +15,17 @@ namespace LegacyThps.QScript
         public OpLogic Logic = OpLogic.Unknown;
         public NestCommand Nesting = NestCommand.None;
 
-        public QToken(string name, string syn, OpLogic log)
+        public QTokenType(string name, string syn, OpLogic log)
         {
             Name = name;
             Syntax = syn;
             Logic = log;
         }
 
-        public static QToken Space = new QToken("space", " ", OpLogic.Reserved);
+        public static QTokenType Space = new QTokenType("space", " ", OpLogic.Reserved);
 
         // TODO: convert to XML serialization rather than manual node parsing
-        public QToken(XmlNode n)
+        public QTokenType(XmlNode n)
         {
             if (n.Attributes["code"] != null)
                 Code = Convert.ToByte(n.Attributes["code"].Value, 16);
@@ -50,6 +53,7 @@ namespace LegacyThps.QScript
         {
             if (Syntax == "newline") return Environment.NewLine;
             if (Syntax == "auto") return Name;
+
             return Syntax;
         }
     }

@@ -29,7 +29,7 @@ namespace LegacyThps.QScript
                 QBuilder.Init();
 
                 // load cache file
-                QBuilder.LoadCompiledScript(symbolCachePath);
+                QBuilder.Parse(symbolCachePath);
             }
 
             LoadCFuncs();
@@ -63,7 +63,7 @@ namespace LegacyThps.QScript
 
         public static int Count() => Entries.Count;
 
-        public static void Add(QChunk i)
+        public static void Add(QToken i)
         {
             if (!SymbolCache.Entries.ContainsKey(i.data_uint))
             {
