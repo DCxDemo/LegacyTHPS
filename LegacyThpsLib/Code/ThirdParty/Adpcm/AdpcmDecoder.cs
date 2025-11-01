@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace System.Media
+﻿namespace System.Media
 {
     public class AdpcmDecoder
     {
@@ -57,7 +51,7 @@ namespace System.Media
             var step = stepSizeTable[index];
             var difference = step >> 3;
 
- 
+
             // compute difference and new predicted value
             if ((sample & 0x4) > 0) difference += step;
             if ((sample & 0x2) > 0) difference += (step >> 1);
@@ -100,7 +94,7 @@ namespace System.Media
             return output;
         }
 
-         // ADPCM decoder implementation based on https://github.com/jwzhangjie/Adpcm_Pcm/blob/master/adpcm.c
+        // ADPCM decoder implementation based on https://github.com/jwzhangjie/Adpcm_Pcm/blob/master/adpcm.c
 
     }
 }

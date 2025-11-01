@@ -7,8 +7,8 @@ https://gist.github.com/soeminnminn/e9c4c99867743a717f5b
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace DDS
 {

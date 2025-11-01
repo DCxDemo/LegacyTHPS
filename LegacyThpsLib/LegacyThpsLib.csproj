@@ -59,10 +59,22 @@
     <Compile Include="Code\Games\Thps2\bon\BonTexture.cs" />
     <Compile Include="Code\Games\Thps2\bon\BonVertex.cs" />
     <Compile Include="Code\Games\Thps2\bon\Thps2Bone.cs" />
+    <Compile Include="Code\Games\Thps2\trg\CommandList.cs" />
+    <Compile Include="Code\Games\Thps2\trg\Enums.cs" />
+    <Compile Include="Code\Games\Thps2\trg\generic_stub\GenericNode.cs" />
+    <Compile Include="Code\Games\Thps2\trg\generic_stub\INode.cs" />
+    <Compile Include="Code\Games\Thps2\trg\generic_stub\Nodes.cs" />
+    <Compile Include="Code\Games\Thps2\trg\generic_stub\RailDefNode.cs" />
+    <Compile Include="Code\Games\Thps2\trg\GetName.cs" />
+    <Compile Include="Code\Games\Thps2\trg\RailCluster.cs" />
+    <Compile Include="Code\Games\Thps2\trg\TNode.cs" />
+    <Compile Include="Code\Games\Thps2\trg\TriggerFile.cs" />
     <Compile Include="Code\Helpers\CmdParser.cs" />
     <Compile Include="Code\Helpers\Debug.cs" />
     <Compile Include="Code\Helpers\MtlWriter.cs" />
     <Compile Include="Code\Helpers\ObjWriter.cs" />
+    <Compile Include="Code\Meta.cs" />
+    <Compile Include="Code\Shared\Extensions.cs" />
     <Compile Include="Code\ThirdParty\Adpcm\AdpcmDecoder.cs" />
     <Compile Include="Code\ThirdParty\Adpcm\ImaAdpcm.cs" />
     <Compile Include="Code\ThirdParty\Adpcm\ImaAdpcmDecoder.cs" />
@@ -84,5 +96,6 @@
   <ItemGroup>
     <None Include="Code\ThirdParty\LzssStream\readme.md" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
