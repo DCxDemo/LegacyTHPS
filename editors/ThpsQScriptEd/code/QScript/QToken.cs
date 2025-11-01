@@ -6,7 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 using ThpsQScriptEd;
-using Settings = ThpsQScriptEd.Properties.Settings;
+using ThpsQScriptEd.Properties;
 
 namespace LegacyThps.QScript
 {

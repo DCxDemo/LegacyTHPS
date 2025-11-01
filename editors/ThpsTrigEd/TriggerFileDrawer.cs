@@ -113,7 +113,7 @@ namespace ThpsTrigEd
             }
 
             // points are apparently used for teleports and killers
-            if (node.IsPoint && c.Points) 
+            if ((node.IsPoint || node.IsScriptPoint) && c.Points) 
                 e.FillEllipse(Brushes.Green, new Rectangle(c.Zoomed(node.Position.X) - 10 + c.X, c.Zoomed(-node.Position.Z) - 10 + c.Y, 20, 20));
 
             if (node.IsPowerUp && c.PowerUps)

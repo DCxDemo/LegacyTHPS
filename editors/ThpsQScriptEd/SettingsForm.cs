@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
-using Settings = ThpsQScriptEd.Properties.Settings;
+using ThpsQScriptEd.Properties;
 
 namespace ThpsQScriptEd
 {

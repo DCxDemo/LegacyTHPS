@@ -343,21 +343,21 @@ namespace ThpsQScriptEd
             // sortOfManualToolStripMenuItem
             // 
             this.sortOfManualToolStripMenuItem.Name = "sortOfManualToolStripMenuItem";
-            this.sortOfManualToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
-            this.sortOfManualToolStripMenuItem.Text = "Documentation";
+            this.sortOfManualToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.sortOfManualToolStripMenuItem.Text = "Documentation (Github)";
             this.sortOfManualToolStripMenuItem.Click += new System.EventHandler(this.sortOfManualToolStripMenuItem_Click);
             // 
             // legacyThpsGithubToolStripMenuItem
             // 
             this.legacyThpsGithubToolStripMenuItem.Name = "legacyThpsGithubToolStripMenuItem";
-            this.legacyThpsGithubToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.legacyThpsGithubToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.legacyThpsGithubToolStripMenuItem.Text = "LegacyThps Github";
             this.legacyThpsGithubToolStripMenuItem.Click += new System.EventHandler(this.legacyThpsGithubToolStripMenuItem_Click);
             // 
             // legacyThpsToolStripMenuItem
             // 
             this.legacyThpsToolStripMenuItem.Name = "legacyThpsToolStripMenuItem";
-            this.legacyThpsToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.legacyThpsToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.legacyThpsToolStripMenuItem.Text = "LegacyThps Discord";
             this.legacyThpsToolStripMenuItem.Click += new System.EventHandler(this.legacyThpsToolStripMenuItem_Click);
             // 
@@ -366,7 +366,7 @@ namespace ThpsQScriptEd
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.ShortcutKeyDisplayString = "F1";
             this.aboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 

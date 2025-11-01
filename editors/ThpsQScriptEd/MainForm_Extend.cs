@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using ThpsQScriptEd.Properties;
+using Settings = ThpsQScriptEd.Properties.Settings;
+using Resources = ThpsQScriptEd.Properties.Resources;
+using System.Drawing.Imaging;
 
 namespace ThpsQScriptEd
 {
@@ -12,7 +14,7 @@ namespace ThpsQScriptEd
 
         public void SetTitle(string filename)
         {
-            this.Text = $"{Strings.AppName}";
+            this.Text = $"{Resources.AppName}";
             if (filename != "")
                 this.Text += $" - {filename}";
         }

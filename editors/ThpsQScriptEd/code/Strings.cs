@@ -2,7 +2,9 @@
 {
     class Strings
     {
-        public static string AppName = "QScripted";
+		// TODO: purge this file and move all strings to resources
+
+        // public static string AppName = "ThpsQScripted";
         public static string Warning = "Warning!";
         public static string UnsavedChanges = "Any unsaved changes will be lost, are you sure?";
         public static string MissingEditor = "No external editor selected.";

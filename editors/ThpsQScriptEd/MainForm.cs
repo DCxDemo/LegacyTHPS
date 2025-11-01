@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using Settings = ThpsQScriptEd.Properties.Settings;
+using ThpsQScriptEd.Properties;
 using LegacyThps.QScript;
 using LegacyThps.QScript.Helpers;
 
@@ -54,7 +54,7 @@ namespace ThpsQScriptEd
 
             if (Settings.Default.wordWrap) WrapOn(); else WrapOff();
 
-            codeBox.Text = "ThpsQScriptEd\r\n2018, DCxDemo*.";
+            codeBox.Text = $"{Resources.AppName}\r\n2018, DCxDemo*.";
             codeBox.Font = Settings.Default.editorFont;
 
             SetTitle("");
@@ -250,7 +250,7 @@ namespace ThpsQScriptEd
             }
 
             QBuilder.Init();
-            QBuilder.Parse(filename);
+            QBuilder.ParseFile(filename);
 
             if (ctrlState)
             {
@@ -785,7 +785,7 @@ namespace ThpsQScriptEd
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("QScripted.\r\nMany codes.\r\nSuch wow.\r\n\r\n2018, DCxDemo*.");
+            MessageBox.Show($"{Resources.AppName}.\r\nMany codes.\r\nSuch wow.\r\n\r\n2018, DCxDemo*.");
         }
         #endregion
     }

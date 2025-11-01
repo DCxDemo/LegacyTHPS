@@ -1,11 +1,9 @@
-﻿using LegacyThps.Thps2.Triggers;
+﻿using LegacyThps;
+using LegacyThps.Thps2.Triggers;
 using System;
 using System.Collections;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
-using System.Xml;
-using System.Xml.Serialization;
 using ThpsTrigEd.Properties;
 
 namespace ThpsTrigEd
@@ -26,7 +24,7 @@ namespace ThpsTrigEd
             propertyGrid1.Visible = false;
             toggleEditButton.Visible = false;
 
-            this.Text = Resources.AppName;
+            this.Text = $"{Resources.AppName} {Meta.Version}";
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -74,7 +72,7 @@ namespace ThpsTrigEd
             }
 
             if (visForm != null) visForm.Hide();
-            this.Text = $"{Resources.AppName} - {filename}";
+            this.Text = $"{Resources.AppName} {Meta.Version} - {filename}";
             trg = TriggerFile.FromFile(filename);
 
             RefreshData();
@@ -311,7 +309,7 @@ namespace ThpsTrigEd
 
         private void legacyTHPSDiscordToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://discord.gg/vTWucHS");
+            System.Diagnostics.Process.Start(Meta.linkDiscord);
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)

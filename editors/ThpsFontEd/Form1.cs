@@ -1,4 +1,5 @@
-﻿using LegacyThps.Fonts;
+﻿using LegacyThps;
+using LegacyThps.Fonts;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using ThpsFontEd.Properties;
 
 namespace ThpsFontEd
 {
@@ -17,6 +19,8 @@ namespace ThpsFontEd
         public Form1()
         {
             InitializeComponent();
+
+            this.Text = $"{Resources.AppName} {Meta.Version}";
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
