@@ -20,15 +20,13 @@ namespace LegacyThps.QScript
 
         public static void SetQBLevel(QBFormat format)
         {
-            if ((byte)format > (byte)currentQBlevel)
-            {
+            // if newer format is higher than existing - update
+            if (format > currentQBlevel)
                 currentQBlevel = format;
-            }
 
-            if ((byte)format < (byte)Settings.Default.minQBLevel)
-            {
+            // if current format is lower than the lower limit - raise
+            if ((byte)format < Settings.Default.minQBLevel)
                 currentQBlevel = (QBFormat)Settings.Default.minQBLevel;
-            }
         }
 
         public static void ForceQBLevel(QBFormat format)
@@ -118,7 +116,7 @@ namespace LegacyThps.QScript
             string sympath = Path.ChangeExtension(filename, ".sym.qb");
 
             if (File.Exists(sympath))
-                Parse(sympath);
+                ParseFile(sympath);
         }
 
         /// <summary>
@@ -126,7 +124,7 @@ namespace LegacyThps.QScript
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public static List<QToken> Parse(string filename)
+        public static List<QToken> ParseFile(string filename)
         {
             //ForceQBLevel(QBFormat.THPS3);
 
@@ -153,7 +151,7 @@ namespace LegacyThps.QScript
                         if (qcode is null)
                             MainForm.WarnUser("findcode failed for " + x.ToString("X2"));
 
-                        chunk = new QToken(br, qcode);
+                        chunk = QToken.FromReader(br, qcode);
 
                         // adjust qb format
                         SetProperQBFormat(chunk);

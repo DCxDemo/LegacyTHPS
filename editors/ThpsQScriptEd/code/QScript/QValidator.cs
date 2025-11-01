@@ -33,7 +33,7 @@ namespace LegacyThps.QScript
             // lines are counted using tokenized new lines, may differ from source lines...
             int line = 0;
 
-            // supposed to remember the line where stack was last seen empty
+            // supposed to remember the line where stack was last seen empty. may be way off for long functions.
             int lastemptystackline = -1;
 
             // breaks the loop early if detected any inconsistency
@@ -90,5 +90,7 @@ namespace LegacyThps.QScript
 
             return stack == "" ? -1 : lastemptystackline;
         }
+
+
     }
 }

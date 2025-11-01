@@ -29,7 +29,7 @@ namespace LegacyThps.QScript
                 QBuilder.Init();
 
                 // load cache file
-                QBuilder.Parse(symbolCachePath);
+                QBuilder.ParseFile(symbolCachePath);
             }
 
             LoadCFuncs();

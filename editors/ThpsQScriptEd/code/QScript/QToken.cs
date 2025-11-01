@@ -68,7 +68,14 @@ namespace LegacyThps.QScript
 
         public static int maxRandomValue = 0;
 
-        public QToken(BinaryReaderEx br, QTokenType c)
+        public static QToken FromReader(BinaryReaderEx br, QTokenType tokenType) => new QToken(br, tokenType);
+
+        public QToken(BinaryReaderEx br, QTokenType tokenType)
+        {
+            Read(br, tokenType);
+        }
+
+        public void Read(BinaryReaderEx br, QTokenType c)
         {
             tokenType = c;
 
@@ -83,20 +90,27 @@ namespace LegacyThps.QScript
                 case DataGroup.Unknown:
                 case DataGroup.Empty: break;
 
+                // ints
                 case DataGroup.Short: data_short = br.ReadInt16(); break;
                 case DataGroup.Int: data_int = br.ReadInt32(); break;
                 case DataGroup.Uint:
                     data_uint = br.ReadUInt32();
                     break;
+
+                // floats and arrays
                 case DataGroup.Float: data_float = br.ReadSingle(); break;
                 case DataGroup.Vector2: data_vector = br.ReadVector2(); isVector2 = true; break;
                 case DataGroup.Vector3: data_vector = br.ReadVector3(); isVector2 = false; break;
+
+                // strings
                 case DataGroup.FixedString:
                     {
                         data_int = br.ReadInt32();
                         data_string = br.ReadFixedString(data_int);
                         break;
                     }
+
+                // randoms
                 case DataGroup.Random:
                     {
                         data_int = br.ReadInt32();
@@ -156,6 +170,7 @@ namespace LegacyThps.QScript
                         break;
                     }
 
+                // like string, but adds a symbol
                 case DataGroup.SymbolDef:
                     {
                         data_uint = br.ReadUInt32();
@@ -173,7 +188,8 @@ namespace LegacyThps.QScript
 
                         break;
                     }
-                default: ThpsQScriptEd.MainForm.WarnUser("unimplemented datagroup!: " + tokenType.Group); break;
+
+                default: MainForm.WarnUser("unimplemented datagroup!: " + tokenType.Group); break;
             }
         }
 
@@ -261,10 +277,9 @@ namespace LegacyThps.QScript
                     }
                     break;
 
+                // this is a syboldef entry, we don't need it to be in the resulting code
                 case OpLogic.SymbolDef:
-                    // this is a syboldef entry, we don't need it to be in the resulting code
                     result = "";
-                    // result = "#\"" + data_string + "\"";
                     break;
 
                 case OpLogic.Random:
@@ -281,7 +296,6 @@ namespace LegacyThps.QScript
                     break;
 
                 default: MainForm.WarnUser("unimplemented logic: " + tokenType.Logic); break;
-
             }
 
             return (debug)

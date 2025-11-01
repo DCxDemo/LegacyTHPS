@@ -113,7 +113,7 @@ namespace LegacyThps.QScript
         randomjump = 0x2E,
         random = 0x2F,
         randomrange = 0x30,
-        //0x31 - "at" @
+        random_at = 0x31, // jump operator, only used at compilation time
         qbor = 0x32,
         qband = 0x33,
         //0x34 - xor
