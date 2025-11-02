@@ -1,6 +1,6 @@
-﻿using System;
+﻿using LegacyThps.Thps2;
+using System;
 using System.Windows.Forms;
-using LegacyThps.Thps2;
 
 namespace thps_ddx_gui
 {
@@ -11,7 +11,7 @@ namespace thps_ddx_gui
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void openDdxButton_Click(object sender, EventArgs e)
         {
             var ofd = new OpenFileDialog();
             ofd.Filter = "THPS2x DDX texture library (*.ddx)|*.ddx";
@@ -20,7 +20,7 @@ namespace thps_ddx_gui
                 ddxPath.Text = ofd.FileName;
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void selectFolderButton_Click(object sender, EventArgs e)
         {
             var fbd = new FolderBrowserDialog();
 
@@ -28,16 +28,20 @@ namespace thps_ddx_gui
                 texturesPath.Text = fbd.SelectedPath;
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void buildButton_Click(object sender, EventArgs e)
         {
-            if (texturesPath.Text != "" && ddxPath.Text != "")
-                XboxDdx.Build(texturesPath.Text, ddxPath.Text);
+            if (String.IsNullOrEmpty(texturesPath.Text) || String.IsNullOrEmpty(ddxPath.Text))
+                MessageBox.Show("Please select both input and output values.");
+
+            XboxDdx.Build(texturesPath.Text, ddxPath.Text);
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void extractButton_Click(object sender, EventArgs e)
         {
-            if (texturesPath.Text != "" && ddxPath.Text != "")
-                XboxDdx.Extract(ddxPath.Text, texturesPath.Text);
+            if (String.IsNullOrEmpty(texturesPath.Text) || String.IsNullOrEmpty(ddxPath.Text))
+                MessageBox.Show("Please select both input and output values.");
+
+            XboxDdx.Extract(ddxPath.Text, texturesPath.Text);
         }
     }
 }

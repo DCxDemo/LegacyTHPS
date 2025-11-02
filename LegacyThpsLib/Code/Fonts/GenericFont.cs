@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -37,7 +34,7 @@ namespace LegacyThps.LegacyThps.Fonts
             var graphics = Graphics.FromImage(result);
 
             foreach (var glyph in Glyphs)
-            {   
+            {
                 //validate range
                 if (!region.Contains(glyph.Region))
                     throw new ArgumentOutOfRangeException($"Glyph outside the atlas!!!\r\n{glyph}");

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using ImaAdpcm_Tool;
+using System;
 using System.IO;
-using ImaAdpcm_Tool;
 
 namespace LegacyThps.Containers
 {
@@ -147,7 +147,7 @@ namespace LegacyThps.Containers
             bw.Write("data".ToCharArray());
 
             if (Bits == 8)
-            { 
+            {
                 bw.Write(Data.Length);
                 bw.Write(Data);
             }

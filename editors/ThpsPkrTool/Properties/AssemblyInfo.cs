@@ -1,0 +1,14 @@
+﻿using System.Reflection;
+using System.Runtime.InteropServices;
+[assembly: AssemblyTitle("ThpsPkrTool")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("LegacyThps")]
+[assembly: AssemblyProduct("ThpsPkrTool")]
+[assembly: AssemblyCopyright("dcxdemo")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+[assembly: ComVisible(false)]
+[assembly: Guid("ef8fc77e-e3fe-4164-b9b6-94a9ee2056ec")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

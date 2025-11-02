@@ -1,13 +1,11 @@
-﻿using System;
+﻿using ColourQuantization;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
-using ColourQuantization;
 
 namespace LegacyThps.Fonts
 {
@@ -137,9 +135,9 @@ namespace LegacyThps.Fonts
             {
                 ReadFNT1or2(br);
             }
-         //   catch
+            //   catch
             {
-           //     ReadFNT0(br, false);
+                //     ReadFNT0(br, false);
             }
 
             /*
@@ -588,8 +586,8 @@ namespace LegacyThps.Fonts
                     //Process.Start("kek.png");
 
                     bb = new FastBMP(Atlas);
-                    
-                    
+
+
                 }
 
                 bmpraw = bb.GetRaw();

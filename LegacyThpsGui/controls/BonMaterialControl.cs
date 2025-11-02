@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LegacyThps.Thps2;
+using System;
 using System.Windows.Forms;
-using LegacyThps.Thps2;
 
 namespace bon_tool
 {
@@ -43,8 +36,8 @@ namespace bon_tool
             var ofd = new OpenFileDialog();
             ofd.Filter = "DirectX DDS surface (*.dds)|*.dds";
 
-            if (ofd.ShowDialog() == DialogResult.OK) 
-            { 
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
                 _material.Replace(ofd.FileName);
                 pictureBox1.Image = _material.Texture.GetBitmap();
             }

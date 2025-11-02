@@ -42,8 +42,6 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="kaitai\KaitaiStream.cs" />
-    <Compile Include="kaitai\KaitaiStruct.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Thps2Bon.cs" />

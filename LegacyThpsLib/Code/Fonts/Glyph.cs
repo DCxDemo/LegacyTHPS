@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Windows.Forms;
 
 namespace LegacyThps.Fonts
 {
@@ -81,7 +80,7 @@ namespace LegacyThps.Fonts
                 bmp = new Bitmap(Region.Width, Region.Height);
                 bmp = atlas.Clone(region, atlas.PixelFormat);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
             }
         }

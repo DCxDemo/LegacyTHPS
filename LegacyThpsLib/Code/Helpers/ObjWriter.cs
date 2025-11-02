@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Numerics;
-using System.Drawing;
-using System.Globalization;
+using System.Text;
 using System.Threading;
 
 namespace LegacyThps.Helpers
@@ -50,7 +46,7 @@ namespace LegacyThps.Helpers
             var pos = position * scale;
 
             WriteLine($"v {pos.X.ToString("0.####")} {pos.Y.ToString("0.####")} {pos.Z.ToString("0.####")} " +
-                $"{(color.R / 255.0).ToString("0.###")} {(color.G / 255.0).ToString("0.###")} { (color.B / 255.0).ToString("0.###")}");
+                $"{(color.R / 255.0).ToString("0.###")} {(color.G / 255.0).ToString("0.###")} {(color.B / 255.0).ToString("0.###")}");
 
             TotalVertices++;
         }

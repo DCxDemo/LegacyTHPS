@@ -43,6 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\Containers\Pkr\PKR.cs" />
+    <Compile Include="Code\Containers\Pkr\PKRFile.cs" />
+    <Compile Include="Code\Containers\Pkr\PKRFolder.cs" />
     <Compile Include="Code\Containers\TreyarchKat\Kat.cs" />
     <Compile Include="Code\Containers\TreyarchKat\KatEntry.cs" />
     <Compile Include="Code\Containers\TreyarchKat\Sounds.cs" />
@@ -74,6 +77,7 @@
     <Compile Include="Code\Helpers\MtlWriter.cs" />
     <Compile Include="Code\Helpers\ObjWriter.cs" />
     <Compile Include="Code\Meta.cs" />
+    <Compile Include="Code\Shared\Checksum.cs" />
     <Compile Include="Code\Shared\Extensions.cs" />
     <Compile Include="Code\ThirdParty\Adpcm\AdpcmDecoder.cs" />
     <Compile Include="Code\ThirdParty\Adpcm\ImaAdpcm.cs" />
