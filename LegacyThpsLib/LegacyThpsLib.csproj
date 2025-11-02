@@ -43,9 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\Containers\Pkr\PKR.cs" />
-    <Compile Include="Code\Containers\Pkr\PKRFile.cs" />
-    <Compile Include="Code\Containers\Pkr\PKRFolder.cs" />
+    <Compile Include="Code\Containers\PcPkr\PKR.cs" />
+    <Compile Include="Code\Containers\PcPkr\PKRFile.cs" />
+    <Compile Include="Code\Containers\PcPkr\PKRFolder.cs" />
     <Compile Include="Code\Containers\TreyarchKat\Kat.cs" />
     <Compile Include="Code\Containers\TreyarchKat\KatEntry.cs" />
     <Compile Include="Code\Containers\TreyarchKat\Sounds.cs" />
@@ -93,6 +93,7 @@
     <Compile Include="Code\ThirdParty\DDS\DDSImage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Code\Containers\PcPkr\PKRFormat.txt" />
     <Content Include="Code\Games\Thps2\bon\bon_hier.txt" />
     <Content Include="Code\ThirdParty\LzssStream\license.txt" />
     <Content Include="Code\ThirdParty\Quantization\license.txt" />

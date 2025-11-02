@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LegacyThps.Helpers
 {
@@ -16,10 +12,11 @@ namespace LegacyThps.Helpers
 
         public static void WriteLine(string text = "")
         {
-            if (Verbose) Console.WriteLine(text);
+            if (Verbose)
+                Console.WriteLine(text);
         }
 
-        public static void Print(string[] lines)
+        public static void Print(params string[] lines)
         {
             foreach (var line in lines)
                 Console.WriteLine(line);

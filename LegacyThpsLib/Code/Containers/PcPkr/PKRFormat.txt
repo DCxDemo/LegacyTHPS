@@ -1,0 +1,48 @@
+dword - "PKR2"
+dword - 1?
+dword - number of folders
+dword - number of files
+
+folders *
+{
+  string[32] name
+  dword - offset
+  dword - files
+}
+
+files *
+{
+  string[32] name
+  dword - compression type (0xFEFFFFFF = raw)
+  dword - offset
+  dword - size compressed
+  dword - size full
+}
+
+==========================
+
+dword - "PKR3"
+dword - ptr to folders
+
+byte[] - files
+
+dword - 4?
+dword - number of folders
+dword - number of files
+
+folders *
+{
+  string[32] name
+  dword - offset
+  dword - files
+}
+
+files *
+{
+  string[32] name
+  dword - unknown, checksum?
+  dword - compression type (0xFEFFFFFF = raw)
+  dword - offset
+  dword - size compressed
+  dword - size full
+}
