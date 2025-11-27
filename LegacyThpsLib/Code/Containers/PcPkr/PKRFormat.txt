@@ -19,12 +19,14 @@ files *
   dword - size full
 }
 
+byte[] - data
+
 ==========================
 
 dword - "PKR3"
 dword - ptr to folders
 
-byte[] - files
+byte[] - data
 
 dword - 4?
 dword - number of folders

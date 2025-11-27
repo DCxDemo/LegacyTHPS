@@ -14,46 +14,36 @@ doc: |
   - Spiderman 1, 2
   - Apocalypse
   - Mat Hoffman's Pro BMX
-    
+  
   PSX files are containers for both models and textures. However some versions
   may split those in several files.
-    
+  
   Example:
   SKWARE.TRG - "trigger" file, used for level nodes, links to other files.
   SKWARE.PSX - level mesh
   SKWARE_L.PSX - textures
   SKWARE_O.PSX - additional items used in career mode + skybox
-    
-  Files tested and confirmed to work properly are:
-  THPS2 PS1 (THPS): SKWARE.PSX
-  THPS3 PS1 (THPS): AABURB.PSX
   
-  Current spec combines the research of dcxdemo and iamgreaser:
+  This spec combines the research of dcxdemo and iamgreaser:
   http://thmods.com/forum/viewtopic.php?f=5&t=200&p=1079
   https://gist.github.com/iamgreaser/b54531e41d77b69d7d13391deb0ac6a5
-  
-  TODO:
-  parse textures
-  make extensions to use enum properly
-  convert coords to correct floats?
-  support xbox version (6: thps2x)
 
 seq:
   - id: version
     type: u2
     enum: version_id
-  - id: magic
-    contents: [2, 0]
+  - id: trg_version
+    type: u2 # always 2
   - id: ptr_ext
     type: u4
-    
+
   - id: num_objects
     type: u4
   - id: objects
     type: obj
     repeat: expr
     repeat-expr: num_objects
-    
+
   - id: num_models
     type: u4
   - id: ptr_models
@@ -64,48 +54,35 @@ seq:
     type: model
     repeat: expr
     repeat-expr: num_models
-    
+
   - id: extensions
     type: extension
     repeat: until
     repeat-until: _.ext_type == -1
-    
+
   - id: model_checksums
     type: u4
     repeat: expr
     repeat-expr: num_models
-    
+
+    # important: level files declare only the textures they use
+    # but acutal textures are saved in a texture library.
   - id: num_texture_checksums
-    type: u4   
+    type: u4
   - id: texture_checksums
     type: u4
     repeat: expr
     repeat-expr: num_texture_checksums
 
-  - id: num_pal4
-    type: u4
-  - id: pal4s
-    type: pal4
-    repeat: expr
-    repeat-expr: num_pal4
-    
-  - id: num_pal8
-    type: u4
-  - id: pal8s
-    type: pal8
-    repeat: expr
-    repeat-expr: num_pal8    
-    
-  - id: num_textures
-    type: u4
-  - id: ptr_textures
-    type: u4
-    repeat: expr
-    repeat-expr: num_textures        
+  - id: pal16
+    type: palette_set(16)
+
+  - id: pal256
+    type: palette_set(256)
+
   - id: textures
-    type: texture
-    repeat: expr
-    repeat-expr: num_textures   
+    type: texture_set
+
 types:
   extension:
     seq:
@@ -138,7 +115,7 @@ types:
 
   model:
     seq:
-      - id: unk1
+      - id: flags # i guess, mostly 8 and 10.
         type:
           switch-on: _root.version
           cases:
@@ -150,7 +127,7 @@ types:
           cases:
             'version_id::apoc': u4
             'version_id::thps': u2
-      - id: num_planes
+      - id: num_normals
         type:
           switch-on: _root.version
           cases:
@@ -166,16 +143,19 @@ types:
         type: u4
       - id: bbox
         type: bounding_box
+        
+      # this value is not present in apocalypse and th1 beta
       - id: unk
         type: u4
+
       - id: vertices
         type: vec4s2
         repeat: expr
         repeat-expr: num_vertices
-      - id: planes
+      - id: normals
         type: vec4s2
         repeat: expr
-        repeat-expr: num_planes
+        repeat-expr: num_normals
       - id: faces
         type: face
         repeat: expr
@@ -188,9 +168,13 @@ types:
       - id: size
         type: u2
       - id: indices
-        type: vec4
+        type:
+          switch-on: _root.version
+          cases:
+            'version_id::apoc': vec4u2
+            'version_id::thps': vec4u1
       - id: color
-        type: color32bpp  
+        type: vec4u1  
       - id: index
         type: u2
       - id: col
@@ -198,15 +182,17 @@ types:
       - id: mat_index
         type: u4
         if: flags.is_textured == true
+        # UV is using shorts in other versions
       - id: uv
-        type: uv_data
+        type: vec2u1
         repeat: expr
         repeat-expr: 4
         if: flags.is_textured == true
       - id: padding1
         type: u4
-        if: flags.is_padded == true      
+        if: flags.is_padded == true
 
+  # TODO: outdated, fix
   flag:
     seq:
       - id: is_collision
@@ -228,51 +214,35 @@ types:
       - id: f_rest
         type: b8
       
-  uv_data:
-    seq:
-      - id: u
-        type: u1
-      - id: v
-        type: u1
-
-  vec4:
+  vec2u1:
     seq:
       - id: x
-        type:
-          switch-on: _root.version
-          cases:
-            'version_id::apoc': u2
-            'version_id::thps': u1
+        type: u1
       - id: y
-        type:
-          switch-on: _root.version
-          cases:
-            'version_id::apoc': u2
-            'version_id::thps': u1
-      - id: z
-        type:
-          switch-on: _root.version
-          cases:
-            'version_id::apoc': u2
-            'version_id::thps': u1
-      - id: w
-        type:
-          switch-on: _root.version
-          cases:
-            'version_id::apoc': u2
-            'version_id::thps': u1
-      
-  color32bpp:
-    seq:
-      - id: r
-        type: u1
-      - id: g
-        type: u1
-      - id: b
-        type: u1
-      - id: a
         type: u1
 
+  vec4u1:
+    seq:
+      - id: x
+        type: u1
+      - id: y
+        type: u1
+      - id: z
+        type: u1
+      - id: w
+        type: u1
+
+  vec4u2:
+    seq:
+      - id: x
+        type: u2
+      - id: y
+        type: u2
+      - id: z
+        type: u2
+      - id: w
+        type: u2
+    
   vec4s2:
     seq:
       - id: x
@@ -298,85 +268,101 @@ types:
   bounding_box:
     seq:
       - id: xmax
-        type: u2
+        type: s2
       - id: xmin
-        type: u2
+        type: s2
       - id: ymax
-        type: u2
+        type: s2
       - id: ymin
-        type: u2
+        type: s2
       - id: zmax
-        type: u2
+        type: s2
       - id: zmin
-        type: u2
-        
-  pal4:
-    seq:
-      - id: checksum
-        type: u4
-      - id: colors
-        type: color16bpp
-        repeat: expr
-        repeat-expr: 16
-           
-  pal8:
-    seq:
-      - id: checksum
-        type: u4
-      - id: colors
-        type: color16bpp
-        repeat: expr
-        repeat-expr: 256
-        
-  color16bpp:
-    seq:
-      - id: r
-        type: b5
-      - id: g
-        type: b5
-      - id: b
-        type: b5
-      - id: a
-        type: b1
-        
+        type: s2
+
   texture:
     seq:
-      - id: unk
-        type: u4
-      - id: pal_type
-        type: u4
-      - id: checksum
-        type: u4
-      - id: index
-        type: u4
-      - id: width
+    - id: magic
+      type: u4
+    - id: paltype
+      type: u4
+    - id: palcrc
+      type: u4
+    - id: index
+      type: u4
+    - id: width
+      type: u2
+    - id: height
+      type: u2
+    - id: data
+      size: stride * height
+      
+    instances:
+      stride:
+        # not particularly sure about this one
+        value: '(paltype == 16 ? width / 2 + 1 & ~1 : width)'
+
+  texture_set:
+    seq:
+    - id: num
+      type: u4
+    - id: ptr
+      type: u4
+      repeat: expr
+      repeat-expr: num
+    - id: entries
+      type: texture
+      repeat: expr
+      repeat-expr: num
+
+  palette_set:
+    params:
+      - id: size
         type: u2
-      - id: height
+    seq:
+    - id: num
+      type: u4
+    - id: entries
+      type: palette(size)
+      repeat: expr
+      repeat-expr: num
+
+  palette:
+    params:
+      - id: size
         type: u2
-      - id: data4
-        size: (width + 4 - (4 - width % 4)) * height / 2
-        if: pal_type == 16
-      - id: data8
-        size: (width + 4 - (4 - width % 4)) * height
-        if: pal_type == 256
+    seq:
+    - id: checksum
+      type: u4
+    - id: entries
+      type: color5551
+      repeat: expr
+      repeat-expr: size
+
+  color5551:
+    seq:
+    - id: r
+      type: b5
+    - id: g
+      type: b5
+    - id: b
+      type: b5
+    - id: stp
+      type: b1
 
 enums:
   ext_type:
-    0x06: assumed_tex_coord_anim
+    0x06: assumed_tex_coord_anim # wibbly textures
     0x07: assumed_vert_color_anim
-    0x0A: block_map
+    0x0A: block_map # collision table
     0x2A: unknown_2a
-    0x2C: anim
-    0x73424752: clut
+    0x2C: anim # animation chunk. sk2anim.psx on th2 mostly
+    0x73424752: vertex_clut # a lookup table for gouraud shading
     0x44415551: quad
-    0x52454948: hier 
+    0x52454948: hier # models with hierarchy - skaters, cars
     -1: terminator
-  
+
   version_id:
     3: apoc
     4: thps
     6: xbox
-    
-  pal_id:
-    16: pal4
-    256: pal8
