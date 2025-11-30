@@ -265,10 +265,8 @@ namespace ThpsFontEd
             // textBox1.Text += (char)fnt.Glyphs[listBox1.SelectedIndex].Character;
         }
 
-
         [DllImport("Unswizzler.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Unswizzle(IntPtr src, uint depth, uint width, uint height, IntPtr dest);
-
 
         private void unswizzleVadruToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -445,9 +443,9 @@ namespace ThpsFontEd
 
         private void addLowercaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<Glyph> x = new List<Glyph>();
+            var x = new List<Glyph>();
 
-            foreach (Glyph g in fnt.Glyphs)
+            foreach (var g in fnt.Glyphs)
             {
                 if (g.Value >= (ushort)'A' && g.Value <= (ushort)'Z')
                 {
@@ -509,14 +507,16 @@ namespace ThpsFontEd
         public void FillListView(ListView x)
         {
             x.Items.Clear();
-            foreach (Glyph g in fnt.Glyphs)
+
+            foreach (var g in fnt.Glyphs)
             {
-                ListViewItem li = new ListViewItem(new[] {
+                var li = new ListViewItem(new[] {
                     (char)g.Value + "",
-                    g.Value.ToString("X4") + "",
-                    g.Region.X + "," + g.Region.Y,
-                    g.Region.Width + "x" + g.Region.Height
+                    g.Value.ToString("X4"),
+                    $"{g.Region.X},{g.Region.Y}",
+                    $"{g.Region.Width}x{g.Region.Height}"
                 });
+
                 x.Items.Add(li);
             }
         }
@@ -526,15 +526,11 @@ namespace ThpsFontEd
 
         }
 
-        string discordLink = "https://discord.gg/vTWucHS";
-        string githubLink = "https://github.com/DCxDemo/LegacyThps";
-        string fonthuntLink = "https://github.com/DCxDemo/ThpsFonts";
+        private void legacyThpsDiscordToolStripMenuItem_Click(object sender, EventArgs e) => Process.Start(Meta.linkDiscord);
 
-        private void legacyThpsDiscordToolStripMenuItem_Click(object sender, EventArgs e) => Process.Start(discordLink);
+        private void tHPSFontsHuntToolStripMenuItem_Click(object sender, EventArgs e) => Process.Start(Meta.linkFonts);
 
-        private void tHPSFontsHuntToolStripMenuItem_Click(object sender, EventArgs e) => Process.Start(fonthuntLink);
-
-        private void githubToolStripMenuItem_Click(object sender, EventArgs e) => Process.Start(githubLink);
+        private void githubToolStripMenuItem_Click(object sender, EventArgs e) => Process.Start(Meta.linkGithub);
 
         private void SetTitle(string title = "")
         {

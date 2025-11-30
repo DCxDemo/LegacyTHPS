@@ -133,6 +133,12 @@ namespace ThpsTrigEd
                 e.DrawString(node.Number + " - " + GetName.BaddyType(node.BaddyType), SystemFonts.DialogFont, Brushes.Black, new Point(c.Zoomed(node.Position.X) + c.X, c.Zoomed(-node.Position.Z) + c.Y));
             }
 
+            if (node.IsRestart && c.Restarts)
+            {
+                e.FillEllipse(Brushes.Blue, new Rectangle(c.Zoomed(node.Position.X) - 10 + c.X, c.Zoomed(-node.Position.Z) - 10 + c.Y, 20, 20));
+                e.DrawString(node.Number + " - " + node.RestartName, SystemFonts.DialogFont, Brushes.Black, new Point(c.Zoomed(node.Position.X) + c.X, c.Zoomed(-node.Position.Z) + c.Y));
+            }
+
             // zero reference lines
 
             e.DrawLine(Pens.Orange,

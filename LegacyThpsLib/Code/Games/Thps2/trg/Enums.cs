@@ -40,7 +40,7 @@
         // defines a rail point in space. has links to other rail points, forming a line to grind.
         RailDef	= 10,
 
-        // same as above. maybe originally intended to be a rail ending point without links. 
+        // same as above. Point means it's a rail connected to a trickob/command point
         RailPoint = 11,
 
         // a trick object. only contains checksum and serves as a connection to mesh object

@@ -133,6 +133,7 @@ namespace ThpsTrigEd
             if (e.KeyCode == Keys.D6) cam.SplitScreenRails = !cam.SplitScreenRails;
             if (e.KeyCode == Keys.D7) cam.Points = !cam.Points;
             if (e.KeyCode == Keys.D8) cam.Baddies = !cam.Baddies;
+            if (e.KeyCode == Keys.D9) cam.Restarts = !cam.Restarts;
         }
 
         private void Form2_Resize(object sender, EventArgs e)
@@ -157,6 +158,7 @@ namespace ThpsTrigEd
             "Toggle 2P rails: 6",
             "Toggle points: 7",
             "Toggle baddies: 8",
+            "Toggle restarts: 9",
             "",
             "Gray rails - concrete",
             "Red rails - wood",

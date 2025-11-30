@@ -22,6 +22,7 @@ namespace ThpsTrigEd
         public bool SplitScreenRails = true;
         public bool Points = true;
         public bool Baddies = true;
+        public bool Restarts = true;
 
         public int sx;
         public int sy;

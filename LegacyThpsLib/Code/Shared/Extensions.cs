@@ -10,11 +10,11 @@ namespace LegacyThps.Shared
         {
             string result = "";
 
-            byte buf = br.ReadByte();
+            char buf = br.ReadChar();
             while (buf != '\0')
             {
-                result += Convert.ToChar(buf);
-                buf = br.ReadByte();
+                result += buf;
+                buf = br.ReadChar();
             }
 
             br.Pad(2);  // original code loads shorts
@@ -29,9 +29,9 @@ namespace LegacyThps.Shared
             bw.Pad(2);
         }
 
-        public static bool CanRead(this BinaryReader br)
+        public static bool CanRead(this BinaryReader br, int bytes = 0)
         {
-            return br.BaseStream.Position < br.BaseStream.Length;
+            return br.BaseStream.Position + bytes < br.BaseStream.Length;
         }
 
         public static void Pad(this BinaryReader br, uint pad = 4)

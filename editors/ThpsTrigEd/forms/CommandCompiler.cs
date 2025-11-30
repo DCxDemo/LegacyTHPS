@@ -33,6 +33,7 @@ namespace ThpsTrigEd
                 var ms = new MemoryStream();
 
                 var bw = new BinaryWriter(ms);
+
                 if (checkBox1.Checked)
                     bw.BaseStream.Position = 2;
 

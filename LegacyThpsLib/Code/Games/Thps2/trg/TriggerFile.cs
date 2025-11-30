@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using System.Drawing;
 using System.Windows.Forms;
-using LegacyThps.Shared;
 
 namespace LegacyThps.Thps2.Triggers
 {
@@ -48,13 +46,16 @@ namespace LegacyThps.Thps2.Triggers
 
             Version = br.ReadInt16(); // always 2
             Project = br.ReadInt16(); // thps - 0, mhpb - 1
+
             int numNodes = br.ReadInt32();
 
+            // create empty nodes
             for (int i = 0; i < numNodes; i++)
                 Nodes.Add(new TNode() { 
                     Offset = br.ReadInt32() 
                 });
 
+            // calculate node sizes and parse them
             for (int i = 0; i < numNodes - 1; i++)
             {
                 Nodes[i].Size = Nodes[i + 1].Offset - Nodes[i].Offset;
@@ -69,6 +70,7 @@ namespace LegacyThps.Thps2.Triggers
             Nodes[numNodes-1].Size = 2;
             // must be terminator!
             Nodes[numNodes-1].ReadNode(br);
+
 
             var sb = new StringBuilder();
 
@@ -87,18 +89,18 @@ namespace LegacyThps.Thps2.Triggers
                     if (Nodes[x] == node)
                     {
                         sb.AppendLine(node.Name);
+                        node.Name += "_SELFLINKED";
                         break;
                     }
 
                     node.LinkedNodes.Add(Nodes[x]);
 
-                    if (node.IsRestart)
-                        if (Nodes[x].IsCommand)
-                            Nodes[x].Name += "_SpawnCommand";
-
-                    if (node.IsCommand)
-                        if (Nodes[x].IsCrate)
-                            node.Name += "_CrateKiller";
+                    if (node.IsRestart && Nodes[x].IsCommand) {
+                        Nodes[x].Name += "_SpawnCommand";
+                    } 
+                    else if (node.IsCommand && Nodes[x].IsCrate) {
+                        node.Name += "_CrateKiller";
+                    }
                 }
             }
 

@@ -84,7 +84,7 @@ namespace LegacyThps.Thps2.Triggers
 
         //===============helper methods that wrap some blocks of node reading=================
 
-        //reads links
+        // reads links
         public void ReadLinks(BinaryReader br)
         {
             LinkCount = br.ReadInt16();
@@ -127,7 +127,7 @@ namespace LegacyThps.Thps2.Triggers
 
         //=====================node reading scripts start here==========================
 
-        //reads the node from file
+        // generic method to read a single node from file
         public void ReadNode(BinaryReader b)
         {
             // seek offset
@@ -158,13 +158,14 @@ namespace LegacyThps.Thps2.Triggers
             //else throw new Exception($"not implemented node type {Type} yet");
         }
 
-        public void ReadPoint(BinaryReader br)
+        // specific node parsers
+        private void ReadPoint(BinaryReader br)
         {
             ReadLinks(br);
             ReadPosition(br);
         }
 
-        public void ReadTrickObCluster(BinaryReader br)
+        private void ReadTrickObCluster(BinaryReader br)
         {
             ReadLinks(br);
 
@@ -184,7 +185,7 @@ namespace LegacyThps.Thps2.Triggers
             while (entry != 0);
         }
 
-        public void ReadRail(BinaryReader br)
+        private void ReadRail(BinaryReader br)
         {
             ReadLinks(br);
             ReadPosition(br);
@@ -199,7 +200,7 @@ namespace LegacyThps.Thps2.Triggers
                 Terminator = br.ReadInt16();
         }
 
-        public void ReadCamPt(BinaryReader b)
+        private void ReadCamPt(BinaryReader b)
         {
             ReadLinks(b);
             ReadPosition(b);
@@ -209,7 +210,7 @@ namespace LegacyThps.Thps2.Triggers
         }
 
         //crate and trickob share similiar format. just trickob additionally has terminator.
-        public void ReadTrickObCrate(BinaryReader b)
+        private void ReadTrickObCrate(BinaryReader b)
         {
             ReadLinks(b);
 
@@ -222,7 +223,7 @@ namespace LegacyThps.Thps2.Triggers
                 Terminator = b.ReadInt16();
         }
 
-        public void ReadPowerUp(BinaryReader b)
+        private void ReadPowerUp(BinaryReader b)
         {
             PowerUpType = b.ReadInt16();
 
@@ -238,7 +239,7 @@ namespace LegacyThps.Thps2.Triggers
             Name += "_" + GetName.PowerUp(PowerUpType);
         }
 
-        public void ReadBaddy(BinaryReader b)
+        private void ReadBaddy(BinaryReader b)
         {
             BaddyType = b.ReadInt16();
             Priority = b.ReadInt16();
@@ -259,11 +260,7 @@ namespace LegacyThps.Thps2.Triggers
             Name += $"_{GetName.BaddyType(BaddyType)}";
         }
 
-
-
-
-
-        public void ReadCommand(BinaryReader b)
+        private void ReadCommand(BinaryReader b)
         {
             ReadLinks(b);
 
@@ -278,7 +275,7 @@ namespace LegacyThps.Thps2.Triggers
                 Name += "_Gap";
         }
 
-        public void ReadRestart(BinaryReader br)
+        private void ReadRestart(BinaryReader br)
         {
             ReadLinks(br);
             ReadPosition(br);
@@ -291,7 +288,7 @@ namespace LegacyThps.Thps2.Triggers
             CommandList = ReadCommandList(br);
         }
 
-        public void ReadScriptPoint(BinaryReader b)
+        private void ReadScriptPoint(BinaryReader b)
         {
             ReadLinks(b);
             ReadPosition(b);
@@ -300,8 +297,7 @@ namespace LegacyThps.Thps2.Triggers
             BaddyScript = ReadBaddyScript(b);
         }
 
-
-        public void ReadAutoExec(BinaryReader b)
+        private void ReadAutoExec(BinaryReader b)
         {
             CommandList = ReadCommandList(b);
         }
