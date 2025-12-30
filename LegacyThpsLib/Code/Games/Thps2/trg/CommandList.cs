@@ -56,7 +56,7 @@ namespace LegacyThps.Thps2.Triggers
            new CFuncDef { Value = 132, Name = "BackgroundOff", ParamTypes = oneBool },
 
             // guess param is linked node index or -1 for all linked nodes?
-            new CFuncDef { Value = 134, Name = "SendInitialPulses", ParamTypes = oneWord },
+            new CFuncDef { Value = 134, Name = "SetInitialPulses", ParamTypes = oneWord },
 
             new CFuncDef { Value = 140, Name = "SetRestart",        ParamTypes = oneString },
 

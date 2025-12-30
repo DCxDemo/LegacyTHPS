@@ -329,7 +329,7 @@ namespace LegacyThps.Thps2.Triggers
                 case 128: r = "SpoolEnv"; break;            //sets level file
                 case 131: r = "BackgroundOn"; break;        //have no idea what this does, maybe turn sky on? seems so
                 case 132: r = "BackgroundOff"; break;       //same off?
-                case 134: r = "SendInitialPulses"; break;   //sets number of times to activate the trigger?
+                case 134: r = "SetInitialPulses"; break;    //sets number of times to activate the trigger?
                 case 140: r = "SetRestart"; break;          //restart for player 1
                 case 142: r = "SetObjFile"; break;          //sets the object file (SkSmth_O.PSX)
                 case 147: r = "SetGameLevel"; break;        //it's always setgamelevel (1). probably turns game mode on or smth like that.
